@@ -166,3 +166,17 @@ main > .status{margin-top:var(--section-space)}
 /* Toolbar button spacing: 10px on all devices; all other spacing unchanged. */
 main > .toolbar{gap:5px}
 main > .toolbar .groupControls{gap:5px}
+
+/* Narrow-screen total-cost order */
+@media(max-width:700px){
+  main > .teams .groupLabel .allCost{
+    order:1;
+    flex:0 0 100%;
+    margin-left:0;
+  }
+  main > .teams .groupLabel .groupCost{
+    order:2;
+    flex:0 0 100%;
+    margin-left:0;
+  }
+}
