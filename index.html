@@ -1,0 +1,370 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ゼンゼロチーム編成シミュレーター</title><style>
+:root{color-scheme:dark;--bg:#101218;--panel:#181b24;--card:#202430;--line:#3a4050;--text:#f4f5f7;--muted:#aeb4c2;--accent:#8ab4ff;--accentbg:#263653}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}button,input,select{font:inherit}button{color:inherit;border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:9px 12px;cursor:pointer}button:hover{border-color:#65708a}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}main{max-width:1100px;margin:auto;padding:24px 16px 40px}h1{font-size:24px;margin:0 0 9px;letter-spacing:.04em;display:inline-block;position:relative;padding-bottom:7px}h1::after{content:"";display:block;width:100%;height:2px;margin-top:6px;background:var(--accent);border-radius:2px;opacity:.8}.sub{color:var(--muted);font-size:14px;margin-bottom:18px}.toolbar,.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.filters input[type="search"]{flex:1 1 240px;min-width:240px;width:240px;box-sizing:border-box}.bangbooControls .filters input[type="search"]{flex:0 0 240px;min-width:240px;width:240px;box-sizing:border-box}input,select{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--text);min-height:42px}input{flex:1;min-width:200px}.notice{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--muted);font-size:13px;margin-bottom:16px}.teams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:22px}.team{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px}.team.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.teamhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.teamhead b{font-size:15px}.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px} .teamContents{display:flex;width:100%;align-items:flex-end;gap:7px}.teamContents .slots{flex:1;min-width:0}.bangbooWrap{width:70px;flex:0 0 70px;display:flex;align-self:flex-end;margin:0;padding:0}.bangbooSlot{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;box-sizing:border-box;width:70px;height:70px;min-height:70px;padding:4px;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#171a22;overflow:hidden;border-left:1px solid var(--line);border-top-left-radius:8px;border-bottom-left-radius:8px} .bangbooSlot img{width:30px;height:30px;object-fit:cover;border-radius:7px;margin-bottom:3px;background:#303746}.bangbooSlot strong{font-size:10px;line-height:1.15}.bangbooSlot.empty{color:var(--muted);border-style:dashed;cursor:pointer}.bangbooSlot.empty:hover{border-color:#8d96a8}.slot.drag-over,.bangbooSlot.drag-over{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}.slot.dragging,.bangbooSlot.dragging{cursor:grabbing}.modeTabs{display:flex;gap:22px;margin-bottom:14px}.modeTabs button.active{background:var(--accentbg);border-color:var(--accent);color:var(--text)}.modeTabs button:disabled{opacity:.45;cursor:not-allowed}.bangbooControls{display:none}.bangbooControls.show{display:block}.bangbooControls .filters{margin-bottom:8px}.bangbooControls.show{display:flex}.agentControls.hide{display:none}.slot{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;min-height:105px;padding:5px;font-size:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#171a22;overflow:hidden}.slot.empty{color:var(--muted);border-style:dashed}.slot.empty:hover{border-color:#8d96a8}.slot img{width:58px;height:58px;object-fit:cover;border-radius:9px;margin-bottom:4px;background:#303746}.slot .initial{font-size:21px;font-weight:700;margin-bottom:3px}.slot .spec,.char .meta{font-size:10px;color:var(--muted);margin-top:auto;padding-top:2px}.chars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.char{min-height:118px;padding:7px 5px;font-size:12px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}.char.used{cursor:not-allowed}.char.used>*:not(.conv){opacity:.38}.char img{width:58px;height:58px;object-fit:cover;border-radius:9px;background:#303746;margin-bottom:5px}.char .initial{width:58px;height:58px;border-radius:9px;background:#303746;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;margin-bottom:5px}.count,.status{color:var(--muted);font-size:13px}.count{margin:8px 0}.status{min-height:22px;margin-top:12px}@media(max-width:850px){.teams{grid-template-columns:repeat(2,minmax(0,1fr))}.chars{grid-template-columns:repeat(5,minmax(0,1fr))}}@media(max-width:560px){main{padding:16px 10px 30px}h1{font-size:21px}.descriptionToggle{display:block;margin-top:0;margin-left:10px}.teams{grid-template-columns:1fr}.chars{grid-template-columns:repeat(4,minmax(0,1fr))}.slot{min-height:95px}.char{min-height:105px;font-size:11px}.char img,.slot img{width:52px;height:52px}}
+.addBtn{font-weight:400}.unitChoiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.unitChoiceGrid button{min-height:72px;font-size:16px;font-weight:700}@media(max-width:560px){.unitChoiceGrid{grid-template-columns:1fr}}.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modal.show{display:flex}.modalbox{width:min(520px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.45)}.modalbox h2{margin:0 0 14px;font-size:20px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.formgrid .full{grid-column:1/-1}.formgrid label{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:13px}.formgrid input,.formgrid select{width:100%}.modalActions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.addedNote{font-size:12px;color:var(--muted);margin-top:10px}.groupLabel{font-size:11px;color:var(--muted);margin:14px 0 6px;font-weight:700}
+.groupLabel{display:flex;align-items:center;justify-content:flex-start;gap:5px}.groupCosts{display:contents}.groupCost{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap}.teamCost{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;margin-left:auto}.allCost{font-size:13px;color:var(--text);font-weight:800;white-space:nowrap;margin-left:auto}.groupControls{display:flex;align-items:center;gap:6px}.groupControls button{padding:6px 10px}.groupCount{min-width:74px;text-align:center;color:var(--muted);font-size:13px}.char{position:relative}.char .conv{margin-top:5px;padding:3px 7px;font-size:10px}.char .deleteAgent{margin-top:4px;padding:3px 7px;font-size:10px;border-color:#7a4650;background:#24171a;position:relative;z-index:5;pointer-events:auto}.char.used .conv,.char.used .deleteAgent{cursor:pointer}.slot .meta2,.char .meta2{font-size:10px;color:var(--muted);margin-top:3px}.slot .meta2{font-size:14px;font-weight:700;color:var(--text);margin-top:5px}.char .meta2{font-size:13px;font-weight:700}.smallNote{font-size:12px;color:var(--muted);margin-top:8px}
+ .meta2{font-size:12px!important;line-height:1.1;margin-top:auto!important;padding-top:2px!important}.slot .meta2{font-size:13px!important}.char .meta2{font-size:12px!important}/* タイトル装飾 */
+.headerDecor{background:var(--panel);border:1px solid var(--accent);border-radius:10px;padding:16px 18px;margin-bottom:18px}.headerDecor h1{margin:0 0 9px;font-size:25px;letter-spacing:.02em;font-weight:750}.headerDecor .sub{margin:0;color:var(--muted);line-height:1.7;max-width:980px}.descriptionToggle{margin-top:0;margin-left:10px;padding:5px 10px;font-size:12px}.descriptionText{margin-top:8px;color:var(--muted);line-height:1.7;max-width:980px}
+.status{display:none!important}</style><link rel="stylesheet" href="theme.css"></head><body><main><header class="headerDecor"><h1>ゼンゼロチーム編成シミュレーター</h1><button id="descriptionToggle" type="button" class="descriptionToggle">このサイトの使い方</button><div id="descriptionText" class="descriptionText" hidden>・マトリクスモードでは支援・防護エージェントは2回、その他の特性のエージェント、ボンプは1回まで選択できるようになっています。<br><br>・+ユニット追加を押すと新実装エージェントやボンプを追加することもできます。<br><br>・画像保存はエージェントや音動機の凸状況を提示する際などご自由にお使いください。<br><br>・凸表示をオンにすることでエージェントや音動機の凸表示(無凸～完凸→M0～M6、W1～W5)に加え、各グループと全グループのコスト数を表示できます。※限定ガチャに一度でも登場したS級エージェントは配布分もコスト数にカウントしています。(例:浅羽悠真M0W1→2 Cost,ジェーンM2W1→4 Cost,ピュロイスM6W5→0 Cost)<br><br>・チーム内のエージェントやボンプはドラッグ(スワイプ)して編成順を入れ替えたり、別チームに移動させることができます。<br><br>・編成、凸等はこのブラウザに自動保存されるため、長期的にお使いいただけます。(ブックマーク推奨)</div></div></header><div class="toolbar"><button id="reset">全グループリセット</button><button id="clearTeam">選択チームリセット</button><button id="addCharacter" class="addBtn">＋ ユニット追加</button><button id="ruleToggle" type="button">マトリクスモード:ON</button><button id="convDisplayToggle" type="button">凸表示:ON</button><button id="duplicateCostToggle" type="button">重複分コスト除外:OFF</button><button id="bangbooToggle" type="button">ボンプ表示:ON</button><button id="saveGroupImage" type="button">画像保存</button><div class="groupControls"><button id="removeGroup" title="グループを1つ減らす">−</button><span id="groupCount" class="groupCount">グループ3</span><button id="addGroup" title="グループを1つ増やす">＋</button></div></div><section id="teams" class="teams"></section><div class="modeTabs"><button id="agentMode" class="active" type="button">エージェント</button><button id="bangbooMode" type="button">ボンプ</button></div><div id="agentControls" class="agentControls"><div class="filters"><input id="search" type="search" placeholder="エージェント名を検索"><select id="specialty"><option value="all">全特性</option><option>強攻</option><option>撃破</option><option>異常</option><option>支援</option><option>防護</option><option>命破</option><option>鋭御</option></select><select id="rarity"><option value="all">全レアリティ</option><option value="S">S級</option><option value="A">A級</option><option value="∞">∞級</option></select></div></div><div id="bangbooControls" class="bangbooControls"><div class="filters"><input id="bangbooSearch" type="search" placeholder="ボンプ名を検索"><select id="bangbooAttribute"><option value="all">全属性</option><option>物理</option><option>炎</option><option>氷</option><option>電気</option><option>エーテル</option></select></div></div><div id="count" class="count"></div><div id="chars" class="chars"></div><div id="status" class="status"></div></main><div id="resetConfirmModal" class="modal" aria-hidden="true"><div class="modalbox"><h2>全グループをリセット</h2><div style="color:var(--muted);line-height:1.7">全グループの編成をリセットします</div><div class="modalActions"><button id="cancelReset" type="button">キャンセル</button><button id="confirmReset" type="button">リセットする</button></div></div></div><div id="addModal" class="modal" aria-hidden="true"><div class="modalbox"><h2>エージェントを追加</h2><div class="formgrid"><label>エージェント名<input id="newName" type="text" maxlength="40" placeholder="例：新エージェント"></label><label>役職<select id="newRole"><option>強攻</option><option>撃破</option><option>異常</option><option>支援</option><option>防護</option><option>命破</option><option>鋭御</option></select></label><label>レアリティ<select id="newRarity"><option value="S">S級</option><option value="A">A級</option><option value="∞">∞級</option></select></label><label class="full">エージェント画像<input id="newImage" type="file" accept="image/*"></label></div><div class="addedNote">画像はこのブラウザに保存されるため、GitHubへ画像をアップロードしなくても追加できます。追加したキャラクターはこのブラウザでのみ表示されます。</div><div class="modalActions"><button id="cancelAdd">キャンセル</button><button id="saveAdd" class="addBtn">追加する</button></div></div></div><div id="unitModal" class="modal" aria-hidden="true"><div class="modalbox"><h2>ユニットを追加</h2><div class="unitChoiceGrid"><button id="chooseAgentAdd" class="addBtn" type="button">エージェント追加</button><button id="chooseBangbooAdd" class="addBtn" type="button">ボンプ追加</button></div><div class="modalActions"><button id="cancelUnit" type="button">キャンセル</button></div></div></div><div id="addBangbooModal" class="modal" aria-hidden="true"><div class="modalbox"><h2>ボンプを追加</h2><div class="formgrid"><label class="full">ボンプ名<input id="newBangbooName" type="text" maxlength="40" placeholder="例：新ボンプ"></label><label>属性<select id="newBangbooAttribute"><option>物理</option><option>炎</option><option>氷</option><option>電気</option><option>エーテル</option></select></label><label>ボンプ画像<input id="newBangbooImage" type="file" accept="image/*"></label></div><div class="addedNote">画像はこのブラウザに保存されます。追加したボンプはこのブラウザでのみ表示されます。</div><div class="modalActions"><button id="cancelBangbooAdd" type="button">キャンセル</button><button id="saveBangbooAdd" class="addBtn" type="button">追加する</button></div></div></div><div id="deleteModal" class="modal" aria-hidden="true"><div class="modalbox"><h2>エージェントを削除</h2><div id="deleteMessage" style="line-height:1.7">このエージェントを削除しますか？</div><div class="modalActions"><button id="cancelDelete" type="button">キャンセル</button><button id="confirmDelete" class="addBtn" type="button">削除する</button></div></div></div><div id="convModal" class="modal" aria-hidden="true"><div class="modalbox"><h2 id="convTitle">凸数を設定</h2><div class="formgrid"><label>エージェント凸数<select id="charConv"><option value="0">M0</option><option value="1">M1</option><option value="2">M2</option><option value="3">M3</option><option value="4">M4</option><option value="5">M5</option><option value="6">M6</option></select></label><label>音動機凸数<select id="weaponConv"><option value="0">W1</option><option value="1">W2</option><option value="2">W3</option><option value="3">W4</option><option value="4">W5</option></select></label><label>音動機の種類<select id="weaponType"><option value="limited">限定</option><option value="permanent">恒常</option></select></label><label>音動機名(任意)<input id="weaponName" type="text" maxlength="40" placeholder="例：啜り泣くゆりかご"></label></div><div class="smallNote">この設定はこのブラウザに自動保存されます。</div><div class="modalActions"><button id="cancelConv">キャンセル</button><button id="saveConv" class="addBtn">保存</button></div></div></div><div id="groupImageModal" class="modal" aria-hidden="true"><div class="modalbox" style="max-width:900px"><h2>全グループ画像</h2><img id="groupImagePreview" alt="全グループ編成画像" style="display:block;width:100%;max-height:70vh;object-fit:contain;background:#0b0f13;border:1px solid #68c9e8;border-radius:8px"><div class="smallNote" style="margin-top:10px">画像を保存できます。</div><div class="modalActions"><button id="closeGroupImage" type="button">閉じる</button><button id="shareGroupImage" type="button">共有</button><button id="downloadGroupImage" class="addBtn" type="button">画像を保存</button></div></div></div><script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script><script>
+const IMAGE_BASE='./image.agent/';const AGENTS=[["エージェント (62).webp","セヴェリアン","強攻","S"],["エージェント (61).webp","フィオニー","異常","S"],["エージェント (60).webp","ロクシー","異常","S"],["エージェント (59).webp","クラレッタ","鋭御","S"],["エージェント (58).webp","シグリッド","強攻","S"],["エージェント (57).webp","レミエール","異常","S"],["エージェント (56).webp","ノルムー","撃破","S"],["エージェント (55).webp","ヴェリナ","異常","S"],["エージェント (54).webp","ピュロイス","強攻","∞"],["エージェント (53).webp","スターライト・ビリー","命破","S"],["エージェント (52).webp","プロメイア","異常","S"],["エージェント (51).webp","シーシィア","強攻","S"],["エージェント (50).webp","南宮羽","撃破","S"],["エージェント (49).webp","アリア","異常","S"],["エージェント (48).webp","千夏","支援","S"],["エージェント (47).webp","葉瞬光","強攻","S"],["エージェント (46).webp","照","防護","S"],["エージェント (45).webp","盤岳","命破","S"],["エージェント (44).webp","ダイアリン","撃破","S"],["エージェント (43).webp","イドリー","命破","S"],["エージェント (42).webp","狛野真斗","命破","A"],["エージェント (41).webp","リュシア","支援","S"],["エージェント (40).webp","オルペウス＆「鬼火」","強攻","S"],["エージェント (39).webp","「シード」","強攻","S"],["エージェント (38).webp","アリス","異常","S"],["エージェント (37).webp","浮波柚葉","支援","S"],["エージェント (36).webp","儀玄","命破","S"],["エージェント (35).webp","潘引壺","防護","A"],["エージェント (34).webp","橘福福","撃破","S"],["エージェント (33).webp","ヒューゴ","強攻","S"],["エージェント (32).webp","ビビアン","異常","S"],["エージェント (31).webp","「トリガー」","撃破","S"],["エージェント (30).webp","プルクラ","撃破","A"],["エージェント (29).webp","0号・アンビー","強攻","S"],["エージェント (28).webp","イヴリン","強攻","S"],["エージェント (27).webp","アストラ","支援","S"],["エージェント (26).webp","浅羽悠真","強攻","S"],["エージェント (25).webp","星見雅","異常","S"],["エージェント (24).webp","ライト","撃破","S"],["エージェント (23).webp","月城柳","異常","S"],["エージェント (22).webp","バーニス","異常","S"],["エージェント (21).webp","シーザー","防護","S"],["エージェント (20).webp","セス","防護","A"],["エージェント (19).webp","ジェーン","異常","S"],["エージェント (18).webp","青衣","撃破","S"],["エージェント (17).webp","パイパー","異常","A"],["エージェント (16).webp","ルーシー","支援","A"],["エージェント (15).webp","蒼角","支援","A"],["エージェント (14).webp","朱鳶","強攻","S"],["エージェント (13).webp","リナ","支援","S"],["エージェント (12).webp","エレン","強攻","S"],["エージェント (11).webp","ライカン","撃破","S"],["エージェント (10).webp","グレース","異常","S"],["エージェント (9).webp","クレタ","撃破","S"],["エージェント (8).webp","ベン・ビガー","防護","A"],["エージェント (7).webp","アンドー","強攻","A"],["エージェント (6).webp","カリン","強攻","A"],["エージェント (5).webp","「11号」","強攻","S"],["エージェント (4).webp","猫又","強攻","S"],["エージェント (3).webp","ニコ","支援","A"],["エージェント (2).webp","ビリー","強攻","A"],["エージェント (1).webp","アンビー","撃破","A"]];const BANGBOO_BASE='./image.bangboo/';const BANGBOOS=[["ボンプ (41).webp","アリエル","エーテル"],["ボンプ (40).webp","ウルトラネイヴ","炎"],["ボンプ (39).webp","ユウレイボンプ","エーテル"],["ボンプ (38).webp","コサン","エーテル"],["ボンプ (37).webp","メメ","物理"],["ボンプ (36).webp","ブロックボンプ","物理"],["ボンプ (35).webp","ビャークブリック","物理"],["ボンプ (34).webp","セイケンボンプ","物理"],["ボンプ (33).webp","「マーキュリー」","炎"],["ボンプ (32).webp","ミス・エスメ","物理"],["ボンプ (31).webp","オシシ","物理"],["ボンプ (30).webp","サビザンボンプ","物理"],["ボンプ (29).webp","ロビン","エーテル"],["ボンプ (28).webp","カチャコ","エーテル"],["ボンプ (27).webp","カクトウボンプ","炎"],["ボンプ (26).webp","ガリバー隊員","電気"],["ボンプ (25).webp","キシドウボンプ","エーテル"],["ボンプ (24).webp","カチコミボンプ","炎"],["ボンプ (23).webp","真紅のモックス","物理"],["ボンプ (22).webp","ツェイ巡査","物理"],["ボンプ (21).webp","オマネキボンプ","物理"],["ボンプ (20).webp","タンケンボンプ","物理"],["ボンプ (19).webp","オスモウボンプ","物理"],["ボンプ (18).webp","ハコイリボンプ","物理"],["ボンプ (17).webp","フクロノボンプ","物理"],["ボンプ (16).webp","ウルリンボンプ","炎"],["ボンプ (15).webp","アボカドボンプ","物理"],["ボンプ (14).webp","ズバットボンプ","物理"],["ボンプ (13).webp","ビリビリボンプ","電気"],["ボンプ (12).webp","クッツキボンプ","物理"],["ボンプ (11).webp","キアツデボンプ","エーテル"],["ボンプ (10).webp","ガブットボンプ","氷"],["ボンプ (9).webp","アクマデボンプ","エーテル"],["ボンプ (8).webp","ハヤスギボンプ","炎"],["ボンプ (7).webp","プラグノボンプ","電気"],["ボンプ (6).webp","レゾナンボンプ","エーテル"],["ボンプ (5).webp","リボルバボンプ","物理"],["ボンプ (4).webp","ゴアンゼン","物理"],["ボンプ (3).webp","アミリオン","物理"],["ボンプ (2).webp","バトラー","物理"],["ボンプ (1).webp","ペンギンボンプ","氷"]];const AGENT_NAME_ALIASES={"セヴェリアン・ローウェル":"セヴェリアン","フィオニー・レファエラ":"フィオニー","ロクシー・イフリータ・プライス":"ロクシー","クラレッタ・フリンツ":"クラレッタ","シグリッド・ドゥ・ラズール":"シグリッド","レミエール・ダン":"レミエール","ノルムー・ホローウェル":"ノルムー","ヴェリナ・エガード":"ヴェリナ","スターライト・ビリー・キッド":"スターライト・ビリー","イドリー・マーフィー":"イドリー","リュシア・エロウェン":"リュシア","オルペウス・マグヌッソン＆「鬼火」":"オルペウス＆「鬼火」","アリス・タイムフィールド":"アリス","ヒューゴ・ヴラド":"ヒューゴ","ビビアン・バンシー":"ビビアン","プルクラ・フェリーニ":"プルクラ","イヴリン・シェヴァリエ":"イヴリン","アストラ・ヤオ":"アストラ","バーニス・ホワイト":"バーニス","キング・シーザー":"シーザー","セス・ローウェル":"セス","ジェーン・ドゥ":"ジェーン","パイパー・ウィール":"パイパー","ルシアーナ・デ・モンテフィーノ":"ルーシー","アレクサンドリナ・セバスチャン":"リナ","エレン・ジョー":"エレン","フォン・ライカン":"ライカン","グレース・ハワード":"グレース","クレタ・ベロボーグ":"クレタ","アンドー・イワノフ":"アンドー","カリン・ウィクス":"カリン","猫宮又奈":"猫又","ニコ・デマラ":"ニコ","ビリー・キッド":"ビリー","アンビー・デマラ":"アンビー","11号":"「11号」"};
+function restoreAgent(a){
+ if(!Array.isArray(a)||String(a[0]).startsWith('data:'))return a;
+ const name=Object.prototype.hasOwnProperty.call(AGENT_NAME_ALIASES,a[1])?AGENT_NAME_ALIASES[a[1]]:a[1];
+ const current=AGENTS.find(x=>x[1]===name)||AGENTS.find(x=>x[0]===a[0]);
+ return current?current.slice():a;
+}
+function restoreBangboo(b){
+ if(!Array.isArray(b)||String(b[0]).startsWith('data:'))return b;
+ const current=BANGBOOS.find(x=>x[1]===b[1])||BANGBOOS.find(x=>x[0]===b[0]);
+ return current?current.slice():b;
+}
+function restoreConv(data){
+ for(const [oldName,name] of Object.entries(AGENT_NAME_ALIASES)){
+  if(Object.prototype.hasOwnProperty.call(data,oldName)&&!Object.prototype.hasOwnProperty.call(data,name))data[name]=data[oldName];
+ }
+ return data;
+}
+const KEY='zzz-9-team-builder-v6';const OLD_KEY='zzz-9-team-builder-v5';const CUSTOM_KEY='zzz-9-team-builder-custom-v2';const CUSTOM_BANGBOO_KEY='zzz-team-bangboo-custom-v1';const RULE_KEY='zzz-agent-no-overlap-v1';const CONV_DISPLAY_KEY='zzz-agent-conv-display-v1';const DUPLICATE_COST_DISPLAY_KEY='zzz-duplicate-cost-display-v1';let customAgents=loadCustom(),customBangboos=loadCustomBangboos(),teams=load(),active=0,convData=loadConv(),convTarget='',noOverlap=loadRule(),showConv=loadConvDisplay(),showDuplicateCost=loadDuplicateCostDisplay(),bangboos=loadBangboos(),selectionMode='agent',showBangboo=true;const $=id=>document.getElementById(id);function load(){for(const k of [KEY,OLD_KEY]){try{const x=JSON.parse(localStorage.getItem(k));if(Array.isArray(x)&&x.length>=3&&x.length<=27&&x.length%3===0&&x.every(t=>Array.isArray(t)&&t.length===3))return x.map(t=>t.map(restoreAgent))}catch(e){}}return Array.from({length:9},()=>[null,null,null])}function save(){localStorage.setItem(KEY,JSON.stringify(teams))}function loadBangboos(){try{const x=JSON.parse(localStorage.getItem('zzz-team-bangboo-v1'));return Array.isArray(x)?Array.from({length:teams.length},(_,i)=>restoreBangboo(x[i])||null):Array.from({length:teams.length},()=>null)}catch(e){return Array.from({length:teams.length},()=>null)}}function saveBangboos(){localStorage.setItem('zzz-team-bangboo-v1',JSON.stringify(bangboos))}function loadCustom(){try{const x=JSON.parse(localStorage.getItem(CUSTOM_KEY));if(Array.isArray(x))return x.filter(a=>Array.isArray(a)&&a.length===4)}catch(e){}return []}function saveCustom(){localStorage.setItem(CUSTOM_KEY,JSON.stringify(customAgents))}function loadCustomBangboos(){try{const x=JSON.parse(localStorage.getItem(CUSTOM_BANGBOO_KEY));if(Array.isArray(x))return x.filter(b=>Array.isArray(b)&&(b.length===2||b.length===3))}catch(e){}return []}function saveCustomBangboos(){localStorage.setItem(CUSTOM_BANGBOO_KEY,JSON.stringify(customBangboos))}function allBangboos(){return customBangboos.concat(BANGBOOS)}function loadConv(){try{const x=JSON.parse(localStorage.getItem('zzz-agent-conv-v2'));return x&&typeof x==='object'&&!Array.isArray(x)?restoreConv(Object.assign(Object.create(null),x)):Object.create(null)}catch(e){return Object.create(null)}}function saveConv(){localStorage.setItem('zzz-agent-conv-v2',JSON.stringify(convData))}function loadRule(){try{const v=localStorage.getItem(RULE_KEY);return v===null?true:v==='true'}catch(e){return true}}function saveRule(){localStorage.setItem(RULE_KEY,String(noOverlap));updateRuleButton() }function updateRuleButton(){const b=$('ruleToggle');if(b)b.textContent=noOverlap?'マトリクスモード:ON':'マトリクスモード:OFF(被りあり)'}function enforceMatrixAgentRules(){const seen=new Set(),seenInGroup=new Map(),removed=[];for(let ti=0;ti<teams.length;ti++){const g=groupOf(ti);for(let si=0;si<teams[ti].length;si++){const a=teams[ti][si];if(!a)continue;const n=a[1],support=a[2]==='支援'||a[2]==='防護',groupKey=g+'|'+n;let keep=true;if(support){const total=seen.get(n)||0;const inGroup=seenInGroup.get(groupKey)||0;if(total>=2||inGroup>=1)keep=false}else if(seen.has(n)){keep=false}if(keep){seen.set(n,(seen.get(n)||0)+1);seenInGroup.set(groupKey,(seenInGroup.get(groupKey)||0)+1)}else{teams[ti][si]=null;removed.push(n)}}}if(removed.length)save();return removed} function loadConvDisplay(){try{const v=localStorage.getItem(CONV_DISPLAY_KEY);return v===null?true:v==='true'}catch(e){return true}}function saveConvDisplay(){localStorage.setItem(CONV_DISPLAY_KEY,String(showConv));updateConvDisplayButton();updateDuplicateCostDisplayButton()}function updateConvDisplayButton(){const b=$('convDisplayToggle');if(b)b.textContent=showConv?'凸表示:ON':'凸表示:OFF'} function loadDuplicateCostDisplay(){try{return localStorage.getItem(DUPLICATE_COST_DISPLAY_KEY)==='true'}catch(e){return false}}function saveDuplicateCostDisplay(){localStorage.setItem(DUPLICATE_COST_DISPLAY_KEY,String(showDuplicateCost));updateDuplicateCostDisplayButton()}function updateDuplicateCostDisplayButton(){const b=$('duplicateCostToggle');if(b)b.textContent=showDuplicateCost?'重複分コスト除外:ON':'重複分コスト除外:OFF'} const PERMANENT_AGENT_NAMES=new Set(['リナ','アレクサンドリナ・セバスチャン','ライカン','フォン・ライカン','猫又','猫宮又奈','11号','「11号」','クレタ','クレタ・ベロボーグ','グレース','グレース・ハワード','ピュロイス']);function isPermanentAgent(a){return !!a&&((a[3]==='A')||PERMANENT_AGENT_NAMES.has(a[1]))}function agentCost(a,c){return isPermanentAgent(a)?0:Math.max(0,Math.min(6,c&&c.char||0))+1}function weaponCost(c,a){const wt=c&&c.weaponType;if(wt==='permanent'||wt==='恒常'||(wt==null&&isPermanentAgent(a)))return 0;return Math.max(0,Math.min(4,c&&c.weapon||0))+1}function unitCost(a){const c=convData[a[1]]||{char:0,weapon:0};return agentCost(a,c)+weaponCost(c,a)}function groupCost(g){let total=0;const seen=new Set();for(let ti=0;ti<Math.min(teams.length,(g+1)*3);ti++){for(const a of teams[ti]){if(!a||seen.has(a[1]))continue;seen.add(a[1]);if(ti>=g*3)total+=unitCost(a)}}return total}function groupDisplayedCost(g){let total=0;for(let ti=g*3;ti<Math.min(teams.length,(g+1)*3);ti++)for(const a of teams[ti])if(a)total+=unitCost(a);return total}function groupDuplicateCost(g){if(g===0)return 0;let total=0;const currentSeen=new Set(),previous=new Set();for(let ti=0;ti<g*3&&ti<teams.length;ti++)for(const a of teams[ti])if(a)previous.add(a[1]);for(let ti=g*3;ti<Math.min(teams.length,(g+1)*3);ti++)for(const a of teams[ti]){if(!a||currentSeen.has(a[1])||!previous.has(a[1]))continue;currentSeen.add(a[1]);total+=unitCost(a)}return total}function teamDisplayedCost(ti){let total=0;for(const a of teams[ti]||[])if(a)total+=unitCost(a);return total}function teamDuplicateCost(ti){const g=groupOf(ti);if(g===0)return 0;const previous=new Set(),seen=new Set();for(let i=0;i<g*3&&i<teams.length;i++)for(const a of teams[i])if(a)previous.add(a[1]);let total=0;for(const a of teams[ti]||[]){if(!a||seen.has(a[1])||!previous.has(a[1]))continue;seen.add(a[1]);total+=unitCost(a)}return total}function allGroupsCost(){let total=0;for(let g=0;g<getGroupCount();g++)total+=groupDisplayedCost(g);return total}function allGroupsDuplicateCost(){let total=0;for(let g=0;g<getGroupCount();g++)total+=groupCost(g);return total}function convText(n){const c=convData[n]||{char:0,weapon:0,weaponName:'',weaponType:'limited'};return `M${Math.max(0,Math.min(6,c.char||0))}${escapeHTML(c.weaponName||'')}W${Math.max(1,Math.min(5,(Number(c.weapon)||0)+1))}`}function getGroupCount(){return Math.ceil(teams.length/3)}function allAgents(){return customAgents.concat(AGENTS)}function groupOf(ti){return Math.floor(ti/3)}function groupName(g){return `グループ${g+1}`}function uses(n){return teams.flat().filter(x=>x&&x[1]===n).length}function usesInGroup(n,g){return teams.slice(g*3,g*3+3).flat().filter(x=>x&&x[1]===n).length}function maxUses(a){return a[2]==='支援'||a[2]==='防護'?2:1}function canAdd(a){const g=groupOf(active);if(!noOverlap)return usesInGroup(a[1],g)<1;if(a[2]==='支援'||a[2]==='防護')return uses(a[1])<2&&usesInGroup(a[1],g)<1;return uses(a[1])<1}function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function initial(n){return n.replace(/[「」・＆&]/g,'').trim().slice(0,1)||'？'}function img(a,c){if(a[0].startsWith('data:'))return `<img class="${c}" src="${a[0]}" alt="${escapeHTML(a[1])}" crossorigin="anonymous" loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none">${escapeHTML(initial(a[1]))}</div>`;return `<img class="${c}" src="${IMAGE_BASE}${encodeURIComponent(restoreAgent(a)[0])}" alt="${escapeHTML(a[1])}" crossorigin="anonymous" loading="eager" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none">${escapeHTML(initial(a[1]))}</div>`}function validAgentLayout(){
+  const seen=new Map(),groupSeen=new Map();
+  for(let ti=0;ti<teams.length;ti++){
+    const g=groupOf(ti);
+    for(const a of teams[ti]){
+      if(!a)continue;
+      const n=a[1],support=a[2]==='支援'||a[2]==='防護';
+      const total=(seen.get(n)||0)+1;
+      const key=g+'|'+n;
+      const inGroup=(groupSeen.get(key)||0)+1;
+      if(noOverlap){
+        if(support ? (total>2||inGroup>1) : total>1)return false;
+      }else{
+        if(inGroup>1)return false;
+      }
+      seen.set(n,total);groupSeen.set(key,inGroup);
+    }
+  }
+  return true;
+}
+function validBangbooLayout(){
+  const seen=new Map(),groupSeen=new Map();
+  for(let ti=0;ti<bangboos.length;ti++){
+    const b=bangboos[ti];if(!b)continue;
+    const n=b[1],g=groupOf(ti),total=(seen.get(n)||0)+1,key=g+'|'+n,inGroup=(groupSeen.get(key)||0)+1;
+    if(noOverlap ? total>1 : inGroup>1)return false;
+    seen.set(n,total);groupSeen.set(key,inGroup);
+  }
+  return true;
+}
+function setupTeamDragDrop(){
+  const root=$('teams');
+  if(!root)return;
+  root.ondragstart=e=>{
+    const slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]');
+    if(slot){const [ti,si]=slot.dataset.slot.split(',').map(Number);if(teams[ti]?.[si]){root.dataset.dragType='agent';root.dataset.dragSource=slot.dataset.slot;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','agent:'+slot.dataset.slot)}}
+    else if(bb){const ti=Number(bb.dataset.bangbooSlot);if(bangboos[ti]){root.dataset.dragType='bangboo';root.dataset.dragSource=String(ti);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','bangboo:'+ti)}}
+  };
+  root.ondragover=e=>{const slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]'),type=root.dataset.dragType;if((type==='agent'&&slot)||(type==='bangboo'&&bb)){e.preventDefault();e.dataTransfer.dropEffect='move'}};
+  root.ondrop=e=>{e.preventDefault();const type=root.dataset.dragType,src=root.dataset.dragSource,slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]');performTeamDrop(type,src,slot,bb);root.dataset.dragType='';root.dataset.dragSource=''};
+  root.ondragend=()=>{root.dataset.dragType='';root.dataset.dragSource='';setTimeout(()=>root.dataset.justDragged='',0)};
+
+  // Mobile: Pointer Events allow immediate drag without long-press/native image handling.
+  let touchDrag=null;
+  root.onpointerdown=e=>{
+    window.__suppressTeamClick=false;root.dataset.justDragged='';
+    if(e.pointerType==='mouse')return;
+    const slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]');
+    if(!slot&&!bb)return;
+    let type,source,valid=false;
+    if(slot){const [ti,si]=slot.dataset.slot.split(',').map(Number);valid=!!teams[ti]?.[si];type='agent';source=slot.dataset.slot}
+    else {const ti=Number(bb.dataset.bangbooSlot);valid=!!bangboos[ti];type='bangboo';source=String(ti)}
+    if(!valid)return;
+    touchDrag={pointerId:e.pointerId,type,source,startX:e.clientX,startY:e.clientY,dragging:false,target:null,el:slot||bb};
+    try{(slot||bb).setPointerCapture(e.pointerId)}catch(_){ }
+  };
+  root.onpointermove=e=>{
+    const d=touchDrag;if(!d||d.pointerId!==e.pointerId)return;
+    const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
+    if(!d.dragging && Math.hypot(dx,dy)<7)return;
+    if(!d.dragging){
+      d.dragging=true;root.dataset.dragType=d.type;root.dataset.dragSource=d.source;
+      d.el.classList.add('dragging');d.el.style.opacity='.55';
+    }
+    e.preventDefault();
+    const under=document.elementFromPoint(e.clientX,e.clientY);
+    d.target=under?.closest('[data-slot],[data-bangboo-slot]')||null;
+    root.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+    if(d.target && ((d.type==='agent'&&d.target.matches('[data-slot]'))||(d.type==='bangboo'&&d.target.matches('[data-bangboo-slot]'))))d.target.classList.add('drag-over');
+  };
+  const finishPointer=e=>{
+    const d=touchDrag;if(!d||d.pointerId!==e.pointerId)return;
+    if(d.dragging){
+      e.preventDefault();
+      root.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+      if(e.type!=='pointercancel')performTeamDrop(d.type,d.source,d.target?.matches('[data-slot]')?d.target:null,d.target?.matches('[data-bangboo-slot]')?d.target:null);
+      d.el.classList.remove('dragging');d.el.style.opacity='';
+      root.dataset.justDragged='1';setTimeout(()=>root.dataset.justDragged='',120);
+    }
+    touchDrag=null;root.dataset.dragType='';root.dataset.dragSource='';
+  };
+  root.onpointerup=finishPointer;root.onpointercancel=finishPointer;
+  root.oncontextmenu=e=>{if(touchDrag?.dragging)e.preventDefault()};
+}
+function performTeamDrop(type,src,slot,bb){
+  let changed=false;
+  if(type==='agent'&&src!==undefined&&slot){
+    const [aTi,aSi]=src.split(',').map(Number),[bTi,bSi]=slot.dataset.slot.split(',').map(Number);
+    if((aTi!==bTi||aSi!==bSi)&&teams[aTi]?.[aSi]){
+      const source=teams[aTi][aSi],target=teams[bTi]?.[bSi]??null;teams[bTi][bSi]=source;teams[aTi][aSi]=target;
+      if(validAgentLayout()){save();active=bTi;changed=true;render()}else{teams[aTi][aSi]=source;teams[bTi][bSi]=target}
+    }
+  }else if(type==='bangboo'&&src!==undefined&&bb){
+    const aTi=Number(src),bTi=Number(bb.dataset.bangbooSlot);
+    if(aTi!==bTi&&bangboos[aTi]){
+      const source=bangboos[aTi],target=bangboos[bTi]??null;bangboos[bTi]=source;bangboos[aTi]=target;
+      if(validBangbooLayout()){saveBangboos();active=bTi;changed=true;render()}else{bangboos[aTi]=source;bangboos[bTi]=target}
+    }
+  }
+  if(changed){window.__suppressTeamClick=true;setTimeout(()=>window.__suppressTeamClick=false,0)}
+}
+function renderTeams(){const groupHeaders=Array.from({length:getGroupCount()},(_,i)=>i*3);$('groupCount').textContent=`グループ${getGroupCount()}`;let out='';teams.forEach((t,ti)=>{if(groupHeaders.includes(ti)){const g=groupOf(ti);const gc=groupDisplayedCost(g),gcd=Math.max(0,gc-groupDuplicateCost(g));out+=`<div class="groupLabel" style="grid-column:1/-1"><span>${groupName(g)}</span>${showConv?`<span class="groupCost">グループ総コスト: ${showDuplicateCost?gcd:gc} Cost</span>${g===0?`<span class="allCost">全グループ総コスト: ${showDuplicateCost?allGroupsDuplicateCost():allGroupsCost()} Cost</span>`:''}`:''}</div>`;}const b=bangboos[ti];const tc=teamDisplayedCost(ti),tcd=Math.max(0,tc-teamDuplicateCost(ti));out+=`<article class="team ${ti===active?'active':''}" data-team="${ti}"><div class="teamhead"><b>チーム${ti+1}</b>${showConv?`<span class="teamCost">${showDuplicateCost?tcd:tc} Cost</span>`:''}</div><div class="teamContents"><div class="slots">${t.map((a,si)=>a?`<button class="slot" draggable="true" data-slot="${ti},${si}" title="クリックして外す・ドラッグで交換">${img(a,'slotImage')}<strong>${escapeHTML(a[1])}</strong>${showConv?`<span class="meta2">${convText(a[1])}</span>`:``}</button>`:`<button class="slot empty" data-slot="${ti},${si}"></button>`).join('')}</div><div class="bangbooWrap" style="${showBangboo ? "" : "display:none"}">${b?`<button class="bangbooSlot" draggable="true" data-bangboo-slot="${ti}" title="クリックして外す・ドラッグで交換">${bangbooImg(b)}<strong>${escapeHTML(b[1])}</strong></button>`:`<button class="bangbooSlot empty" data-bangboo-slot="${ti}" title="ボンプを選択"></button>`}</div></div></article>`});$('teams').innerHTML=out;document.querySelectorAll('.team[data-team]').forEach(b=>b.onclick=e=>{if(e.target.closest('[data-slot],[data-bangboo-slot]'))return;active=+b.dataset.team;$('status').textContent=`チーム${active+1}を選択中。`;render()});$('teams').onclick=e=>{if(window.__suppressTeamClick){window.__suppressTeamClick=false;return;}if($('teams').dataset.justDragged){$('teams').dataset.justDragged='';return;}const slot=e.target.closest('[data-slot]');if(slot){e.stopPropagation();const [ti,si]=slot.dataset.slot.split(',').map(Number);active=ti;if(teams[ti]&&teams[ti][si]){const n=teams[ti][si][1];teams[ti][si]=null;save();selectionMode='agent';updateMode();render();renderChars()}else{selectionMode='agent';updateMode();renderTeams();renderChars()}return;}const bb=e.target.closest('[data-bangboo-slot]');if(bb){e.stopPropagation();const ti=Number(bb.dataset.bangbooSlot);active=ti;if(bangboos[ti]){const n=bangboos[ti][1];bangboos[ti]=null;saveBangboos();selectionMode='bangboo';updateMode();render();renderBangboos()}else{selectionMode='bangboo';updateMode();renderTeams();renderBangboos()}}};setupTeamDragDrop()}
+function bangbooImg(b){const src=String(b[0]).startsWith('data:')?b[0]:`${BANGBOO_BASE}${encodeURIComponent(restoreBangboo(b)[0])}`;return `<img class="bangbooImage" src="${src}" alt="${escapeHTML(b[1])}" crossorigin="anonymous" loading="eager" onerror="this.style.display='none'">`}
+function add(i){const a=allAgents()[i];if(!canAdd(a)){const g=groupOf(active);$('status').textContent=(a[2]==='支援'||a[2]==='防護')?`${a[1]}は${groupName(g)}ですでに使用されています。別グループでは使用できます。`:`${a[1]}はすでに使用されています。`;return}const s=teams[active].findIndex(x=>x===null);if(s<0){$('status').textContent=`チーム${active+1}は満員です。`;return}teams[active][s]=a;save();$('status').textContent=`${a[1]}をチーム${active+1}に追加しました。`;if(teams[active].every(Boolean)&&active<teams.length-1)active++;render()}function renderChars(){
+ const list=allAgents(),q=$('search').value.trim().toLowerCase(),sp=$('specialty').value,ra=$('rarity').value;
+ const f=list.map((a,i)=>({a,i})).filter(x=>(!q||x.a[1].toLowerCase().includes(q))&&(sp==='all'||x.a[2]===sp)&&(ra==='all'||x.a[3]===ra));
+ $('count').textContent=`${f.length}人表示 / 全${list.length}人（追加${customAgents.length}人）`;
+ $('chars').innerHTML=f.map(({a,i})=>{
+   const g=groupOf(active),isShared=(a[2]==='支援'||a[2]==='防護'),u=uses(a[1]),ug=usesInGroup(a[1],g),m=isShared?2:1,d=!canAdd(a);
+   return `<div class="char ${d?'used':''}" data-agent="${i}">${img(a,'charImage')}<strong>${escapeHTML(a[1])}</strong><span class="meta">${a[2]} / ${a[3]}級　${noOverlap?`${u}/${m}${isShared?`（このグループ${ug}/1）`:''}`:''}</span>${showConv?`<span class="meta2">${convText(a[1])}</span>`:``}<button class="conv" type="button" data-conv="${i}">凸設定</button>${i<customAgents.length?`<button class="deleteAgent" type="button" data-delete-custom="${i}">削除</button>`:''}</div>`
+ }).join('');
+}
+function deleteCustomDirect(i){
+ const idx=Number(i); if(!Number.isInteger(idx)||idx<0||idx>=customAgents.length)return;
+ const a=customAgents[idx]; if(!a)return; const name=a[1];
+ customAgents.splice(idx,1); saveCustom();
+ teams=teams.map(t=>t.map(x=>x&&x[1]===name?null:x));
+ delete convData[name]; save(); saveConv();
+ if(active>=teams.length)active=teams.length-1;
+ $('status').textContent=`${name}を削除しました。`; render();
+}
+let deleteTarget=-1;
+function openDelete(i){
+ const idx=Number(i); if(!Number.isInteger(idx)||idx<0||idx>=customAgents.length)return;
+ deleteBangbooTarget=-1;deleteTarget=idx; const name=customAgents[idx][1];
+ $('deleteModal').querySelector('h2').textContent='エージェントを削除';
+ $('deleteMessage').innerHTML=`「<strong>${escapeHTML(name)}</strong>」を削除しますか？<br><span class="smallNote">削除すると、このブラウザに追加したエージェントの登録がなくなります。編成中の場合は編成からも外れます。</span>`;
+ $('deleteModal').classList.add('show'); $('deleteModal').setAttribute('aria-hidden','false');
+}
+function closeDelete(){deleteTarget=-1;deleteBangbooTarget=-1;$('deleteModal').classList.remove('show');$('deleteModal').setAttribute('aria-hidden','true')}
+function openConv(i){
+ const a=allAgents()[Number(i)]; if(!a)return; convTarget=a[1];
+ const c=convData[convTarget]||{char:0,weapon:0,weaponName:'',weaponType:isPermanentAgent(a)?'permanent':'limited'};
+ $('convTitle').textContent=`${convTarget}の凸数を設定`;
+ $('charConv').value=String(Math.max(0,Math.min(6,c.char||0)));
+ $('weaponName').value=c.weaponName||'';
+ $('weaponType').value=(c.weaponType==='permanent'||c.weaponType==='恒常')?'permanent':(c.weaponType==='limited'?'limited':(isPermanentAgent(a)?'permanent':'limited'));
+ $('weaponConv').value=String(Math.max(0,Math.min(4,c.weapon||0)));
+ $('convModal').classList.add('show'); $('convModal').setAttribute('aria-hidden','false');
+}
+function closeConv(){convTarget='';$('convModal').classList.remove('show');$('convModal').setAttribute('aria-hidden','true')}
+function bangbooUses(n){return bangboos.filter(x=>x&&x[1]===n).length}function bangbooUsesInGroup(n,g){return bangboos.slice(g*3,g*3+3).filter(x=>x&&x[1]===n).length}function canAddBangboo(b){const n=b[1],g=groupOf(active);return noOverlap?bangbooUses(n)<1:bangbooUsesInGroup(n,g)<1}function renderBangboos(){const list=allBangboos(),q=($('bangbooSearch')?.value||'').trim().toLowerCase(),attr=$('bangbooAttribute')?.value||'all';const f=list.map((b,i)=>({b,i})).filter(x=>(!q||x.b[1].toLowerCase().includes(q))&&(attr==='all'||(x.b[2]||'物理')===attr));$('count').textContent=`${f.length}体表示 / 全${list.length}体（追加${customBangboos.length}体）`;$('chars').innerHTML=f.map(({b,i})=>{const used=bangboos[active]&&bangboos[active][1]===b[1];const disabled=!canAddBangboo(b);const del=i<customBangboos.length?`<button class="deleteBangboo deleteAgent" type="button" data-delete-custom-bangboo="${i}">削除</button>`:'';return `<div class="char ${disabled?'used':''}" data-bangboo="${i}">${bangbooImg(b)}<strong>${escapeHTML(b[1])}</strong><span class="meta">${b[2]||'物理'}${used?'・選択中':''}</span>${del}</div>`}).join('');}
+
+function updateMode(){if(!showBangboo&&selectionMode==='bangboo')selectionMode='agent';const agent=selectionMode==='agent';$('agentMode').classList.toggle('active',agent);$('bangbooMode').classList.toggle('active',!agent);$('bangbooMode').disabled=!showBangboo;$('agentControls').classList.toggle('hide',!agent);$('bangbooControls').classList.toggle('show',!agent);if($('search'))$('search').placeholder='エージェント名を検索';if($('bangbooSearch'))$('bangbooSearch').placeholder='ボンプ名を検索'}
+function updateBangbooToggle(){const b=$('bangbooToggle');if(b)b.textContent=showBangboo?'ボンプ表示:ON':'ボンプ表示:OFF'}function render(){renderTeams();if(selectionMode==='agent')renderChars();else renderBangboos();updateMode();updateBangbooToggle();updateRuleButton();updateConvDisplayButton();updateDuplicateCostDisplayButton()}
+$('chars').addEventListener('click',e=>{
+  if(selectionMode==='bangboo'){
+    const delb=e.target.closest('[data-delete-custom-bangboo]');
+    if(delb){e.preventDefault();e.stopPropagation();openDeleteBangboo(Number(delb.dataset.deleteCustomBangboo));return}
+    const card=e.target.closest('[data-bangboo]');if(!card)return;
+    const b=allBangboos()[Number(card.dataset.bangboo)];if(!b)return;if(!canAddBangboo(b)){$('status').textContent=`${b[1]}は${noOverlap?'すでに使用されています。':'このグループですでに使用されています。'}`;return;}
+    bangboos[active]=b;saveBangboos();if(active<teams.length-1)active++;render();return;
+  }
+  const del=e.target.closest('[data-delete-custom]');
+  if(del){e.preventDefault();e.stopPropagation();openDelete(Number(del.dataset.deleteCustom));return}
+  const conv=e.target.closest('[data-conv]');
+  if(conv){e.preventDefault();e.stopPropagation();openConv(Number(conv.dataset.conv));return}
+  const card=e.target.closest('[data-agent]'); if(!card||e.target.closest('button'))return;
+  const i=Number(card.dataset.agent),a=allAgents()[i]; if(a&&!card.classList.contains('used'))add(i);
+});
+$('agentMode').onclick=()=>{selectionMode='agent';render()};$('bangbooMode').onclick=()=>{if(!showBangboo)return;selectionMode='bangboo';render()};$('bangbooToggle').onclick=()=>{showBangboo=!showBangboo;if(!showBangboo&&selectionMode==='bangboo')selectionMode='agent';render()};$('cancelDelete').onclick=closeDelete;
+$('deleteModal').onclick=e=>{if(e.target.id==='deleteModal')closeDelete()};
+$('confirmDelete').onclick=()=>{if(deleteBangbooTarget>=0){const idx=deleteBangbooTarget;deleteBangbooTarget=-1;closeDelete();deleteCustomBangbooDirect(idx);return}if(deleteTarget>=0){const idx=deleteTarget;closeDelete();deleteCustomDirect(idx)}};
+$('cancelConv').onclick=closeConv;
+$('convModal').onclick=e=>{if(e.target.id==='convModal')closeConv()};
+$('saveConv').onclick=()=>{if(!convTarget)return;convData[convTarget]={char:Number($('charConv').value)||0,weapon:Number($('weaponConv').value)||0,weaponName:$('weaponName').value.trim(),weaponType:$('weaponType').value==='permanent'?'permanent':'limited'};saveConv();closeConv();$('status').textContent=`${convTarget}の凸設定を保存しました。`;render()};
+function openAddAgentModal(){$('addModal').classList.add('show');$('addModal').setAttribute('aria-hidden','false')}
+let deleteBangbooTarget=-1;
+function openDeleteBangboo(i){const idx=Number(i);if(!Number.isInteger(idx)||idx<0||idx>=customBangboos.length)return;deleteTarget=-1;deleteBangbooTarget=idx;const name=customBangboos[idx][1];$('deleteModal').querySelector('h2').textContent='ボンプを削除';$('deleteMessage').innerHTML=`「<strong>${escapeHTML(name)}</strong>」を削除しますか？<br><span class="smallNote">削除すると、このブラウザに追加したボンプの登録がなくなります。編成中の場合は編成からも外れます。</span>`;$('deleteModal').classList.add('show');$('deleteModal').setAttribute('aria-hidden','false')}
+function deleteCustomBangbooDirect(i){const idx=Number(i);if(!Number.isInteger(idx)||idx<0||idx>=customBangboos.length)return;const b=customBangboos[idx];const name=b[1];customBangboos.splice(idx,1);saveCustomBangboos();bangboos=bangboos.map(x=>x&&x[1]===name?null:x);saveBangboos();$('status').textContent=`${name}を削除しました。`;render()}
+function openUnitModal(){$('unitModal').classList.add('show');$('unitModal').setAttribute('aria-hidden','false')}
+function closeUnitModal(){ $('unitModal').classList.remove('show'); $('unitModal').setAttribute('aria-hidden','true') }
+$('addCharacter').onclick=()=>openUnitModal();
+$('chooseAgentAdd').onclick=()=>{closeUnitModal();openAddAgentModal()};
+$('chooseBangbooAdd').onclick=()=>{closeUnitModal();$('addBangbooModal').classList.add('show');$('addBangbooModal').setAttribute('aria-hidden','false')};
+$('cancelBangbooAdd').onclick=()=>{$('addBangbooModal').classList.remove('show');$('addBangbooModal').setAttribute('aria-hidden','true')};
+$('addBangbooModal').onclick=e=>{if(e.target.id==='addBangbooModal'){$('addBangbooModal').classList.remove('show');$('addBangbooModal').setAttribute('aria-hidden','true')}};
+$('saveBangbooAdd').onclick=()=>{const name=$('newBangbooName').value.trim(),attr=$('newBangbooAttribute').value,file=$('newBangbooImage').files[0];if(!name){alert('ボンプ名を入力してください。');return}if(!file){alert('ボンプ画像を選択してください。');return}if(file.size>2*1024*1024){alert('画像は2MB以下にしてください。');return}if(allBangboos().some(b=>b[1]===name)){alert('同じ名前のボンプがすでに存在します。');return}const reader=new FileReader();reader.onload=()=>{const b=[String(reader.result),name,attr];customBangboos.unshift(b);try{saveCustomBangboos()}catch(e){customBangboos.shift();alert('ボンプを保存できませんでした。ブラウザの保存容量・設定を確認するか、画像を小さくして再度お試しください。');return}$('newBangbooName').value='';$('newBangbooImage').value='';$('newBangbooAttribute').value='物理';$('addBangbooModal').classList.remove('show');$('addBangbooModal').setAttribute('aria-hidden','true');showBangboo=true;selectionMode='bangboo';$('status').textContent=`${name}をボンプ一覧に追加しました。`;render()};reader.readAsDataURL(file)};
+$('cancelUnit').onclick=closeUnitModal;
+$('unitModal').onclick=e=>{if(e.target.id==='unitModal')closeUnitModal()};
+$('cancelAdd').onclick=()=>{$('addModal').classList.remove('show');$('addModal').setAttribute('aria-hidden','true')};
+$('addModal').onclick=e=>{if(e.target.id==='addModal'){$('addModal').classList.remove('show');$('addModal').setAttribute('aria-hidden','true')}};
+$('saveAdd').onclick=()=>{
+ const name=$('newName').value.trim(),role=$('newRole').value,rarity=$('newRarity').value,file=$('newImage').files[0];
+ if(!name){alert('キャラクター名を入力してください。');return}
+ if(allAgents().some(a=>a[1]===name)){alert('同じ名前のエージェントがすでに存在します。');return}
+ if(!file){alert('キャラクター画像を選択してください。');return}
+ if(file.size>2*1024*1024){alert('画像は2MB以下にしてください。');return}
+ const reader=new FileReader();
+ reader.onload=()=>{customAgents.unshift([String(reader.result),name,role,rarity]);try{saveCustom()}catch(e){customAgents.shift();alert('エージェントを保存できませんでした。ブラウザの保存容量・設定を確認するか、画像を小さくして再度お試しください。');return}$('newName').value='';$('newImage').value='';$('addModal').classList.remove('show');$('addModal').setAttribute('aria-hidden','true');$('status').textContent=`${name}を追加しました。`;render()};
+ reader.readAsDataURL(file);
+};
+$('reset').onclick=()=>{const m=$('resetConfirmModal');m.classList.add('show');m.setAttribute('aria-hidden','false')};
+$('clearTeam').onclick=()=>{teams[active]=[null,null,null];bangboos[active]=null;save();saveBangboos();render();$('status').textContent=`チーム${active+1}を空にしました。`};
+$('removeGroup').onclick=()=>{const gc=getGroupCount();if(gc<=1){alert('グループは1つ以上必要です。');return}const removed=teams.slice(-3);if((removed.some(t=>t.some(Boolean))||bangboos.slice(-3).some(Boolean))&&!confirm(`グループ${gc}の編成を削除します。よろしいですか？`))return;teams.splice(-3,3);bangboos.splice(-3,3);if(active>=teams.length)active=teams.length-1;save();saveBangboos();render();$('status').textContent=`グループ${gc}を削除しました。`};
+$('addGroup').onclick=()=>{const gc=getGroupCount();if(gc>=9){alert('グループは最大9つまでです。');return}teams.push([null,null,null],[null,null,null],[null,null,null]);bangboos.push(null,null,null);save();saveBangboos();render();active=teams.length-3;$('status').textContent=`グループ${getGroupCount()}を追加しました。`;render()};
+
+let groupImageBlob=null,groupImageUrl='';
+function closeGroupImagePreview(){
+ const m=$('groupImageModal');if(!m)return;m.classList.remove('show');m.setAttribute('aria-hidden','true');
+}
+async function downloadGroupImageBlob(blob){
+ if(!blob){$('status').textContent='画像の作成に失敗しました。';return}
+ const fileName='危局強襲戦_全グループ.png';
+ try{
+  // iPhone/iPadなど、<a download>が正常に動作しない環境では
+  // Web Share APIのファイル共有を使って「写真に保存」等へ渡せるようにする。
+  const ua=navigator.userAgent||'';
+  const isIOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(isIOS&&navigator.share&&navigator.canShare){
+   const file=new File([blob],fileName,{type:'image/png'});
+   if(navigator.canShare({files:[file]})){
+    await navigator.share({files:[file],title:'危局強襲戦 全グループ'});
+    $('status').textContent='画像を保存しました。';
+    return;
+   }
+  }
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;link.download=fileName;link.rel='noopener';link.style.display='none';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  $('status').textContent='画像を保存しました。';
+ }catch(e){
+  if(e&&e.name==='AbortError')return;
+  console.error(e);
+  // モバイルブラウザでダウンロードが制限された場合の最終フォールバック。
+  try{
+   const url=URL.createObjectURL(blob);
+   const w=window.open(url,'_blank');
+   if(w){$('status').textContent='画像を開きました。長押しして画像を保存してください。';setTimeout(()=>URL.revokeObjectURL(url),60000);return}
+  }catch(_){}
+  $('status').textContent='画像の保存に失敗しました。';
+ }
+}
+function dataUrlToBlob(dataUrl){
+  try{
+    const parts=dataUrl.split(',');
+    const mime=(parts[0].match(/:(.*?);/)||[])[1]||'image/png';
+    const bin=atob(parts[1]);
+    const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    return new Blob([bytes],{type:mime});
+  }catch(e){return null}
+}
+function showGroupImagePreview(blob){
+ if(!blob){$('status').textContent='画像の作成に失敗しました。';return}
+ if(groupImageUrl)URL.revokeObjectURL(groupImageUrl);
+ groupImageBlob=blob;
+ groupImageUrl=URL.createObjectURL(blob);
+ $('groupImagePreview').src=groupImageUrl;
+ const m=$('groupImageModal');
+ m.classList.add('show');m.setAttribute('aria-hidden','false');
+ $('status').textContent='画像を確認してください。';
+}
+async function waitForTeamImages(target){
+ const images=Array.from(target.querySelectorAll('img'));
+ await Promise.all(images.map(async im=>{
+   try{
+     if(im.complete){if(im.naturalWidth>0)return;}
+     if(im.decode)await im.decode();
+     else await new Promise(r=>{im.addEventListener('load',r,{once:true});im.addEventListener('error',r,{once:true})});
+   }catch(e){}
+ }));
+}
+async function ensureHtml2Canvas(){
+ if(typeof html2canvas==='function')return true;
+ return await new Promise(resolve=>{
+   const old=document.querySelector('script[data-html2canvas]');
+   if(old){old.addEventListener('load',()=>resolve(typeof html2canvas==='function'),{once:true});old.addEventListener('error',()=>resolve(false),{once:true});return}
+   const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';sc.async=true;sc.dataset.html2canvas='1';
+   sc.onload=()=>resolve(typeof html2canvas==='function');sc.onerror=()=>{sc.remove();resolve(false)};document.head.appendChild(sc);
+ });
+}
+async function saveSelectedGroupImage(){
+  const target=$('teams');
+  if(!target){$('status').textContent='画像の作成に失敗しました。';return}
+  $('status').textContent='全グループのスクリーンショットを作成中…';
+  try{
+    const ready=await ensureHtml2Canvas();
+    if(!ready){$('status').textContent='画像保存機能を読み込めませんでした。インターネット接続を確認してください。';return}
+    await waitForTeamImages(target);
+    // 画面に表示されている#teamsそのものを画像化するため、保存用の別デザインは作らない。
+    const canvas=await html2canvas(target,{
+      backgroundColor:'#101218',
+      useCORS:true,
+      allowTaint:false,
+      scale:Math.min(2,window.devicePixelRatio||1.5),
+      logging:false,
+      imageTimeout:20000,
+      scrollX:-window.scrollX,
+      scrollY:-window.scrollY,
+      windowWidth:document.documentElement.clientWidth,
+      windowHeight:document.documentElement.clientHeight,
+      onclone:(doc)=>{
+        const cloned=doc.getElementById('teams');
+        if(cloned){cloned.style.maxWidth='none';cloned.style.width='1100px';cloned.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';cloned.style.rowGap='8px';cloned.style.marginBottom='0';cloned.querySelectorAll('.groupLabel').forEach(el=>{el.style.fontSize='9px';el.style.marginTop='3px';el.style.marginBottom='2px';el.style.lineHeight='1'});cloned.querySelectorAll('.teamhead b').forEach(el=>{el.style.fontSize='11px';el.style.lineHeight='1'});cloned.querySelectorAll('.team').forEach(el=>{el.style.padding='8px';el.style.borderRadius='10px'});cloned.querySelectorAll('.teamhead').forEach(el=>{el.style.marginBottom='6px'});cloned.querySelectorAll('.meta2').forEach(el=>{el.style.fontSize='15px';el.style.fontWeight='800';el.style.lineHeight='1.1';el.style.marginTop='3px';el.style.paddingTop='1px'});cloned.querySelectorAll('.team.active').forEach(el=>{el.style.borderColor='var(--line)';el.style.boxShadow='none'});}
+      }
+    });
+    // 実際の画面をそのまま使い、外周だけ少し余白を追加する。
+    const pad=Math.round(8*(window.devicePixelRatio||1));
+    const padded=document.createElement('canvas');
+    padded.width=canvas.width+pad*2;padded.height=canvas.height+pad*2;
+    const ctx=padded.getContext('2d');
+    ctx.fillStyle='#101218';ctx.fillRect(0,0,padded.width,padded.height);
+    ctx.drawImage(canvas,pad,pad);
+    if(typeof padded.toBlob==='function'){
+      padded.toBlob(blob=>{
+        if(blob)showGroupImagePreview(blob);
+        else showGroupImagePreview(dataUrlToBlob(padded.toDataURL('image/png')));
+      },'image/png');
+    }else{
+      showGroupImagePreview(dataUrlToBlob(padded.toDataURL('image/png')));
+    }
+  }catch(e){
+    console.error(e);
+    $('status').textContent='画像の作成に失敗しました。もう一度お試しください。';
+  }
+}
+$('closeGroupImage').onclick=closeGroupImagePreview;
+async function shareGroupImage(){
+ if(!groupImageBlob)return;
+ const fileName='危局強襲戦_全グループ.png';
+ try{
+  if(!navigator.share||!navigator.canShare){alert('この環境では画像の共有に対応していません。');return}
+  const file=new File([groupImageBlob],fileName,{type:'image/png'});
+  if(!navigator.canShare({files:[file]})){alert('この環境では画像の共有に対応していません。');return}
+  await navigator.share({files:[file],title:'危局強襲戦 全グループ'});
+  $('status').textContent='画像を共有しました。';
+ }catch(e){
+  if(e&&e.name==='AbortError')return;
+  console.error(e);$('status').textContent='画像の共有に失敗しました。';
+ }
+}
+$('shareGroupImage').onclick=shareGroupImage;
+$('downloadGroupImage').onclick=()=>{if(groupImageBlob)downloadGroupImageBlob(groupImageBlob)};
+$('groupImageModal').onclick=e=>{if(e.target.id==='groupImageModal')closeGroupImagePreview()};
+$('ruleToggle').onclick=()=>{try{if(noOverlap){noOverlap=false;saveRule();$('status').textContent='マトリクスモードをOFFにしました。';render();return}const removed=[];const seen=new Set(),seenInGroup=new Set(),supportCount=new Map();for(let ti=0;ti<teams.length;ti++){const g=groupOf(ti);for(let si=0;si<teams[ti].length;si++){const a=teams[ti][si];if(!a)continue;const n=a[1],support=a[2]==='支援'||a[2]==='防護',key=g+'|'+n;let keep=true;if(support){const total=supportCount.get(n)||0;if(total>=2||seenInGroup.has(key))keep=false;else supportCount.set(n,total+1)}else{if(seen.has(n))keep=false;else seen.add(n)}if(support&&keep)seenInGroup.add(key);if(!keep){teams[ti][si]=null;removed.push(n)}}}const seenBangboos=new Set();for(let ti=0;ti<bangboos.length;ti++){const b=bangboos[ti];if(!b)continue;const n=String(b[1]||b[0]);if(seenBangboos.has(n)){bangboos[ti]=null;removed.push(n)}else seenBangboos.add(n)}noOverlap=true;save();saveBangboos();saveRule();$('status').textContent=removed.length?`マトリクスモードをONにしました。重複していた${removed.length}体を整理しました。` :'マトリクスモードをONにしました。';render()}catch(e){console.error(e);noOverlap=false;saveRule();$('status').textContent='マトリクスモードの切り替えに失敗しました。';render()}};$('convDisplayToggle').onclick=()=>{showConv=!showConv;saveConvDisplay();render()};$('duplicateCostToggle').onclick=()=>{showDuplicateCost=!showDuplicateCost;saveDuplicateCostDisplay();render()};
+$('saveGroupImage').onclick=()=>saveSelectedGroupImage();
+$('search').oninput=()=>renderChars();$('bangbooSearch').oninput=()=>renderBangboos();$('specialty').onchange=renderChars;$('rarity').onchange=renderChars;$('bangbooAttribute').onchange=renderBangboos;
+render();$('status').textContent='チーム1を選択中。キャラをクリックして編成してください。';
+document.getElementById('descriptionToggle').onclick=()=>{const d=document.getElementById('descriptionText'),b=document.getElementById('descriptionToggle');d.hidden=!d.hidden;b.textContent=d.hidden?'このサイトの使い方':'非表示'};document.getElementById('cancelReset').onclick=()=>{const m=document.getElementById('resetConfirmModal');m.classList.remove('show');m.setAttribute('aria-hidden','true')};
+document.getElementById('resetConfirmModal').onclick=e=>{if(e.target.id==='resetConfirmModal')document.getElementById('cancelReset').click()};
+document.getElementById('confirmReset').onclick=()=>{teams=teams.map(()=>[null,null,null]);bangboos=Array.from({length:teams.length},()=>null);save();saveBangboos();const m=document.getElementById('resetConfirmModal');m.classList.remove('show');m.setAttribute('aria-hidden','true');render();$('status').textContent='全グループを空にしました。'};
+</script></body></html>
