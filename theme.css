@@ -30,4 +30,29 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
 .allCost{color:var(--accent)}
 .modalbox{border:3px solid #414141;border-radius:24px;background:#171717}
 .modalbox h2{font-weight:900}
+/* Graphic masthead: tape, halftone and oversized lettering. */
+body{background:radial-gradient(ellipse at 85% 0, #34351a 0,transparent 42%),repeating-linear-gradient(135deg,#1a1a1a 0 3px,#131313 3px 8px);background-attachment:fixed}
+.headerDecor{position:relative;isolation:isolate;padding:56px 30px 30px;border:3px solid #555;border-radius:30px 30px 10px 30px;background:radial-gradient(circle,#444 1px,transparent 1.6px) right top/7px 7px,linear-gradient(115deg,#090909 0 65%,#252525 65% 82%,#101010 82%);box-shadow:7px 7px 0 #050505,inset 0 0 0 5px #151515;border-bottom:7px solid var(--accent)}
+.headerDecor::before{content:'ZENLESS ZONE ZERO / TEAM BUILDER';position:absolute;top:15px;left:28px;max-width:calc(100% - 56px);font-size:11px;font-weight:900;letter-spacing:.17em;color:#090909;background:var(--accent);padding:5px 14px;border-radius:4px;transform:rotate(-2deg);pointer-events:none}
+.headerDecor::after{content:'ZZZ';position:absolute;right:24px;bottom:5px;font-size:100px;font-weight:900;line-height:1;color:#ffffff0a;letter-spacing:-.09em;z-index:-1;pointer-events:none;transform:skew(-12deg)}
+.headerDecor h1{display:block;width:fit-content;max-width:100%;font-size:clamp(23px,3.25vw,38px);line-height:1.5;margin:0 0 18px;padding:0 0 0 17px;border-left:7px solid var(--accent);text-shadow:-1px -1px 0 #fff,0 -1px 0 #fff,1px -1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff,-1px 1px 0 #fff,0 1px 0 #fff,1px 1px 0 #fff,3px 4px 0 #000}
+.descriptionToggle{margin:0;background:#222;border-color:#606060;padding:7px 18px;box-shadow:3px 3px 0 #000}
+.descriptionText{background:#101010;border-left:3px solid var(--accent);padding:14px 18px;margin-top:16px;border-radius:0 14px 14px 0}
+.toolbar{border-radius:15px;border-color:#444;background:radial-gradient(circle,#2d2d2d 1px,transparent 1.5px) 0 0/6px 6px,#101010;box-shadow:4px 4px 0 #050505;padding:15px;margin-bottom:22px}
+.toolbar button{box-shadow:0 3px 0 #000}
+#addCharacter,#saveGroupImage{background:var(--accent);border-color:var(--accent);color:#090909}
+.groupControls{padding:3px 7px;background:#262626;border-radius:30px}
+.groupLabel{position:relative;border:2px solid #474747;border-left:7px solid var(--accent);border-radius:5px 18px 18px 5px;background:linear-gradient(100deg,#292929,#0b0b0b);box-shadow:3px 3px 0 #050505;padding:12px 16px;letter-spacing:.025em}
+.team{background:radial-gradient(circle,#303030 .8px,transparent 1.4px) 0 0/6px 6px,#202020;border-radius:20px 20px 8px 20px;box-shadow:4px 4px 0 #050505}
+.teamhead{background:#101010;border-radius:20px;padding:7px 11px;gap:7px;flex-wrap:wrap}
+.team.active .teamhead{background:var(--accent);color:#090909}
+.team.active .teamhead b,.team.active .teamhead .teamCost{color:#090909}
+.slot.empty,.bangbooSlot.empty{border-color:#5b5b5b;background:repeating-linear-gradient(135deg,#202020 0 2px,#171717 2px 7px)}
+.modeTabs{box-shadow:4px 4px 0 #050505;margin-top:8px;margin-bottom:18px}
+.char{background:linear-gradient(155deg,#303030,#101010 60%);border-radius:16px 16px 6px 16px;box-shadow:2px 3px 0 #080808}
+.char>img{border-bottom:3px solid #777}
+.char:hover{border-color:var(--accent)}
+.modalbox{box-shadow:8px 8px 0 #050505}
+.modalbox h2{border-left:6px solid var(--accent);padding-left:12px}
+@media(max-width:560px){.headerDecor{padding:53px 17px 22px;border-radius:22px 22px 8px 22px}.headerDecor::before{left:17px;max-width:calc(100% - 34px);font-size:9px;letter-spacing:.08em;padding:5px 8px}.headerDecor::after{font-size:75px;right:15px}.headerDecor h1{font-size:24px!important;padding-left:11px;border-left-width:5px;letter-spacing:.025em}.toolbar{padding:10px}.teamhead{padding:6px 9px}.descriptionText{padding:12px}.modeTabs{max-width:100%}.modeTabs button{min-width:0;flex:1}}
 @media(max-width:560px){.headerDecor{padding:16px}.headerDecor h1{font-size:22px}.toolbar{padding:9px}.toolbar button{font-size:12px;padding:8px 10px}.groupLabel{padding:8px 10px}.groupCost,.allCost{white-space:normal}.filters input[type=search],.bangbooControls .filters input[type=search]{min-width:0;width:100%;flex:1 1 100%}.filters select{min-width:0;max-width:100%}.formgrid input,.formgrid select{min-width:0}.descriptionToggle{margin-left:0}}
