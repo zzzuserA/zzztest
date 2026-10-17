@@ -164,5 +164,5 @@ main > .status{margin-top:var(--section-space)}
 }
 
 /* Toolbar button spacing: 10px on all devices; all other spacing unchanged. */
-main > .toolbar{gap:10px}
-main > .toolbar .groupControls{gap:10px}
+main > .toolbar{gap:5px}
+main > .toolbar .groupControls{gap:5px}
