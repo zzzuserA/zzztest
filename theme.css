@@ -112,46 +112,53 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
   .headerDecor .descriptionText{padding:12px 14px}
 }
 
-
-/* Unified layout spacing below title */
+/* Unified 16px spacing below title — all device widths.
+   Zero margins prevent doubled gaps; compact controls retain fit-safe padding. */
 :root{--section-space:16px}
 .headerDecor{margin-bottom:var(--section-space)}
-/* Main-level sections share one vertical rhythm. */
 main > .toolbar{
+  gap:var(--section-space);
+  padding:var(--section-space);
   margin-bottom:var(--section-space);
 }
+main > .toolbar .groupControls{gap:var(--section-space)}
 main > .teams{
-  column-gap:12px;
-  row-gap:12px;
+  gap:var(--section-space);
   margin-bottom:var(--section-space);
 }
+main > .teams .team{
+  padding:var(--section-space);
+}
+main > .teams .teamhead{margin-bottom:var(--section-space)}
+main > .teams .teamContents{gap:var(--section-space)}
+main > .teams .slots{gap:var(--section-space)}
+main > .teams .groupLabel{
+  margin:0;
+  padding:var(--section-space);
+  gap:var(--section-space);
+}
+main > .teams .groupLabel:not(:first-child){margin-top:0}
 main > .modeTabs{
   margin-bottom:var(--section-space);
 }
+/* Keep the two tabs joined as one segmented control. */
 main > .agentControls .filters,
 main > .bangbooControls .filters{
+  gap:var(--section-space);
   margin-bottom:var(--section-space);
 }
-main > .count{
-  margin:0 0 12px;
-}
-main > .count:empty{
-  margin:0;
-}
+main > .agentControls.hide,
+main > .bangbooControls:not(.show){display:none}
+main > .count{margin:0 0 var(--section-space)}
+main > .count:empty{margin:0}
 main > .chars{
-  row-gap:8px;
-  column-gap:8px;
+  gap:var(--section-space);
 }
-/* Group headings keep equal breathing room relative to team cards. */
-main > .teams .groupLabel{
-  margin:0;
-}
-main > .teams .groupLabel:not(:first-child){
-  margin-top:4px;
-}
-/* Compact device widths use the same main section spacing. */
+main > .status{margin-top:var(--section-space)}
+/* Do not enlarge fixed-size character images, drag targets, or modal controls. */
 @media(max-width:560px){
-  :root{--section-space:16px}
-  main > .teams{column-gap:12px;row-gap:12px}
-  main > .teams .groupLabel:not(:first-child){margin-top:4px}
+  main > .toolbar{gap:var(--section-space);padding:var(--section-space)}
+  main > .teams{gap:var(--section-space)}
+  main > .teams .slots{gap:var(--section-space)}
+  main > .chars{gap:var(--section-space)}
 }
