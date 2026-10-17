@@ -162,3 +162,7 @@ main > .status{margin-top:var(--section-space)}
   main > .teams .slots{gap:var(--section-space)}
   main > .chars{gap:var(--section-space)}
 }
+
+/* Toolbar button spacing: 10px on all devices; all other spacing unchanged. */
+main > .toolbar{gap:10px}
+main > .toolbar .groupControls{gap:10px}
