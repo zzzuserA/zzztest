@@ -167,36 +167,36 @@ main > .status{margin-top:var(--section-space)}
 main > .toolbar{gap:5px}
 main > .toolbar .groupControls{gap:5px}
 
-/* Narrow-screen cost layout: group name top-left, all cost top-right, group cost bottom-left */
+/* Narrow-screen: overall cost top right; group name and group cost aligned below */
 @media(max-width:700px){
-  main > .teams .groupLabel{
+  main > .teams .groupLabel:has(.allCost){
     display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-columns:max-content minmax(0,1fr);
     grid-template-rows:auto auto;
-    align-items:start;
+    align-items:center;
     column-gap:12px;
     row-gap:12px;
   }
-  main > .teams .groupLabel > span:first-child{
+  main > .teams .groupLabel:has(.allCost) > span:first-child{
     grid-column:1;
-    grid-row:1;
+    grid-row:2;
     min-width:0;
   }
   main > .teams .groupLabel .allCost{
-    grid-column:2;
+    grid-column:1 / -1;
     grid-row:1;
     justify-self:end;
-    align-self:start;
     text-align:right;
     margin:0;
     min-width:0;
     flex:initial;
   }
-  main > .teams .groupLabel .groupCost{
-    grid-column:1 / -1;
+  main > .teams .groupLabel:has(.allCost) .groupCost{
+    grid-column:2;
     grid-row:2;
     justify-self:start;
     margin:0;
+    min-width:0;
     flex:initial;
   }
 }
