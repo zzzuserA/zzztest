@@ -41,3 +41,40 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
 .descriptionText{background:#101010;border-left:3px solid var(--accent);padding:14px 18px;margin-top:16px;border-radius:0 14px 14px 0}
 
 @media(max-width:560px){.headerDecor{padding:20px 17px 22px;border-radius:22px 22px 8px 22px}.headerDecor::before{position:static;display:table;max-width:100%;margin:0 0 16px;font-size:10px;line-height:1.6;letter-spacing:.05em;padding:5px 8px;transform:none;overflow-wrap:anywhere}.headerDecor::after{font-size:75px;right:15px}.headerDecor h1{font-size:24px;padding-left:11px;border-left-width:5px;letter-spacing:.025em}.descriptionText{padding:12px}}
+
+/* Title panel: angular, dark game UI inspired by the supplied reference.
+   Only .headerDecor and its descendants are affected. */
+.headerDecor {
+  background:
+    linear-gradient(108deg, transparent 0 73%, rgba(0,0,0,.87) 73.2% 83%, transparent 83.2%),
+    linear-gradient(108deg, transparent 0 70.9%, #f0eb00 71% 71.55%, transparent 71.7%),
+    repeating-linear-gradient(132deg, rgba(255,255,255,.027) 0 1px, transparent 1px 6px),
+    linear-gradient(113deg, #08090a 0 24%, #202123 24.3% 44%, #0b0b0d 44.3% 65%, #252628 65.3% 83%, #090a0b 83.3%);
+  border-color: #525252;
+  box-shadow: 7px 7px 0 #050505, inset 0 0 0 4px #151515;
+}
+.headerDecor::before {
+  background: #f0eb00;
+  color: #080808;
+  padding-left: 18px;
+  padding-right: 23px;
+  border-radius: 0;
+  clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+}
+.headerDecor::after { opacity: .95; }
+.headerDecor h1,
+.headerDecor .descriptionToggle,
+.headerDecor .descriptionText { position: relative; z-index: 1; }
+.headerDecor .descriptionToggle {
+  background: linear-gradient(180deg, #292929, #151515);
+  border-color: #595959;
+}
+.headerDecor .descriptionText { background: rgba(11,11,11,.96); }
+@media (max-width:560px) {
+  .headerDecor {
+    background:
+      linear-gradient(108deg, transparent 0 84%, #f0eb00 84.1% 84.8%, transparent 84.9%),
+      repeating-linear-gradient(132deg, rgba(255,255,255,.027) 0 1px, transparent 1px 6px),
+      linear-gradient(113deg, #090a0b 0 50%, #202123 50.3% 81%, #0a0b0c 81.3%);
+  }
+}
