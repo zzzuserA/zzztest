@@ -111,3 +111,47 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
   .headerDecor h1{margin:44px 0 20px;padding-left:11px;border-left-width:5px;font-size:24px;line-height:1.4}
   .headerDecor .descriptionText{padding:12px 14px}
 }
+
+
+/* Unified layout spacing below title */
+:root{--section-space:16px}
+.headerDecor{margin-bottom:var(--section-space)}
+/* Main-level sections share one vertical rhythm. */
+main > .toolbar{
+  margin-bottom:var(--section-space);
+}
+main > .teams{
+  column-gap:12px;
+  row-gap:12px;
+  margin-bottom:var(--section-space);
+}
+main > .modeTabs{
+  margin-bottom:var(--section-space);
+}
+main > .agentControls .filters,
+main > .bangbooControls .filters{
+  margin-bottom:var(--section-space);
+}
+main > .count{
+  margin:0 0 12px;
+}
+main > .count:empty{
+  margin:0;
+}
+main > .chars{
+  row-gap:8px;
+  column-gap:8px;
+}
+/* Group headings keep equal breathing room relative to team cards. */
+main > .teams .groupLabel{
+  margin:0;
+}
+main > .teams .groupLabel:not(:first-child){
+  margin-top:4px;
+}
+/* Compact device widths use the same main section spacing. */
+@media(max-width:560px){
+  :root{--section-space:16px}
+  main > .teams{column-gap:12px;row-gap:12px}
+  main > .teams .groupLabel:not(:first-child){margin-top:4px}
+}
