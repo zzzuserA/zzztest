@@ -42,39 +42,110 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
 
 @media(max-width:560px){.headerDecor{padding:20px 17px 22px;border-radius:22px 22px 8px 22px}.headerDecor::before{position:static;display:table;max-width:100%;margin:0 0 16px;font-size:10px;line-height:1.6;letter-spacing:.05em;padding:5px 8px;transform:none;overflow-wrap:anywhere}.headerDecor::after{font-size:75px;right:15px}.headerDecor h1{font-size:24px;padding-left:11px;border-left-width:5px;letter-spacing:.025em}.descriptionText{padding:12px}}
 
-/* Title panel: angular, dark game UI inspired by the supplied reference.
-   Only .headerDecor and its descendants are affected. */
-.headerDecor {
+/* ===== Title panel: dark diagonal texture from reference (all devices) ===== */
+.headerDecor{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:34px 24px 24px;
+  margin-bottom:18px;
+  border:3px solid #555;
+  border-radius:28px 28px 10px 28px;
   background:
-    linear-gradient(108deg, transparent 0 73%, rgba(0,0,0,.87) 73.2% 83%, transparent 83.2%),
-    linear-gradient(108deg, transparent 0 70.9%, #f0eb00 71% 71.55%, transparent 71.7%),
-    repeating-linear-gradient(132deg, rgba(255,255,255,.027) 0 1px, transparent 1px 6px),
-    linear-gradient(113deg, #08090a 0 24%, #202123 24.3% 44%, #0b0b0d 44.3% 65%, #252628 65.3% 83%, #090a0b 83.3%);
-  border-color: #525252;
-  box-shadow: 7px 7px 0 #050505, inset 0 0 0 4px #151515;
+    linear-gradient(115deg, rgba(255,255,255,.05) 0 19%, transparent 19% 100%),
+    linear-gradient(115deg, transparent 0 27%, rgba(0,0,0,.30) 27% 48%, transparent 48% 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.045) 0 2px, transparent 2px 8px),
+    linear-gradient(115deg, #0a0a0a 0%, #1b1b1d 38%, #101113 60%, #090909 100%);
+  box-shadow:7px 7px 0 #050505, inset 0 0 0 5px #151515;
+  border-bottom:3px solid #555;
 }
-.headerDecor::before {
-  background: #f0eb00;
-  color: #080808;
-  padding-left: 18px;
-  padding-right: 23px;
-  border-radius: 0;
-  clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+.headerDecor::before{
+  content:"ZENLESS ZONE ZERO";
+  position:absolute;
+  display:block;
+  top:14px;
+  left:22px;
+  width:auto;
+  max-width:calc(100% - 44px);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.14em;
+  line-height:1.4;
+  color:rgba(255,255,255,.30);
+  background:none;
+  padding:0;
+  border-radius:0;
+  transform:none;
+  clip-path:none;
+  pointer-events:none;
 }
-.headerDecor::after { opacity: .95; }
-.headerDecor h1,
-.headerDecor .descriptionToggle,
-.headerDecor .descriptionText { position: relative; z-index: 1; }
-.headerDecor .descriptionToggle {
-  background: linear-gradient(180deg, #292929, #151515);
-  border-color: #595959;
+.headerDecor::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  right:0;
+  bottom:0;
+  width:auto;
+  height:auto;
+  font-size:initial;
+  transform:none;
+  background:linear-gradient(115deg, transparent 0 62%, rgba(255,255,255,.035) 62% 69%, transparent 69% 100%);
+  pointer-events:none;
+  z-index:0;
 }
-.headerDecor .descriptionText { background: rgba(11,11,11,.96); }
-@media (max-width:560px) {
-  .headerDecor {
-    background:
-      linear-gradient(108deg, transparent 0 84%, #f0eb00 84.1% 84.8%, transparent 84.9%),
-      repeating-linear-gradient(132deg, rgba(255,255,255,.027) 0 1px, transparent 1px 6px),
-      linear-gradient(113deg, #090a0b 0 50%, #202123 50.3% 81%, #0a0b0c 81.3%);
+.headerDecor h1{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:fit-content;
+  max-width:100%;
+  margin:0 0 18px;
+  padding:0 0 0 15px;
+  border-left:6px solid #f0eb00;
+  font-size:clamp(23px,3.1vw,38px);
+  line-height:1.45;
+  letter-spacing:.03em;
+  color:#080808;
+  text-shadow:-1px -1px 0 #fff,0 -1px 0 #fff,1px -1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff,-1px 1px 0 #fff,0 1px 0 #fff,1px 1px 0 #fff,3px 4px 0 #000;
+}
+.headerDecor .descriptionToggle{
+  position:relative;
+  z-index:1;
+  margin:0;
+  padding:7px 18px;
+  background:linear-gradient(180deg,#2a2a2a,#171717);
+  border:2px solid #5d5d5d;
+  border-radius:18px;
+  color:#f7f7f2;
+  box-shadow:3px 3px 0 #000;
+}
+.headerDecor .descriptionText{
+  position:relative;
+  z-index:1;
+  margin-top:16px;
+  padding:14px 18px;
+  background:rgba(10,10,10,.92);
+  border-left:3px solid #f0eb00;
+  border-radius:0 14px 14px 0;
+  color:#bcbcbc;
+  line-height:1.7;
+}
+@media (max-width:560px){
+  .headerDecor{padding:28px 16px 20px;border-radius:22px 22px 8px 22px}
+  .headerDecor::before{
+    position:absolute;
+    display:block;
+    top:11px;
+    left:16px;
+    max-width:calc(100% - 32px);
+    margin:0;
+    padding:0;
+    font-size:10px;
+    line-height:1.4;
+    letter-spacing:.08em;
+    transform:none;
   }
+  .headerDecor::after{inset:0;width:auto;height:auto;font-size:initial;transform:none}
+  .headerDecor h1{padding-left:11px;border-left-width:5px;font-size:24px;line-height:1.4}
+  .headerDecor .descriptionText{padding:12px 14px}
 }
