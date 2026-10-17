@@ -1,0 +1,33 @@
+/* Visual theme only. Application behavior and storage remain in index.html. */
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
+:root{--bg:#141414;--panel:#101010;--card:#202020;--line:#414141;--text:#f7f7f2;--muted:#bcbcbc;--accent:#f0eb00;--accentbg:#373600}
+body{background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);font-family:'Zen Kaku Gothic New',sans-serif;font-weight:500}
+button,input,select,textarea{font-family:inherit;font-style:normal}
+button{border-width:2px;border-radius:24px;font-weight:900;background:#101010}
+button:hover{border-color:var(--accent)}
+main{max-width:1180px}
+.headerDecor{background:#0a0a0a;border:3px solid #383838;border-radius:24px;padding:22px;margin-bottom:18px}
+.headerDecor h1{font-family:inherit;font-size:clamp(21px,2.6vw,30px);font-weight:900;font-style:normal;letter-spacing:.035em;line-height:1.65;color:#080808;-webkit-text-fill-color:#080808;-webkit-text-stroke:0;text-shadow:-1px -1px 0 #fff,0 -1px 0 #fff,1px -1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff,-1px 1px 0 #fff,0 1px 0 #fff,1px 1px 0 #fff;overflow-wrap:anywhere}
+h1::after{display:none}
+.descriptionToggle{color:var(--text);text-shadow:none}
+.toolbar{gap:8px;padding:12px;background:#0a0a0a;border:3px solid #383838;border-radius:24px}
+.toolbar button{font-size:13px}
+.team{background:#202020;border:2px solid #414141;border-radius:20px}
+.team.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.team.active .teamhead b{color:var(--accent)}
+.teamhead b{font-weight:900}
+.slot,.bangbooSlot{background:repeating-linear-gradient(135deg,#191919 0 2px,#151515 2px 5px);border-radius:12px}
+.slot img,.bangbooSlot img,.char img{background:#303030}
+.char{background:#101010;border:2px solid #414141;border-radius:16px}
+.char .initial{background:#303030}
+.char .conv{background:#292929;border-color:#505050;border-radius:20px;font-weight:700}
+.modeTabs{gap:0;background:#202020;border:2px solid #414141;border-radius:30px;width:fit-content;padding:3px}
+.modeTabs button{min-width:125px;border-color:transparent;background:transparent}
+.modeTabs button.active{background:var(--accent);color:#080808;border-color:var(--accent)}
+input,select{border:2px solid #414141;border-radius:24px;background:#101010}
+.groupLabel{background:#0a0a0a;border-radius:20px;padding:10px 14px;font-size:14px;color:var(--text);flex-wrap:wrap;gap:8px}
+.groupCost,.teamCost,.allCost{color:var(--muted)}
+.allCost{color:var(--accent)}
+.modalbox{border:3px solid #414141;border-radius:24px;background:#171717}
+.modalbox h2{font-weight:900}
+@media(max-width:560px){.headerDecor{padding:16px}.headerDecor h1{font-size:22px}.toolbar{padding:9px}.toolbar button{font-size:12px;padding:8px 10px}.groupLabel{padding:8px 10px}.groupCost,.allCost{white-space:normal}.filters input[type=search],.bangbooControls .filters input[type=search]{min-width:0;width:100%;flex:1 1 100%}.filters select{min-width:0;max-width:100%}.formgrid input,.formgrid select{min-width:0}.descriptionToggle{margin-left:0}}
