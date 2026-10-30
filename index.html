@@ -320,7 +320,7 @@ async function saveSelectedGroupImage(){
       backgroundColor:'#101218',
       useCORS:true,
       allowTaint:false,
-      scale:Math.min(2,window.devicePixelRatio||1.5),
+      scale:2,
       logging:false,
       imageTimeout:20000,
       scrollX:-window.scrollX,
@@ -329,7 +329,23 @@ async function saveSelectedGroupImage(){
       windowHeight:document.documentElement.clientHeight,
       onclone:(doc)=>{
         const cloned=doc.getElementById('teams');
-        if(cloned){cloned.style.maxWidth='none';cloned.style.width='1100px';cloned.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';cloned.style.rowGap='8px';cloned.style.marginBottom='0';cloned.querySelectorAll('.groupLabel').forEach(el=>{el.style.fontSize='9px';el.style.marginTop='3px';el.style.marginBottom='2px';el.style.lineHeight='1'});cloned.querySelectorAll('.teamhead b').forEach(el=>{el.style.fontSize='11px';el.style.lineHeight='1'});cloned.querySelectorAll('.team').forEach(el=>{el.style.padding='5px';el.style.borderRadius='10px'});cloned.querySelectorAll('.teamhead').forEach(el=>{el.style.marginBottom='5px'});cloned.querySelectorAll('.meta2').forEach(el=>{el.style.fontSize='15px';el.style.fontWeight='800';el.style.lineHeight='1.1';el.style.marginTop='3px';el.style.paddingTop='1px'});cloned.querySelectorAll('.team.active').forEach(el=>{el.classList.remove('active');el.style.borderColor='var(--line)';el.style.boxShadow='none'});}
+        if(cloned){
+          cloned.style.maxWidth='none';
+          cloned.style.width='1100px';
+          cloned.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
+          cloned.style.rowGap='8px';
+          cloned.style.marginBottom='0';
+          cloned.style.color='#fff';
+          cloned.querySelectorAll('.groupLabel').forEach(el=>{el.style.fontSize='13px';el.style.fontWeight='900';el.style.color='#fff';el.style.marginTop='3px';el.style.marginBottom='3px';el.style.lineHeight='1.3'});
+          cloned.querySelectorAll('.groupCost,.allCost').forEach(el=>{el.style.fontSize='13px';el.style.fontWeight='900';el.style.color='#fff'});
+          cloned.querySelectorAll('.teamhead b').forEach(el=>{el.style.fontSize='14px';el.style.fontWeight='900';el.style.color='#fff';el.style.lineHeight='1.3'});
+          cloned.querySelectorAll('.teamCost').forEach(el=>{el.style.fontSize='12px';el.style.fontWeight='900';el.style.color='#fff'});
+          cloned.querySelectorAll('.team').forEach(el=>{el.style.padding='5px';el.style.borderRadius='10px'});
+          cloned.querySelectorAll('.teamhead').forEach(el=>{el.style.marginBottom='5px'});
+          cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{el.style.fontSize='12px';el.style.fontWeight='900';el.style.lineHeight='1.25';el.style.color='#fff';el.style.textShadow='0 1px 2px #000'});
+          cloned.querySelectorAll('.meta2').forEach(el=>{el.style.fontSize='15px';el.style.fontWeight='900';el.style.lineHeight='1.15';el.style.color='#fff';el.style.textShadow='0 1px 2px #000';el.style.marginTop='3px';el.style.paddingTop='1px'});
+          cloned.querySelectorAll('.team.active').forEach(el=>{el.classList.remove('active');el.style.borderColor='var(--line)';el.style.boxShadow='none'});
+        }
       }
     });
     // 実際の画面をそのまま使い、外周だけ少し余白を追加する。
