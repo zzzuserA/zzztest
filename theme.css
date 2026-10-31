@@ -13,7 +13,7 @@ h1::after{display:none}
 .toolbar{gap:8px;padding:12px;background:#0a0a0a;border:3px solid #383838;border-radius:24px}
 .toolbar button{font-size:13px}
 .team{background:#202020;border:2px solid #414141;border-radius:20px}
-.team.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.team.active{border:1px solid var(--accent);box-shadow:none}
 .team.active .teamhead b{color:var(--accent)}
 .teamhead b{font-weight:900}
 .slot,.bangbooSlot{background:repeating-linear-gradient(135deg,#191919 0 2px,#151515 2px 5px);border-radius:12px}
