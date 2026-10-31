@@ -276,3 +276,32 @@ main > .teams .bangbooSlot strong{
     min-height:95px;
   }
 }
+
+/* Keep Group 1 cost and Total cost on one left/right row at every width. */
+main > .teams .groupLabel{column-gap:4px}
+main > .teams .groupLabel:has(.allCost){
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  row-gap:0;
+}
+main > .teams .groupLabel:has(.allCost) > span:first-child,
+main > .teams .groupLabel:has(.allCost) .groupCost{
+  grid-column:auto;
+  grid-row:auto;
+  justify-self:auto;
+  margin:0;
+  min-width:0;
+  flex:initial;
+  white-space:nowrap;
+}
+main > .teams .groupLabel:has(.allCost) .allCost{
+  grid-column:auto;
+  grid-row:auto;
+  justify-self:auto;
+  text-align:right;
+  margin:0 0 0 auto;
+  min-width:0;
+  flex:initial;
+  white-space:nowrap;
+}
