@@ -25,8 +25,9 @@ h1::after{display:none}
 .modeTabs button{min-width:125px;border-color:transparent;background:transparent}
 .modeTabs button.active{background:var(--accent);color:#080808;border-color:var(--accent)}
 input,select{border:2px solid #414141;border-radius:24px;background:#101010}
-.groupLabel{background:#0a0a0a;border-radius:20px;padding:10px 14px;font-size:14px;color:var(--text);flex-wrap:wrap;gap:8px}
+.groupLabel{background:#0a0a0a;border-radius:20px;padding:10px 14px;font-size:14px;color:var(--muted);flex-wrap:wrap;gap:8px}
 .groupCost,.teamCost,.allCost{color:var(--muted)}
+.groupCost{font-size:13px}
 .allCost{color:var(--accent)}
 .modalbox{border:3px solid #414141;border-radius:24px;background:#171717}
 .modalbox h2{font-weight:900}
