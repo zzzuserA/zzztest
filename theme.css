@@ -237,9 +237,9 @@ main > .teams .slot.empty:hover,
 main > .teams .bangbooSlot.empty:hover{border-color:var(--accent)}
 
 /* Highlight every character slot in the selected team; Bangboo remains independent. */
-main > .teams .team.active .slot{
-  border-color:var(--accent);
-  box-shadow:0 0 0 1px var(--accent) inset;
+main > .teams .team.active.agent-selected .slot{
+  border:1px solid var(--accent);
+  box-shadow:none;
 }
 main > .teams .slot{-webkit-tap-highlight-color:transparent}
 
