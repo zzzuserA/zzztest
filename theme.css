@@ -167,7 +167,7 @@ main > .status{margin-top:var(--section-space)}
 main > .toolbar{gap:5px}
 main > .toolbar .groupControls{gap:5px}
 
-/* Narrow-screen: overall cost top right; group name and group cost aligned below */
+/* Narrow-screen: overall cost left aligned above group name and group cost. */
 @media(max-width:700px){
   main > .teams .groupLabel:has(.allCost){
     display:grid;
@@ -185,8 +185,8 @@ main > .toolbar .groupControls{gap:5px}
   main > .teams .groupLabel .allCost{
     grid-column:1 / -1;
     grid-row:1;
-    justify-self:end;
-    text-align:right;
+    justify-self:start;
+    text-align:left;
     margin:0;
     min-width:0;
     flex:initial;
@@ -234,7 +234,12 @@ main > .teams .bangbooSlot.empty{
   border-radius:12px;
 }
 main > .teams .slot.empty:hover,
-main > .teams .bangbooSlot.empty:hover{border-color:var(--accent)}
+main > .teams .bangbooSlot.empty:hover{
+  border-style:solid;
+  border-color:var(--accent);
+}
+main > .teams .slot.drag-over,
+main > .teams .bangbooSlot.drag-over{border-style:solid}
 
 /* Selected unit outlines keep the normal border width and shape. */
 main > .teams .team.active.agent-selected .slot,
