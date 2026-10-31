@@ -242,3 +242,23 @@ main > .teams .team.active .slot{
   box-shadow:0 0 0 1px var(--accent) inset;
 }
 main > .teams .slot{-webkit-tap-highlight-color:transparent}
+
+/* Keep character slots uniform and reserve one line for fitted unit names. */
+main > .teams .slot{
+  height:105px;
+  min-height:105px;
+}
+main > .teams .slot strong,
+main > .teams .bangbooSlot strong{
+  display:block;
+  width:100%;
+  max-width:100%;
+  white-space:nowrap;
+  line-height:1.15;
+}
+@media(max-width:560px){
+  main > .teams .slot{
+    height:95px;
+    min-height:95px;
+  }
+}
