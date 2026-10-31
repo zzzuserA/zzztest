@@ -16,6 +16,7 @@ h1::after{display:none}
 .team.active{border-color:var(--accent);box-shadow:none}
 .team.active .teamhead b{color:var(--accent)}
 .teamhead b{font-weight:900}
+.teamhead b,.teamCost{font-size:15px;line-height:1.2}
 .slot,.bangbooSlot{background:repeating-linear-gradient(135deg,#191919 0 2px,#151515 2px 5px);border-radius:12px}
 .slot img,.bangbooSlot img,.char img{background:#303030}
 .char{background:#101010;border:2px solid #414141;border-radius:16px}
@@ -25,10 +26,10 @@ h1::after{display:none}
 .modeTabs button{min-width:125px;border-color:transparent;background:transparent}
 .modeTabs button.active{background:var(--accent);color:#080808;border-color:var(--accent)}
 input,select{border:2px solid #414141;border-radius:24px;background:#101010}
-.groupLabel{background:#0a0a0a;border-radius:20px;padding:10px 14px;font-size:14px;color:var(--muted);flex-wrap:wrap;gap:8px}
+.groupLabel{background:#0a0a0a;border-radius:20px;padding:10px 14px;font-size:15px;color:var(--muted);flex-wrap:wrap;gap:8px}
 .groupCost,.teamCost,.allCost{color:var(--muted)}
-.groupCost{font-size:13px}
-.allCost{color:var(--accent)}
+.groupCost{font-size:15px}
+.allCost{font-size:15px;color:var(--accent)}
 .modalbox{border:3px solid #414141;border-radius:24px;background:#171717}
 .modalbox h2{font-weight:900}
 @media(max-width:560px){.headerDecor{padding:16px}.headerDecor h1{font-size:22px}.toolbar{padding:9px}.toolbar button{font-size:12px;padding:8px 10px}.groupLabel{padding:8px 10px}.groupCost,.allCost{white-space:normal}.filters input[type=search],.bangbooControls .filters input[type=search]{min-width:0;width:100%;flex:1 1 100%}.filters select{min-width:0;max-width:100%}.formgrid input,.formgrid select{min-width:0}.descriptionToggle{margin-left:0}}
@@ -205,7 +206,7 @@ main > .toolbar .groupControls{gap:5px}
 /* Expanded agent frames with compact spacing and a smaller Bangboo slot. */
 :root{--team-slot-space:5px}
 main > .teams .team{padding:var(--team-slot-space)}
-main > .teams .teamhead{margin-bottom:var(--team-slot-space)}
+main > .teams .teamhead{margin:0 0 var(--team-slot-space);padding:var(--team-slot-space)}
 main > .teams .teamContents{
   display:grid;
   grid-template-columns:minmax(0,1fr) 70px;
