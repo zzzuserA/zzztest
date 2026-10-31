@@ -305,3 +305,11 @@ main > .teams .groupLabel:has(.allCost) .allCost{
   flex:initial;
   white-space:nowrap;
 }
+
+/* Make all live cost values visibly larger. */
+main > .teams .groupLabel .groupCost,
+main > .teams .groupLabel .allCost,
+main > .teams .teamhead .teamCost{
+  font-size:17px!important;
+  line-height:1.2;
+}
