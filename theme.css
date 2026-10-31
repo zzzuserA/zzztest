@@ -236,13 +236,19 @@ main > .teams .bangbooSlot.empty{
 main > .teams .slot.empty:hover,
 main > .teams .bangbooSlot.empty:hover{border-color:var(--accent)}
 
-/* Highlight every character slot in the selected team; Bangboo remains independent. */
-main > .teams .team.active.agent-selected .slot{
+/* Selected unit outlines keep the normal border width and shape. */
+main > .teams .team.active.agent-selected .slot,
+main > .teams .team.active.bangboo-selected .bangbooSlot,
+main > .teams .slot:active{
   border-style:solid;
+}
+main > .teams .team.active.agent-selected .slot,
+main > .teams .team.active.bangboo-selected .bangbooSlot{
   border-color:var(--accent);
   box-shadow:none;
 }
-main > .teams .slot{-webkit-tap-highlight-color:transparent}
+main > .teams .slot,
+main > .teams .bangbooSlot{-webkit-tap-highlight-color:transparent}
 
 /* Keep character slots uniform and reserve one line for fitted unit names. */
 main > .teams .slot{
