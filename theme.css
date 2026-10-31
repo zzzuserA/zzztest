@@ -235,3 +235,10 @@ main > .teams .bangbooSlot.empty{
 }
 main > .teams .slot.empty:hover,
 main > .teams .bangbooSlot.empty:hover{border-color:var(--accent)}
+
+/* Highlight every character slot in the selected team; Bangboo remains independent. */
+main > .teams .team.active .slot{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent) inset;
+}
+main > .teams .slot{-webkit-tap-highlight-color:transparent}
