@@ -255,3 +255,19 @@ main > .teams .teamhead .teamCost{
   font-size:17px!important;
   line-height:1.2;
 }
+
+/* Match team-label white throughout the team summary; keep only Total accented. */
+main > .teams .groupLabel,
+main > .teams .groupLabel .groupCost,
+main > .teams .teamhead b,
+main > .teams .teamhead .teamCost,
+main > .teams .team.active .teamhead b{color:#fff}
+main > .teams .groupLabel .allCost{color:var(--accent)}
+main > .chars .char strong{
+  display:block;
+  width:100%;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  line-height:1.2;
+}
