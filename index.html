@@ -329,7 +329,10 @@ async function saveSelectedGroupImage(){
     const ready=await ensureHtml2Canvas();
     if(!ready){$('status').textContent='画像保存機能を読み込めませんでした。インターネット接続を確認してください。';return}
     await waitForTeamImages(target);
-    // 画面に表示されている#teamsそのものを画像化するため、保存用の別デザインは作らない。
+    // Keep each team's displayed size while restoring the three-team export layout.
+    const teamWidth=target.querySelector('.team')?.getBoundingClientRect().width||0;
+    const teamGap=parseFloat(getComputedStyle(target).columnGap)||16;
+    const exportWidth=teamWidth*3+teamGap*2;
     const canvas=await html2canvas(target,{
       backgroundColor:'#101218',
       useCORS:true,
@@ -343,11 +346,18 @@ async function saveSelectedGroupImage(){
       windowHeight:document.documentElement.clientHeight,
       onclone:(doc)=>{
         const cloned=doc.getElementById('teams');
-        if(cloned)cloned.querySelectorAll('.team.active').forEach(el=>{
-          el.classList.remove('active','agent-selected','bangboo-selected');
-          el.style.borderColor='var(--line)';
-          el.style.boxShadow='none';
-        });
+        if(cloned){
+          if(teamWidth){
+            cloned.style.maxWidth='none';
+            cloned.style.width=exportWidth+'px';
+            cloned.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
+          }
+          cloned.querySelectorAll('.team.active').forEach(el=>{
+            el.classList.remove('active','agent-selected','bangboo-selected');
+            el.style.borderColor='var(--line)';
+            el.style.boxShadow='none';
+          });
+        }
       }
     });
     if(typeof canvas.toBlob==='function'){
