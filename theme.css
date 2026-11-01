@@ -169,40 +169,6 @@ main > .status{margin-top:var(--section-space)}
 main > .toolbar{gap:5px}
 main > .toolbar .groupControls{gap:5px}
 
-/* Narrow-screen: overall cost left aligned above group name and group cost. */
-@media(max-width:700px){
-  main > .teams .groupLabel:has(.allCost){
-    display:grid;
-    grid-template-columns:max-content minmax(0,1fr);
-    grid-template-rows:auto auto;
-    align-items:center;
-    column-gap:12px;
-    row-gap:12px;
-  }
-  main > .teams .groupLabel:has(.allCost) > span:first-child{
-    grid-column:1;
-    grid-row:2;
-    min-width:0;
-  }
-  main > .teams .groupLabel .allCost{
-    grid-column:1 / -1;
-    grid-row:1;
-    justify-self:start;
-    text-align:left;
-    margin:0;
-    min-width:0;
-    flex:initial;
-  }
-  main > .teams .groupLabel:has(.allCost) .groupCost{
-    grid-column:2;
-    grid-row:2;
-    justify-self:start;
-    margin:0;
-    min-width:0;
-    flex:initial;
-  }
-}
-
 /* Expanded agent frames with compact spacing and a smaller Bangboo slot. */
 :root{--team-slot-space:5px}
 main > .teams .team{padding:var(--team-slot-space)}
@@ -277,34 +243,9 @@ main > .teams .bangbooSlot strong{
   }
 }
 
-/* Keep Group 1 cost and Total cost on one left/right row at every width. */
-main > .teams .groupLabel{column-gap:4px}
-main > .teams .groupLabel:has(.allCost){
-  display:flex;
-  flex-wrap:nowrap;
-  align-items:center;
-  row-gap:0;
-}
-main > .teams .groupLabel:has(.allCost) > span:first-child,
-main > .teams .groupLabel:has(.allCost) .groupCost{
-  grid-column:auto;
-  grid-row:auto;
-  justify-self:auto;
-  margin:0;
-  min-width:0;
-  flex:initial;
-  white-space:nowrap;
-}
-main > .teams .groupLabel:has(.allCost) .allCost{
-  grid-column:auto;
-  grid-row:auto;
-  justify-self:auto;
-  text-align:right;
-  margin:0 0 0 auto;
-  min-width:0;
-  flex:initial;
-  white-space:nowrap;
-}
+/* All groups share the same label layout; Total stays at the far right. */
+main > .teams .groupLabel{display:flex;flex-wrap:nowrap;align-items:center;column-gap:4px}
+main > .teams .groupLabel .allCost{margin-left:auto;text-align:right;white-space:nowrap}
 
 /* Unify live Group, Team, and all cost labels. */
 main > .teams .groupLabel,
