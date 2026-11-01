@@ -288,3 +288,8 @@ main > .teams .bangbooSlot.empty:active{
     box-shadow:none;
   }
 }
+
+@media(pointer:coarse){
+  main > .teams .slot img,
+  main > .teams .bangbooSlot img{-webkit-user-drag:none}
+}
