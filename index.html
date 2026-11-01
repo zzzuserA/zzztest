@@ -103,7 +103,7 @@ function setupTeamDragDrop(){
     if(!valid)return;
     const touch=e.touches[0];
     const d={id:touch.identifier,type,source,startX:touch.clientX,startY:touch.clientY,armed:false,dragging:false,target:null,el:target,timer:null};
-    d.timer=setTimeout(()=>{if(touchDrag===d)d.armed=true},200);
+    d.timer=setTimeout(()=>{if(touchDrag===d)d.armed=true},100);
     touchDrag=d;
   };
   root.ontouchmove=e=>{
