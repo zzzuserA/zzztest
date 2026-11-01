@@ -357,10 +357,36 @@ async function saveSelectedGroupImage(){
           cloned.querySelectorAll('.groupLabel').forEach(el=>{
             el.style.margin='0';
             el.style.padding='4px';
+            el.style.alignItems='center';
           });
-          cloned.querySelectorAll('.groupLabel span,.teamhead b,.teamCost,.slot strong,.slot .meta2,.bangbooSlot strong').forEach(el=>{
+          cloned.querySelectorAll('.groupLabel span').forEach(el=>{
+            el.style.alignSelf='center';
+            el.style.lineHeight='1.2';
+          });
+          cloned.querySelectorAll('.teamhead').forEach(el=>{
+            el.style.padding='1px 5px 5px';
+            el.style.alignItems='center';
+          });
+          cloned.querySelectorAll('.groupLabel span,.teamhead b,.teamCost').forEach(el=>{
+            const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
+            if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.06)+'px','important');
+          });
+          cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
             if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.18)+'px','important');
+          });
+          cloned.querySelectorAll('.slot').forEach(el=>{
+            el.style.justifyContent='flex-start';
+            if(el.querySelector('.meta2'))el.style.minHeight='104px';
+          });
+          cloned.querySelectorAll('.slot strong').forEach(el=>{
+            el.style.setProperty('margin-top','auto','important');
+          });
+          cloned.querySelectorAll('.slot .meta2').forEach(el=>{
+            const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
+            if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.6)+'px','important');
+            el.style.setProperty('margin-top','1px','important');
+            el.style.setProperty('margin-bottom','0','important');
           });
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             let size=parseFloat(el.style.fontSize);
