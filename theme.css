@@ -271,3 +271,20 @@ main > .chars .char strong{
   overflow:hidden;
   line-height:1.2;
 }
+
+/* Empty slots never show an isolated press highlight; touch scrolling stays native. */
+main > .teams .slot,
+main > .teams .bangbooSlot{touch-action:pan-y}
+main > .teams .slot:not(.empty):active{border-style:solid}
+main > .teams .slot.empty:active,
+main > .teams .bangbooSlot.empty:active{
+  border:2px dashed #606060;
+  box-shadow:none;
+}
+@media(hover:none){
+  main > .teams .slot.empty:not(.drag-over):hover,
+  main > .teams .bangbooSlot.empty:not(.drag-over):hover{
+    border:2px dashed #606060;
+    box-shadow:none;
+  }
+}
