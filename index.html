@@ -112,7 +112,7 @@ function setupTeamDragDrop(){
     if(!touch||e.touches.length!==1){clearTouchDrag();return}
     const distance=Math.hypot(touch.clientX-d.startX,touch.clientY-d.startY);
     if(!d.armed){
-      if(distance>8)clearTouchDrag();
+      if(distance>5)clearTouchDrag();
       return;
     }
     // Once held, prevent the browser's pan so the intentional drag can proceed.
