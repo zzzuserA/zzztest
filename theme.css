@@ -297,7 +297,7 @@ main > .teams .moveActions button{
   width:43px;height:43px;min-width:43px;min-height:43px;padding:3px;
   display:inline-flex;align-items:center;justify-content:center;line-height:1
 }
-main > .teams .moveActions svg{display:block;width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:6.5;stroke-linecap:round;stroke-linejoin:round}
+main > .teams .moveActions svg{display:block;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:6.5;stroke-linecap:round;stroke-linejoin:round}
 main > .teams #redoMove svg{transform:scaleX(-1)}
 main > .teams .moveActions button:disabled{opacity:.4;cursor:default}
 @keyframes teamSwapPulse{
