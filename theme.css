@@ -274,7 +274,7 @@ main > .chars .char strong{
 
 /* Empty slots never show an isolated press highlight; touch scrolling stays native. */
 main > .teams .slot,
-main > .teams .bangbooSlot{touch-action:pan-y}
+main > .teams .bangbooSlot{touch-action:none}
 main > .teams .slot:not(.empty):active{border-style:solid}
 main > .teams .slot.empty:active,
 main > .teams .bangbooSlot.empty:active{
@@ -289,7 +289,3 @@ main > .teams .bangbooSlot.empty:active{
   }
 }
 
-@media(pointer:coarse){
-  main > .teams .slot img,
-  main > .teams .bangbooSlot img{-webkit-user-drag:none}
-}
