@@ -289,3 +289,12 @@ main > .teams .bangbooSlot.empty:active{
   }
 }
 
+
+/* Move controls sit directly above the first group's cost. */
+main > .teams .groupLabel.firstGroup{position:relative;padding-top:39px}
+main > .teams .moveActions{position:absolute;top:4px;left:var(--section-space);display:flex;gap:5px}
+main > .teams .moveActions button{min-width:30px;min-height:29px;padding:2px 6px;line-height:1;font-size:23px}
+main > .teams .moveActions button:disabled{opacity:.4;cursor:default}
+@keyframes teamSwapPulse{50%{border-color:#fff3a7;box-shadow:0 0 0 2px rgba(255,215,66,.5)}}
+main > .teams .team.swap-source{animation:teamSwapPulse .8s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){main > .teams .team.swap-source{animation:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,215,66,.5)}}
