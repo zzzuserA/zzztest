@@ -301,15 +301,13 @@ main > .teams .moveActions svg{display:block;width:35px;height:35px;fill:none;st
 main > .teams #redoMove svg{transform:scaleX(-1)}
 main > .teams .moveActions button:disabled{opacity:.4;cursor:default}
 @keyframes teamSwapPulse{
-  0%,100%{outline-color:#ffe058;box-shadow:0 0 0 2px rgba(255,224,88,.85),0 0 18px rgba(255,224,88,.55)}
-  50%{outline-color:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.75),0 0 27px rgba(255,224,88,.9)}
+  0%,100%{border-color:#ffe058}
+  50%{border-color:#555}
 }
-main > .teams .team.swap-source{position:relative;outline:3px solid #ffe058;outline-offset:1px;animation:teamSwapPulse .65s ease-in-out infinite}
-main > .teams .team.swap-source::after{
-  content:"交換元";position:absolute;right:7px;top:5px;z-index:2;
-  background:#ffe058;color:#111;padding:2px 7px;border-radius:5px;
-  font-size:12px;font-weight:900;pointer-events:none
+main > .teams .team.swap-source{
+  outline:none;box-shadow:none;
+  animation:teamSwapPulse .65s steps(1,end) infinite
 }
 @media(prefers-reduced-motion:reduce){
-  main > .teams .team.swap-source{animation:none;box-shadow:0 0 0 3px rgba(255,224,88,.8)}
+  main > .teams .team.swap-source{animation:none;border-color:#ffe058}
 }
