@@ -67,7 +67,6 @@ function setupTeamDragDrop(){
   const root=$('teams');
   if(!root)return;
   root.ondragstart=e=>{
-    if(touchDrag)return e.preventDefault();
     const slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]');
     if(slot){const [ti,si]=slot.dataset.slot.split(',').map(Number);if(teams[ti]?.[si]){root.dataset.dragType='agent';root.dataset.dragSource=slot.dataset.slot;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','agent:'+slot.dataset.slot)}}
     else if(bb){const ti=Number(bb.dataset.bangbooSlot);if(bangboos[ti]){root.dataset.dragType='bangboo';root.dataset.dragSource=String(ti);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','bangboo:'+ti)}}
@@ -76,70 +75,47 @@ function setupTeamDragDrop(){
   root.ondrop=e=>{e.preventDefault();const type=root.dataset.dragType,src=root.dataset.dragSource,slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]');performTeamDrop(type,src,slot,bb);root.dataset.dragType='';root.dataset.dragSource=''};
   root.ondragend=()=>{root.dataset.dragType='';root.dataset.dragSource='';setTimeout(()=>root.dataset.justDragged='',0)};
 
-  // Touch drag starts only after a deliberate hold. Movement before the hold remains native scrolling.
+  // Mobile: Pointer Events allow immediate drag without long-press/native image handling.
   let touchDrag=null;
-  const clearTouchDrag=()=>{
-    if(!touchDrag)return;
-    clearTimeout(touchDrag.timer);
-    touchDrag.el.classList.remove('dragging');
-    touchDrag.el.style.opacity='';
-    root.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
-    touchDrag=null;root.dataset.dragType='';root.dataset.dragSource='';
-  };
   root.onpointerdown=e=>{
-    if(e.pointerType!=='touch')return;
     window.__suppressTeamClick=false;root.dataset.justDragged='';
-  };
-  root.ontouchstart=e=>{
-    clearTouchDrag();
-    if(e.touches.length!==1)return;
-    const target=e.target.closest('[data-slot],[data-bangboo-slot]');
-    if(!target||!root.contains(target))return;
-    const slot=target.matches('[data-slot]')?target:null;
-    const bb=target.matches('[data-bangboo-slot]')?target:null;
+    if(e.pointerType==='mouse')return;
+    const slot=e.target.closest('[data-slot]'),bb=e.target.closest('[data-bangboo-slot]');
+    if(!slot&&!bb)return;
     let type,source,valid=false;
     if(slot){const [ti,si]=slot.dataset.slot.split(',').map(Number);valid=!!teams[ti]?.[si];type='agent';source=slot.dataset.slot}
     else {const ti=Number(bb.dataset.bangbooSlot);valid=!!bangboos[ti];type='bangboo';source=String(ti)}
     if(!valid)return;
-    const touch=e.touches[0];
-    const d={id:touch.identifier,type,source,startX:touch.clientX,startY:touch.clientY,armed:false,dragging:false,target:null,el:target,timer:null};
-    d.timer=setTimeout(()=>{if(touchDrag===d)d.armed=true},30);
-    touchDrag=d;
+    touchDrag={pointerId:e.pointerId,type,source,startX:e.clientX,startY:e.clientY,dragging:false,target:null,el:slot||bb};
+    try{(slot||bb).setPointerCapture(e.pointerId)}catch(_){ }
   };
-  root.ontouchmove=e=>{
-    const d=touchDrag;if(!d)return;
-    const touch=Array.from(e.touches).find(t=>t.identifier===d.id);
-    if(!touch||e.touches.length!==1){clearTouchDrag();return}
-    const distance=Math.hypot(touch.clientX-d.startX,touch.clientY-d.startY);
-    if(!d.armed){
-      if(distance>5)clearTouchDrag();
-      return;
-    }
-    // Once held, prevent the browser's pan so the intentional drag can proceed.
-    if(e.cancelable)e.preventDefault();
-    if(!d.dragging&&distance<7)return;
+  root.onpointermove=e=>{
+    const d=touchDrag;if(!d||d.pointerId!==e.pointerId)return;
+    const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
+    if(!d.dragging && Math.hypot(dx,dy)<7)return;
     if(!d.dragging){
       d.dragging=true;root.dataset.dragType=d.type;root.dataset.dragSource=d.source;
       d.el.classList.add('dragging');d.el.style.opacity='.55';
     }
-    const under=document.elementFromPoint(touch.clientX,touch.clientY);
+    e.preventDefault();
+    const under=document.elementFromPoint(e.clientX,e.clientY);
     d.target=under?.closest('[data-slot],[data-bangboo-slot]')||null;
     root.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
-    if(d.target&&root.contains(d.target)&&((d.type==='agent'&&d.target.matches('[data-slot]'))||(d.type==='bangboo'&&d.target.matches('[data-bangboo-slot]'))))d.target.classList.add('drag-over');
+    if(d.target && ((d.type==='agent'&&d.target.matches('[data-slot]'))||(d.type==='bangboo'&&d.target.matches('[data-bangboo-slot]'))))d.target.classList.add('drag-over');
   };
-  const finishTouch=e=>{
-    const d=touchDrag;if(!d||!Array.from(e.changedTouches).some(t=>t.identifier===d.id))return;
+  const finishPointer=e=>{
+    const d=touchDrag;if(!d||d.pointerId!==e.pointerId)return;
     if(d.dragging){
-      if(e.cancelable)e.preventDefault();
-      const target=e.type==='touchcancel'?null:d.target;
-      clearTouchDrag();
-      if(target)performTeamDrop(d.type,d.source,target.matches('[data-slot]')?target:null,target.matches('[data-bangboo-slot]')?target:null);
+      e.preventDefault();
+      root.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+      if(e.type!=='pointercancel')performTeamDrop(d.type,d.source,d.target?.matches('[data-slot]')?d.target:null,d.target?.matches('[data-bangboo-slot]')?d.target:null);
+      d.el.classList.remove('dragging');d.el.style.opacity='';
       root.dataset.justDragged='1';setTimeout(()=>root.dataset.justDragged='',120);
-    }else clearTouchDrag();
+    }
+    touchDrag=null;root.dataset.dragType='';root.dataset.dragSource='';
   };
-  root.ontouchend=finishTouch;root.ontouchcancel=finishTouch;
-  root.oncontextmenu=e=>{if(touchDrag?.armed)e.preventDefault()};
-
+  root.onpointerup=finishPointer;root.onpointercancel=finishPointer;
+  root.oncontextmenu=e=>{if(touchDrag?.dragging)e.preventDefault()};
 }
 function performTeamDrop(type,src,slot,bb){
   let changed=false;
