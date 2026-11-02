@@ -1,0 +1,1190 @@
+[
+  {
+    "test": "group_persistence",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "reduced_group",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "custom_boo",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "cost_persistence",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "delete_cancel",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "duplicate_agent",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "same_image",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_group_confirm",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_agent",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_boo",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_weapon",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "native_drag",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "pointer_cancel",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "export_retry",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "normal_features",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "rules",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "export",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "group_limits",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "legacy_data",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "cost_totals",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "legal_touch_drag",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "invalid_drag",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "custom_delete",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "selected_team_reset",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_drag",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_cancel",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_same_image_selected",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_delete_title",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "named_proto",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "stored_string_conv",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_add",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_add_boo",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_swap",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_swap",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_invalid_drag",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "every_cost_combination",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "permanent_roundtrip",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "old_images_and_names",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "all_images",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "delete_agent_cancel",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "touch_tap",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "mobile_modal",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_add_remove_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_add_remove_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "history_branch",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "mixed_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_move_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_move_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_cancel",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_invalid",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "history_keyboard",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "history_reload_and_reset",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "history_display_toggles",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "history_limit",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "narrow_layout",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "empty_press_highlight",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "export_names_and_controls",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "touch_double_tap",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_history",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "font_resize_names",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_edit_rollback",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "partial_storage_rollback",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "large_export",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "editing_cancels_swap",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "production_upgrade_persistence",
+    "engine": "chromium",
+    "device": "desktop",
+    "result": "PASS"
+  },
+  {
+    "test": "group_persistence",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "reduced_group",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "custom_boo",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "cost_persistence",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "delete_cancel",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "duplicate_agent",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "same_image",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_group_confirm",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_agent",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_boo",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_weapon",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "native_drag",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "pointer_cancel",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "export_retry",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "normal_features",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "rules",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "export",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "group_limits",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "legacy_data",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "cost_totals",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "legal_touch_drag",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "invalid_drag",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "custom_delete",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "selected_team_reset",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_drag",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_cancel",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_same_image_selected",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_delete_title",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "named_proto",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "stored_string_conv",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_add",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_add_boo",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_swap",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_swap",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_invalid_drag",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "every_cost_combination",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "permanent_roundtrip",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "old_images_and_names",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "all_images",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "delete_agent_cancel",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "touch_tap",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "mobile_modal",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_add_remove_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_add_remove_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "history_branch",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "mixed_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_move_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_move_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_cancel",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_invalid",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "history_keyboard",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "history_reload_and_reset",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "history_display_toggles",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "history_limit",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "narrow_layout",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "empty_press_highlight",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "export_names_and_controls",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "touch_double_tap",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_history",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "font_resize_names",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_edit_rollback",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "partial_storage_rollback",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "large_export",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "editing_cancels_swap",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "production_upgrade_persistence",
+    "engine": "chromium",
+    "device": "android",
+    "result": "PASS"
+  },
+  {
+    "test": "group_persistence",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "reduced_group",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "custom_boo",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "cost_persistence",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "delete_cancel",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "duplicate_agent",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "same_image",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_group_confirm",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_agent",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_boo",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "literal_weapon",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "native_drag",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "pointer_cancel",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "export_retry",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "normal_features",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "rules",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "export",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "group_limits",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "legacy_data",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "cost_totals",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "legal_touch_drag",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "invalid_drag",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "custom_delete",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "selected_team_reset",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_drag",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_cancel",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_same_image_selected",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_delete_title",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "named_proto",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "stored_string_conv",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_add",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_add_boo",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_swap",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_swap",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "bangboo_invalid_drag",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "every_cost_combination",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "permanent_roundtrip",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "old_images_and_names",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "all_images",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "delete_agent_cancel",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "touch_tap",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "mobile_modal",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_add_remove_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_add_remove_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "history_branch",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "mixed_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "agent_move_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "boo_move_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_cancel",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "team_swap_invalid",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "history_keyboard",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "history_reload_and_reset",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "history_display_toggles",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "history_limit",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "narrow_layout",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "empty_press_highlight",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "export_names_and_controls",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "touch_double_tap",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_history",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "font_resize_names",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "quota_edit_rollback",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "partial_storage_rollback",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "large_export",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "editing_cancels_swap",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  },
+  {
+    "test": "production_upgrade_persistence",
+    "engine": "chromium",
+    "device": "iphone",
+    "result": "PASS"
+  }
+]

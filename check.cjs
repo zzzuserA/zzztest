@@ -2,7 +2,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const html=fs.readFileSync('index.html','utf8');
 const nodes=new Map(),storage=new Map();
 function node(id){if(!nodes.has(id))nodes.set(id,{value:['specialty','rarity','bangbooAttribute'].includes(id)?'all':'',dataset:{},style:{},classList:{add(){},remove(){},toggle(){},contains(){return false}},addEventListener(){},setAttribute(){},querySelector(){return node(id+'child')},querySelectorAll(){return []},click(){this.onclick?.({target:this})}});return nodes.get(id)}
-const ctx={console,setTimeout(){},clearTimeout(){},localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},document:{getElementById:node,querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){},documentElement:{clientWidth:1100,clientHeight:900}},window:{},URL,Blob,Map,Set};vm.createContext(ctx);
+const ctx={console,setTimeout(){},clearTimeout(){},localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},document:{getElementById:node,querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){},documentElement:{clientWidth:1100,clientHeight:900}},window:{addEventListener(){}},URL,Blob,Map,Set};vm.createContext(ctx);
 for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))if(match[1].trim())vm.runInContext(match[1],ctx);
 let count=0;function check(code){assert(vm.runInContext(code,ctx),code);count++}
 check('teams.length===9 && teams.every(t=>t.every(x=>x===null))');
@@ -26,3 +26,4 @@ check('(()=>{const before=showConv;$("convDisplayToggle").onclick();return showC
 check('(()=>{const before=showBangboo;$("bangbooToggle").onclick();return showBangboo!==before})()');
 check('(()=>{$("confirmReset").onclick();return teams.every(t=>t.every(x=>!x))&&bangboos.every(x=>!x)})()');
 console.log(`${count} logic checks passed (DOM stub; not a browser test)`);
+

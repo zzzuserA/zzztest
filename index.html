@@ -73,17 +73,29 @@ function updateMoveButtons(){
 function clearMoveHistory(){moveUndo=[];moveRedo=[];swapSource=null;updateMoveButtons()}
 function recordMove(before){
   const after=moveSnapshot();
-  if(before!==after){moveUndo.push({before,after});if(moveUndo.length>50)moveUndo.shift();moveRedo=[];updateMoveButtons()}
+  if(before!==after){swapSource=null;lastTeamTap=null;moveUndo.push({before,after});if(moveUndo.length>50)moveUndo.shift();moveRedo=[];updateMoveButtons()}
+}
+function persistHistoryChange(before){
+  const previous=JSON.parse(before);
+  moveSaving=true;
+  try{save();saveBangboos();return true}
+  catch(error){
+    teams=previous.teams;bangboos=previous.bangboos;active=previous.active;
+    // Restore both keys if one write succeeded before the other failed.
+    try{localStorage.setItem(KEY,JSON.stringify(teams))}catch(_){}
+    try{localStorage.setItem('zzz-team-bangboo-v1',JSON.stringify(bangboos))}catch(_){}
+    alert('編成を保存できませんでした。操作を取り消しました。ブラウザの保存容量・設定を確認してください。');
+    render();return false;
+  }finally{moveSaving=false}
 }
 function restoreMove(snapshot){
-  const state=JSON.parse(snapshot);
-  moveSaving=true;
+  const before=moveSnapshot(),state=JSON.parse(snapshot);
   teams=state.teams;bangboos=state.bangboos;active=state.active;
-  save();saveBangboos();moveSaving=false;
-  swapSource=null;lastTeamTap=null;render();updateMoveButtons();
+  if(!persistHistoryChange(before))return false;
+  swapSource=null;lastTeamTap=null;render();return true;
 }
-function undoMove(){const move=moveUndo.pop();if(!move)return;moveRedo.push(move);restoreMove(move.before);updateMoveButtons()}
-function redoMove(){const move=moveRedo.pop();if(!move)return;moveUndo.push(move);restoreMove(move.after);updateMoveButtons()}
+function undoMove(){const move=moveUndo[moveUndo.length-1];if(!move||!restoreMove(move.before))return;moveUndo.pop();moveRedo.push(move);updateMoveButtons()}
+function redoMove(){const move=moveRedo[moveRedo.length-1];if(!move||!restoreMove(move.after))return;moveRedo.pop();moveUndo.push(move);updateMoveButtons()}
 function swapTeams(a,b){
   if(a===b)return;
   const before=moveSnapshot();
@@ -96,7 +108,7 @@ function swapTeams(a,b){
     $('status').textContent='編成の重複ルールによりチームを交換できません。';return;
   }
   active=b;swapSource=null;lastTeamTap=null;
-  moveSaving=true;save();saveBangboos();moveSaving=false;
+  if(!persistHistoryChange(before))return;
   recordMove(before);render();
   $('status').textContent=`チーム${a+1}とチーム${b+1}を交換しました。`;
 }
@@ -161,18 +173,18 @@ function performTeamDrop(type,src,slot,bb){
     const [aTi,aSi]=src.split(',').map(Number),[bTi,bSi]=slot.dataset.slot.split(',').map(Number);
     if((aTi!==bTi||aSi!==bSi)&&teams[aTi]?.[aSi]){
       const source=teams[aTi][aSi],target=teams[bTi]?.[bSi]??null;teams[bTi][bSi]=source;teams[aTi][aSi]=target;
-      if(validAgentLayout()){moveSaving=true;save();moveSaving=false;active=bTi;changed=true;render()}else{teams[aTi][aSi]=source;teams[bTi][bSi]=target}
+      if(validAgentLayout()){active=bTi;if(!persistHistoryChange(before))return;changed=true;}else{teams[aTi][aSi]=source;teams[bTi][bSi]=target}
     }
   }else if(type==='bangboo'&&src!==undefined&&bb){
     const aTi=Number(src),bTi=Number(bb.dataset.bangbooSlot);
     if(aTi!==bTi&&bangboos[aTi]){
       const source=bangboos[aTi],target=bangboos[bTi]??null;bangboos[bTi]=source;bangboos[aTi]=target;
-      if(validBangbooLayout()){moveSaving=true;saveBangboos();moveSaving=false;active=bTi;changed=true;render()}else{bangboos[aTi]=source;bangboos[bTi]=target}
+      if(validBangbooLayout()){active=bTi;if(!persistHistoryChange(before))return;changed=true;}else{bangboos[aTi]=source;bangboos[bTi]=target}
     }
   }
-  if(changed){recordMove(before);const root=$('teams');root.dataset.justDragged='1';setTimeout(()=>root.dataset.justDragged='',450);window.__suppressTeamClick=true;setTimeout(()=>window.__suppressTeamClick=false,450)}
+  if(changed){recordMove(before);render();const root=$('teams');root.dataset.justDragged='1';setTimeout(()=>root.dataset.justDragged='',450);window.__suppressTeamClick=true;setTimeout(()=>window.__suppressTeamClick=false,450)}
 }
-function fitTeamUnitNames(root,agentMax=12,bangbooMax=10,minSize=7){
+function fitTeamUnitNames(root,agentMax=12,bangbooMax=10,minSize=4.5){
  if(!root)return;
  root.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
    const max=el.closest('.bangbooSlot')?bangbooMax:agentMax;
@@ -201,15 +213,16 @@ function renderTeams(){const groupHeaders=Array.from({length:getGroupCount()},(_
   }
   lastTeamTap={ti,time:now};active=ti;
   $('status').textContent=`チーム${active+1}を選択中。`;render();
-});$('teams').onclick=e=>{if(window.__suppressTeamClick){window.__suppressTeamClick=false;return;}if($('teams').dataset.justDragged){$('teams').dataset.justDragged='';return;}const slot=e.target.closest('[data-slot]');if(slot){swapSource=null;lastTeamTap=null;e.stopPropagation();const [ti,si]=slot.dataset.slot.split(',').map(Number);active=ti;if(teams[ti]&&teams[ti][si]){const before=moveSnapshot();teams[ti][si]=null;moveSaving=true;save();moveSaving=false;recordMove(before);selectionMode='agent';updateMode();render();renderChars()}else{selectionMode='agent';updateMode();renderTeams();renderChars()}return;}const bb=e.target.closest('[data-bangboo-slot]');if(bb){swapSource=null;lastTeamTap=null;e.stopPropagation();const ti=Number(bb.dataset.bangbooSlot);active=ti;if(bangboos[ti]){const before=moveSnapshot();bangboos[ti]=null;moveSaving=true;saveBangboos();moveSaving=false;recordMove(before);selectionMode='bangboo';updateMode();render();renderBangboos()}else{selectionMode='bangboo';updateMode();renderTeams();renderBangboos()}}};setupTeamDragDrop()}
+});$('teams').onclick=e=>{if(window.__suppressTeamClick){window.__suppressTeamClick=false;return;}if($('teams').dataset.justDragged){$('teams').dataset.justDragged='';return;}const slot=e.target.closest('[data-slot]');if(slot){swapSource=null;lastTeamTap=null;e.stopPropagation();const [ti,si]=slot.dataset.slot.split(',').map(Number);active=ti;if(teams[ti]&&teams[ti][si]){const before=moveSnapshot();teams[ti][si]=null;if(!persistHistoryChange(before))return;recordMove(before);selectionMode='agent';updateMode();render();renderChars()}else{selectionMode='agent';updateMode();renderTeams();renderChars()}return;}const bb=e.target.closest('[data-bangboo-slot]');if(bb){swapSource=null;lastTeamTap=null;e.stopPropagation();const ti=Number(bb.dataset.bangbooSlot);active=ti;if(bangboos[ti]){const before=moveSnapshot();bangboos[ti]=null;if(!persistHistoryChange(before))return;recordMove(before);selectionMode='bangboo';updateMode();render();renderBangboos()}else{selectionMode='bangboo';updateMode();renderTeams();renderBangboos()}}};setupTeamDragDrop()}
 function bangbooImg(b){const src=String(b[0]).startsWith('data:')?b[0]:`${BANGBOO_BASE}${encodeURIComponent(restoreBangboo(b)[0])}`;return `<img class="bangbooImage" src="${src}" alt="${escapeHTML(b[1])}" crossorigin="anonymous" loading="eager" onerror="this.style.display='none'">`}
-function add(i){const a=allAgents()[i];if(!canAdd(a)){const g=groupOf(active);$('status').textContent=(a[2]==='支援'||a[2]==='防護')?`${a[1]}は${groupName(g)}ですでに使用されています。別グループでは使用できます。`:`${a[1]}はすでに使用されています。`;return}const s=teams[active].findIndex(x=>x===null);if(s<0){$('status').textContent=`チーム${active+1}は満員です。`;return}const before=moveSnapshot();teams[active][s]=a;moveSaving=true;save();moveSaving=false;$('status').textContent=`${a[1]}をチーム${active+1}に追加しました。`;if(teams[active].every(Boolean)&&active<teams.length-1)active++;recordMove(before);render()}function fitSelectionNames(){
+function add(i){const a=allAgents()[i];if(!canAdd(a)){const g=groupOf(active);$('status').textContent=(a[2]==='支援'||a[2]==='防護')?`${a[1]}は${groupName(g)}ですでに使用されています。別グループでは使用できます。`:`${a[1]}はすでに使用されています。`;return}const s=teams[active].findIndex(x=>x===null);if(s<0){$('status').textContent=`チーム${active+1}は満員です。`;return}const before=moveSnapshot();teams[active][s]=a;if(!persistHistoryChange(before))return;$('status').textContent=`${a[1]}をチーム${active+1}に追加しました。`;if(teams[active].every(Boolean)&&active<teams.length-1)active++;recordMove(before);render()}function fitSelectionNames(){
  $('chars').querySelectorAll('.char strong').forEach(el=>{
+   el.style.fontSize='';
    let size=parseFloat(getComputedStyle(el).fontSize)||12;
    el.style.whiteSpace='nowrap';
    el.style.fontSize=size+'px';
-   while(size>7&&el.scrollWidth>el.clientWidth+.5){
-     size=Math.max(7,size-.5);
+   while(size>4.5&&el.scrollWidth>el.clientWidth+.5){
+     size=Math.max(4.5,size-.5);
      el.style.fontSize=size+'px';
    }
  });
@@ -263,7 +276,7 @@ $('chars').addEventListener('click',e=>{
     if(delb){e.preventDefault();e.stopPropagation();openDeleteBangboo(Number(delb.dataset.deleteCustomBangboo));return}
     const card=e.target.closest('[data-bangboo]');if(!card)return;
     const b=allBangboos()[Number(card.dataset.bangboo)];if(!b)return;if(!canAddBangboo(b)){$('status').textContent=`${b[1]}は${noOverlap?'すでに使用されています。':'このグループですでに使用されています。'}`;return;}
-    const before=moveSnapshot();bangboos[active]=b;moveSaving=true;saveBangboos();moveSaving=false;if(active<teams.length-1)active++;recordMove(before);render();return;
+    const before=moveSnapshot();bangboos[active]=b;if(!persistHistoryChange(before))return;if(active<teams.length-1)active++;recordMove(before);render();return;
   }
   const del=e.target.closest('[data-delete-custom]');
   if(del){e.preventDefault();e.stopPropagation();openDelete(Number(del.dataset.deleteCustom));return}
@@ -393,6 +406,7 @@ async function saveSelectedGroupImage(){
   try{
     const ready=await ensureHtml2Canvas();
     if(!ready){$('status').textContent='画像保存機能を読み込めませんでした。インターネット接続を確認してください。';return}
+    if(document.fonts)await document.fonts.ready;
     await waitForTeamImages(target);
     // Keep each team's displayed size while restoring the three-team export layout.
     const teamWidth=target.querySelector('.team')?.getBoundingClientRect().width||0;
@@ -481,8 +495,11 @@ async function saveSelectedGroupImage(){
           });
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             let size=parseFloat(el.style.fontSize);
-            while(size>5&&el.scrollWidth>el.clientWidth+.5){
-              size=Math.max(5,size-.5);
+            const style=doc.defaultView.getComputedStyle(el);
+            const available=el.clientWidth-(parseFloat(style.paddingLeft)||0)-(parseFloat(style.paddingRight)||0)-.25;
+            const range=doc.createRange();range.selectNodeContents(el);
+            while(size>3&&range.getBoundingClientRect().width>available){
+              size=Math.max(3,size-.25);
               el.style.setProperty('font-size',size+'px','important');
             }
           });
@@ -529,8 +546,13 @@ $('ruleToggle').onclick=()=>{try{if(noOverlap){noOverlap=false;saveRule();$('sta
 $('saveGroupImage').onclick=()=>saveSelectedGroupImage();
 document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable]'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redoMove():undoMove()}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redoMove()}});
 $('search').oninput=()=>renderChars();$('bangbooSearch').oninput=()=>renderBangboos();$('specialty').onchange=renderChars;$('rarity').onchange=renderChars;$('bangbooAttribute').onchange=renderBangboos;
+function refitUnitNames(){fitTeamUnitNames($('teams'));fitSelectionNames()}
+let nameFitTimer;
+window.addEventListener('resize',()=>{clearTimeout(nameFitTimer);nameFitTimer=setTimeout(refitUnitNames,80)});
+if(document.fonts){document.fonts.ready.then(refitUnitNames);document.fonts.addEventListener('loadingdone',refitUnitNames)}
 render();$('status').textContent='チーム1を選択中。キャラをクリックして編成してください。';
 document.getElementById('descriptionToggle').onclick=()=>{const d=document.getElementById('descriptionText'),b=document.getElementById('descriptionToggle');d.hidden=!d.hidden;b.textContent=d.hidden?'このサイトの使い方':'非表示'};document.getElementById('cancelReset').onclick=()=>{const m=document.getElementById('resetConfirmModal');m.classList.remove('show');m.setAttribute('aria-hidden','true')};
 document.getElementById('resetConfirmModal').onclick=e=>{if(e.target.id==='resetConfirmModal')document.getElementById('cancelReset').click()};
 document.getElementById('confirmReset').onclick=()=>{teams=teams.map(()=>[null,null,null]);bangboos=Array.from({length:teams.length},()=>null);save();saveBangboos();const m=document.getElementById('resetConfirmModal');m.classList.remove('show');m.setAttribute('aria-hidden','true');render();$('status').textContent='全グループを空にしました。'};
 </script></body></html>
+

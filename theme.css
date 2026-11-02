@@ -311,3 +311,4 @@ main > .teams .team.swap-source{
 @media(prefers-reduced-motion:reduce){
   main > .teams .team.swap-source{animation:none;border-color:#ffe058}
 }
+
