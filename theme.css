@@ -291,8 +291,8 @@ main > .teams .bangbooSlot.empty:active{
 
 
 /* Circular move controls and clear team-swap cue. */
-main > .teams .groupLabel.firstGroup{position:relative;padding-top:65px}
-main > .teams .moveActions{position:absolute;top:16px;left:var(--section-space);display:flex;gap:5px}
+main > .teams .groupLabel.firstGroup{position:relative;padding-top:53px}
+main > .teams .moveActions{position:absolute;top:4px;left:var(--section-space);display:flex;gap:6px}
 main > .teams .moveActions button{
   width:43px;height:43px;min-width:43px;min-height:43px;padding:3px;
   display:inline-flex;align-items:center;justify-content:center;line-height:1
