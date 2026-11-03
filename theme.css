@@ -291,8 +291,8 @@ main > .teams .bangbooSlot.empty:active{
 
 
 /* Circular move controls and clear team-swap cue. */
-main > .teams .groupLabel.firstGroup{position:relative;padding-top:53px}
-main > .teams .moveActions{position:absolute;top:4px;left:var(--section-space);display:flex;gap:6px}
+main > .teams .groupLabel.firstGroup{position:relative;padding-top:65px}
+main > .teams .moveActions{position:absolute;top:16px;left:var(--section-space);display:flex;gap:5px}
 main > .teams .moveActions button{
   width:43px;height:43px;min-width:43px;min-height:43px;padding:3px;
   display:inline-flex;align-items:center;justify-content:center;line-height:1
@@ -312,3 +312,8 @@ main > .teams .team.swap-source{
   main > .teams .team.swap-source{animation:none;border-color:#ffe058}
 }
 
+
+/* Keep constellation labels on one line in both the editor and image export. */
+.slot .meta2,.char .meta2{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap!important;overflow-wrap:normal;word-break:normal;flex-shrink:0}
+main > .chars .char .conv{width:100%;max-width:96px;min-height:38px;padding:7px 4px;font-size:12px;line-height:1.2;white-space:nowrap}
+main > .teams .bangbooSlot{border-left-width:2px}
