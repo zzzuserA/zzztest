@@ -94,8 +94,8 @@ function restoreMove(snapshot){
   if(!persistHistoryChange(before))return false;
   swapSource=null;lastTeamTap=null;render();return true;
 }
-function undoMove(){const move=moveUndo[moveUndo.length-1];if(!move||!restoreMove(move.before))return;moveUndo.pop();moveRedo.push(move);updateMoveButtons()}
-function redoMove(){const move=moveRedo[moveRedo.length-1];if(!move||!restoreMove(move.after))return;moveRedo.pop();moveUndo.push(move);updateMoveButtons()}
+function undoMove(){const move=moveUndo[moveUndo.length-1];if(!move)return;moveSaving=true;let restored;try{restored=restoreMove(move.before)}finally{moveSaving=false}if(!restored)return;moveUndo.pop();moveRedo.push(move);updateMoveButtons()}
+function redoMove(){const move=moveRedo[moveRedo.length-1];if(!move)return;moveSaving=true;let restored;try{restored=restoreMove(move.after)}finally{moveSaving=false}if(!restored)return;moveRedo.pop();moveUndo.push(move);updateMoveButtons()}
 function swapTeams(a,b){
   if(a===b)return;
   const before=moveSnapshot();
