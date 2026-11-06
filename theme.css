@@ -10,7 +10,7 @@ main{max-width:1180px}
 .headerDecor h1{font-family:inherit;font-size:clamp(21px,2.6vw,30px);font-weight:900;font-style:normal;letter-spacing:.035em;line-height:1.65;color:#080808;-webkit-text-fill-color:#080808;-webkit-text-stroke:0;text-shadow:-1px -1px 0 #fff,0 -1px 0 #fff,1px -1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff,-1px 1px 0 #fff,0 1px 0 #fff,1px 1px 0 #fff;overflow-wrap:anywhere}
 h1::after{display:none}
 .descriptionToggle{color:var(--text);text-shadow:none}
-.toolbar{gap:8px;padding:12px;background:#0a0a0a;border:3px solid #383838;border-radius:24px}
+.toolbar{gap:8px;padding:10px;background:#0a0a0a;border:3px solid #383838;border-radius:24px}
 .toolbar button{font-size:13px}
 .team{background:#202020;border:2px solid #414141;border-radius:20px}
 .team.active{border-color:var(--accent);box-shadow:none}
@@ -32,7 +32,7 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
 .allCost{font-size:15px;color:var(--accent)}
 .modalbox{border:3px solid #414141;border-radius:24px;background:#171717}
 .modalbox h2{font-weight:900}
-@media(max-width:560px){.headerDecor{padding:16px}.headerDecor h1{font-size:22px}.toolbar{padding:9px}.toolbar button{font-size:12px;padding:8px 10px}.groupLabel{padding:8px 10px}.groupCost,.allCost{white-space:normal}.filters input[type=search],.bangbooControls .filters input[type=search]{min-width:0;width:100%;flex:1 1 100%}.filters select{min-width:0;max-width:100%}.formgrid input,.formgrid select{min-width:0}.descriptionToggle{margin-left:0}}
+@media(max-width:560px){.headerDecor{padding:10px}.headerDecor h1{font-size:22px}.toolbar{padding:9px}.toolbar button{font-size:12px;padding:8px 10px}.groupLabel{padding:8px 10px}.groupCost,.allCost{white-space:normal}.filters input[type=search],.bangbooControls .filters input[type=search]{min-width:0;width:100%;flex:1 1 100%}.filters select{min-width:0;max-width:100%}.formgrid input,.formgrid select{min-width:0}.descriptionToggle{margin-left:0}}
 
 /* Restore only the graphic title area. */
 .headerDecor{position:relative;isolation:isolate;padding:56px 30px 30px;border:3px solid #555;border-radius:30px 30px 10px 30px;background:linear-gradient(115deg,#090909 0 65%,#252525 65% 82%,#101010 82%);box-shadow:7px 7px 0 #050505,inset 0 0 0 5px #151515;border-bottom:3px solid #555}
@@ -40,9 +40,9 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
 .headerDecor::after{content:'';position:absolute;right:24px;bottom:5px;width:1.8em;height:1em;font-size:100px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20210%20100%22%3E%3Cpath%20fill%3D%22%23fff%22%20fill-opacity%3D%22.0392156863%22%20d%3D%22M0%2015h70v16l-47%2038h47v16h-70V69l47-38H0Z%20M70%2015h70v16l-47%2038h47v16h-70V69l47-38H70Z%20M140%2015h70v16l-47%2038h47v16h-70V69l47-38H140Z%22%2F%3E%3C%2Fsvg%3E") center/100% 100% no-repeat;z-index:-1;pointer-events:none;transform:skew(-12deg)}
 .headerDecor h1{display:block;width:fit-content;max-width:100%;font-size:clamp(23px,3.25vw,38px);line-height:1.5;margin:0 0 18px;padding:0 0 0 17px;border-left:7px solid var(--accent);text-shadow:-1px -1px 0 #fff,0 -1px 0 #fff,1px -1px 0 #fff,-1px 0 0 #fff,1px 0 0 #fff,-1px 1px 0 #fff,0 1px 0 #fff,1px 1px 0 #fff,3px 4px 0 #000}
 .descriptionToggle{margin:0;background:#222;border-color:#606060;padding:7px 18px;box-shadow:3px 3px 0 #000}
-.descriptionText{background:#101010;border-left:3px solid var(--accent);padding:14px 18px;margin-top:16px;border-radius:0 14px 14px 0}
+.descriptionText{background:#101010;border-left:3px solid var(--accent);padding:14px 18px;margin-top:10px;border-radius:0 14px 14px 0}
 
-@media(max-width:560px){.headerDecor{padding:20px 17px 22px;border-radius:22px 22px 8px 22px}.headerDecor::before{position:static;display:table;max-width:100%;margin:0 0 16px;font-size:10px;line-height:1.6;letter-spacing:.05em;padding:5px 8px;transform:none;overflow-wrap:anywhere}.headerDecor::after{font-size:75px;right:15px}.headerDecor h1{font-size:24px;padding-left:11px;border-left-width:5px;letter-spacing:.025em}.descriptionText{padding:12px}}
+@media(max-width:560px){.headerDecor{padding:20px 17px 22px;border-radius:22px 22px 8px 22px}.headerDecor::before{position:static;display:table;max-width:100%;margin:0 0 10px;font-size:10px;line-height:1.6;letter-spacing:.05em;padding:5px 8px;transform:none;overflow-wrap:anywhere}.headerDecor::after{font-size:75px;right:15px}.headerDecor h1{font-size:24px;padding-left:11px;border-left-width:5px;letter-spacing:.025em}.descriptionText{padding:10px}}
 
 /* Title-frame corrections: remove right-side graphics; symmetric corners on every device */
 .headerDecor{
@@ -94,29 +94,29 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
   color:#f7f7f2;box-shadow:3px 3px 0 #000;
 }
 .headerDecor .descriptionText{
-  position:relative;z-index:1;margin-top:16px;padding:14px 18px;
+  position:relative;z-index:1;margin-top:10px;padding:14px 18px;
   background:rgba(10,10,10,.92);border-left:3px solid #f0eb00;
   border-radius:0 14px 14px 0;
   color:#bcbcbc;font-size:14px;line-height:1.7;
 }
 @media(max-width:560px){
-  .headerDecor{padding:20px 16px 20px;border-radius:22px}
+  .headerDecor{padding:20px 10px 20px;border-radius:22px}
   .headerDecor::before{
     position:absolute;display:block;
-    top:16px;left:16px;right:auto;bottom:auto;
-    width:auto;height:auto;max-width:calc(100% - 32px);
+    top:10px;left:10px;right:auto;bottom:auto;
+    width:auto;height:auto;max-width:calc(100% - 20px);
     margin:0;padding:7px 20px 7px 14px;
     font-size:10px;letter-spacing:.08em;line-height:1.4;
     transform:none;
   }
   .headerDecor::after{content:none;display:none}
   .headerDecor h1{margin:44px 0 20px;padding-left:11px;border-left-width:5px;font-size:24px;line-height:1.4}
-  .headerDecor .descriptionText{padding:12px 14px}
+  .headerDecor .descriptionText{padding:10px 14px}
 }
 
-/* Unified 16px spacing below title — all device widths.
+/* Unified 10px spacing below title — all device widths.
    Zero margins prevent doubled gaps; compact controls retain fit-safe padding. */
-:root{--section-space:16px}
+:root{--section-space:10px}
 .headerDecor{margin-bottom:var(--section-space)}
 main > .toolbar{
   gap:var(--section-space);
@@ -153,16 +153,14 @@ main > .agentControls.hide,
 main > .bangbooControls:not(.show){display:none}
 main > .count{margin:0 0 var(--section-space)}
 main > .count:empty{margin:0}
-main > .chars{
-  gap:var(--section-space);
-}
+main > .chars{gap:3px}
 main > .status{margin-top:var(--section-space)}
 /* Do not enlarge fixed-size character images, drag targets, or modal controls. */
 @media(max-width:560px){
   main > .toolbar{gap:var(--section-space);padding:var(--section-space)}
   main > .teams{gap:var(--section-space)}
   main > .teams .slots{gap:var(--section-space)}
-  main > .chars{gap:var(--section-space)}
+  main > .chars{gap:3px}
 }
 
 /* Toolbar button spacing: 10px on all devices; all other spacing unchanged. */
@@ -195,6 +193,7 @@ main > .teams .bangbooSlot{
   width:70px;
   height:70px;
   min-height:70px;
+  border:2px solid var(--line);
 }
 main > .teams .slot.empty,
 main > .teams .bangbooSlot.empty{
@@ -291,13 +290,17 @@ main > .teams .bangbooSlot.empty:active{
 
 
 /* Circular move controls and clear team-swap cue. */
-main > .teams .groupLabel.firstGroup{position:relative;padding-top:53px}
-main > .teams .moveActions{position:absolute;top:4px;left:var(--section-space);display:flex;gap:6px}
+main > .teams .groupLabel.firstGroup{position:relative;margin-top:43px;padding-top:var(--section-space)}
+main > .teams .moveActions{position:absolute;top:-43px;left:var(--section-space);display:flex;gap:var(--section-space)}
 main > .teams .moveActions button{
-  width:43px;height:43px;min-width:43px;min-height:43px;padding:3px;
-  display:inline-flex;align-items:center;justify-content:center;line-height:1
+  width:53px;height:33px;min-width:53px;min-height:33px;padding:0;
+  display:inline-flex;align-items:center;justify-content:center;line-height:1;
+  background:transparent;color:#d9371d;border:0;border-radius:0;box-shadow:none;
 }
-main > .teams .moveActions svg{display:block;width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:6.5;stroke-linecap:round;stroke-linejoin:round}
+main > .teams .moveActions svg{display:block;width:70px;height:48px;min-width:70px;flex-shrink:0;overflow:visible;fill:none;stroke:currentColor}
+main > .teams .moveActions .arrowOutline{stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+main > .teams .moveActions .arrowGlyph{stroke-width:10;stroke-linecap:butt;stroke-linejoin:round}
+main > .teams .moveActions .arrowHead{fill:currentColor;stroke:none}
 main > .teams #redoMove svg{transform:scaleX(-1)}
 main > .teams .moveActions button:disabled{opacity:.4;cursor:default}
 @keyframes teamSwapPulse{
@@ -306,14 +309,46 @@ main > .teams .moveActions button:disabled{opacity:.4;cursor:default}
 }
 main > .teams .team.swap-source{
   outline:none;box-shadow:none;
-  animation:teamSwapPulse .65s steps(1,end) infinite
+  animation:teamSwapPulse .9s steps(1,end) infinite
 }
 @media(prefers-reduced-motion:reduce){
-  main > .teams .team.swap-source{animation:none;border-color:#ffe058}
+  main > .teams .team.swap-source{animation:teamSwapPulse 1.4s steps(1,end) infinite}
 }
 
 
-/* Keep constellation labels on one line in both the editor and image export. */
+/* A larger on-screen preview; export dimensions stay unchanged. */
+#groupImageModal{padding:6px}
+#groupImageModal .modalbox{
+  width:min(1280px,100%);
+  max-width:1280px;
+  max-height:calc(100vh - 12px);
+  max-height:calc(100dvh - 12px);
+  overflow:auto;
+  padding:10px;
+}
+#groupImagePreview{height:auto;max-height:none}
+#groupImageModal .modalActions{flex-wrap:wrap}
+
+/* Easier-to-tap constellation settings without widening character cards. */
+main > .chars .char .conv{
+  width:100%;
+  max-width:96px;
+  min-height:38px;
+  padding:7px 4px;
+  font-size:12px;
+  line-height:1.2;
+  white-space:nowrap;
+}
+
+/* Tutorial uses the same header buttons and opens only on request. */
+.headerActions{position:relative;z-index:1;display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.headerDecor .headerActions .descriptionToggle{display:inline-flex;align-items:center;justify-content:center;margin:0}
+#tutorialVideoModal .tutorialVideoBox{width:min(1100px,100%);max-width:1100px}
+#tutorialVideo{display:block;width:100%;max-height:72vh;max-height:72dvh;background:#000;border-radius:8px;object-fit:contain}
+@media(max-width:560px){.headerActions{gap:6px}.headerDecor .headerActions .descriptionToggle{font-size:11px;padding:7px 10px}}
+
+
+/* Keep long constellation and weapon labels inside one line. */
 .slot .meta2,.char .meta2{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap!important;overflow-wrap:normal;word-break:normal;flex-shrink:0}
-main > .chars .char .conv{width:100%;max-width:96px;min-height:38px;padding:7px 4px;font-size:12px;line-height:1.2;white-space:nowrap}
-main > .teams .bangbooSlot{border-left-width:2px}
+main > .teams .slot .meta2{font-size:14px!important;font-weight:900}
+main > .chars .char .meta2{font-size:13px!important;font-weight:900}
