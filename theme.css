@@ -352,3 +352,9 @@ main > .chars .char .conv{
 .slot .meta2,.char .meta2{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap!important;overflow-wrap:normal;word-break:normal;flex-shrink:0}
 main > .teams .slot .meta2{font-size:14px!important;font-weight:900}
 main > .chars .char .meta2{font-size:13px!important;font-weight:900}
+
+/* Shared navigation button: equal bars and an unclipped dropdown. */
+.headerDecor{overflow:visible}
+.headerDecor::before{max-width:calc(100% - 95px)}
+.hpMenu summary span{display:block;flex:none;width:24px;min-width:24px;height:3px;min-height:3px;border-radius:5px;background:#fff}
+@media(max-width:560px){.headerDecor::before{max-width:calc(100% - 85px)}.hpMenu{right:10px;top:10px}}
