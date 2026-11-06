@@ -623,8 +623,9 @@ function calculateHpEstimate(){
  const before=Number($('hpScoreBefore').value),after=Number($('hpScoreAfter').value),damage=Number($('hpDamage').value);
  const error=$('hpEstimatorError'),result=$('hpEstimatorResult');
  error.hidden=true;result.hidden=true;
- if(!$('hpScoreBefore').value.trim()||!$('hpScoreAfter').value.trim()||!$('hpDamage').value.trim()||!Number.isFinite(before)||!Number.isFinite(after)||!Number.isFinite(damage)||before<0||after<=before||damage<=0){
-  error.textContent='ダメージ前後のスコアと正のダメージ量を入力してください。後のスコアは前のスコアより大きい必要があります。';error.hidden=false;return;
+ const maxScore=hpScoreCurves[mode].reduce((sum,row)=>sum+row[0],0);
+ if(!$('hpScoreBefore').value.trim()||!$('hpScoreAfter').value.trim()||!$('hpDamage').value.trim()||!Number.isFinite(before)||!Number.isFinite(after)||!Number.isFinite(damage)||before<0||after<=before||damage<=0||!Number.isInteger(before)||!Number.isInteger(after)||before>maxScore||after>maxScore){
+  error.textContent='スコアは0以上の整数で、対応表の上限（'+maxScore.toLocaleString('ja-JP')+'点）以内に入力してください。ダメージ後のスコアは前より大きく、与ダメージは正の数で入力してください。';error.hidden=false;return;
  }
  const curveBefore=hpCurvePosition(mode,before),curveAfter=hpCurvePosition(mode,after);
  const hpFraction=curveAfter.fraction-curveBefore.fraction;
