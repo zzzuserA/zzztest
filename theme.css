@@ -358,3 +358,6 @@ main > .chars .char .meta2{font-size:13px!important;font-weight:900}
 .headerDecor::before{max-width:calc(100% - 95px)}
 .hpMenu summary span{display:block;flex:none;width:24px;min-width:24px;height:3px;min-height:3px;border-radius:5px;background:#fff}
 @media(max-width:560px){.headerDecor::before{max-width:calc(100% - 85px)}.hpMenu{right:10px;top:10px}}
+
+/* Smooth outlined title at any zoom level. */
+.headerDecor h1{color:#080808;-webkit-text-fill-color:#080808;-webkit-text-stroke:2px #fff;paint-order:stroke fill;text-shadow:3px 4px 0 #000}
