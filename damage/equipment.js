@@ -1,6 +1,6 @@
-import {weapons,discStats,discSets,enemyProfiles} from './equipment-data.js';
+import {weapons,discStats,discSets} from './equipment-data.js';
 
-export {weapons,discStats,discSets,enemyProfiles};
+export {weapons,discStats,discSets};
 export const attributes=['物理','炎','氷','電気','エーテル','風','流明'];
 export const weaponLevels=[0,10,20,30,40,50,60];
 export const setByName=new Map(discSets.map(item=>[item[0],item]));
