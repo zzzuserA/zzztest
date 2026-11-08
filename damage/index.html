@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ゼンレスゾーンゼロの3人編成とローテーションの推定ダメージを比較する非公式ツール">
+<meta name="theme-color" content="#101212">
+<title>ゼンゼロ ダメージシミュレーター</title>
+<link rel="stylesheet" href="./style.css">
+<script type="module" src="./app.js"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-inner">
+  <div class="brand"><span class="mark" aria-hidden="true">Z</span><span>ZZZ <b>/ DAMAGE LAB</b></span></div>
+  <div class="top-actions"><span class="tag">非公式ファンツール</span><details class="hpMenu"><summary aria-label="メニューを開く"><svg class="menuIcon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 6H26M6 16H26M6 26H26"/></svg></summary><nav aria-label="関連ページ"><a href="../">チームビルダー</a><a href="../hp/">危局HP</a><a href="../damage/" aria-current="page">ダメージシミュレーター</a></nav></details></div>
+</div></header>
+<main class="wrap">
+  <section class="intro">
+    <div class="eyebrow"><span></span> ZENLESS ZONE ZERO</div>
+    <h1>ダメージ<span>シミュレーター</span></h1>
+    <p>3人のビルドと行動を組み合わせ、パーティの推定火力を比較。</p>
+  </section>
+  <div class="toolbar" aria-label="編成比較">
+    <div class="switch" role="group" aria-label="編集する編成">
+      <button id="select-a" data-side="0" aria-pressed="true">編成 A</button>
+      <button id="select-b" data-side="1" aria-pressed="false">編成 B</button>
+    </div>
+    <div class="tools"><button id="copy" class="quiet">A を B にコピー</button>
+      <button type="button" id="new-lineup" class="quiet">新規編成</button>
+    </div>
+  </div>
+  <div class="board">
+    <div class="work">
+      <section class="panel" aria-labelledby="party-title">
+        <div class="section-head"><div><div class="label">01 / PARTY SETUP</div><h2 id="party-title">パーティ設定</h2></div><span class="tag">3 AGENTS</span></div>
+        <div id="roster" class="roster"></div>
+        <div id="agent-controls"></div>
+        <details id="build"><summary>選択中のエージェントのビルドを編集</summary><div id="build-content"></div></details>
+        <details id="equipment"><summary>選択中のエージェントの音動機・ディスク</summary><div id="equipment-content"></div></details>
+        <details id="target"><summary>敵・戦闘時間を編集</summary><div id="enemy-content"></div></details>
+      </section>
+      <section class="panel" aria-labelledby="rotation-title">
+        <div class="section-head"><div><div class="label">02 / ROTATION</div><h2 id="rotation-title">ローテーション</h2></div></div>
+        <div class="sequence-toolbar"><div id="rotation-slots" aria-label="行動を追加するエージェント"></div><div class="sequence-buttons"><button class="add" id="rotation-add-skill">＋ 技を追加</button><button class="quiet" id="add">＋ 手入力</button></div></div>
+        <div id="rotation-board"></div>
+        <p class="hint">行動を開くと発動時刻、回数、時限効果を編集できます。同じ秒の行動はカードの上から順に処理します。</p>
+        <div id="rotation"></div>
+        <details class="timeline"><summary>時刻別ダメージ・適用効果の内訳</summary><div id="timeline-output"></div></details>
+      </section>
+    </div>
+    <aside class="panel result" aria-labelledby="result-title">
+      <div class="label">LIVE / DAMAGE REPORT</div>
+      <h2 id="result-title">計算結果</h2>
+      <div class="total"><span>パーティ総ダメージ</span><strong id="total">—</strong><small>DMG / 入力した行動の合計</small></div>
+      <div class="metrics"><div><span>平均 DPS</span><strong id="dps">—</strong></div><div><span>設定時間</span><strong id="seconds">—</strong></div></div>
+      <h3>エージェント別</h3><div id="contributions"></div>
+      <div class="comparison"><h3>編成 A / B 比較</h3><div id="comparison"></div></div>
+      <p class="hint">各行動の発動時刻に有効な補正から推定値を計算します。</p>
+    </aside>
+  </div>
+  <details class="panel notes"><summary>計算式と参照データ</summary>
+    <div class="notes-body">
+      <p>収録範囲はVer.3.3前半（2026年11月8日時点）です。技の倍率はキャラ別の参照リンクから確認できます。欠けているレベルは「資料なし」と表示します。心象映画はM3・M5のスキルレベル加算を反映します。自動適用の対象は、条件を判定できる一部のキャラ・音動機・ディスク効果です。ほかの効果も行動ごとに追加できます。判定に必要な入力条件は「時限効果」に表示します。</p>
+      <p>Lv.60を前提とします。通常は戦闘時攻撃力 × スキル倍率 × 与ダメージ補正 × 会心期待値 × 防御補正 × 耐性補正 × ブレイク補正。状態異常では会心の代わりに異常マスタリー・レベル係数・異常ダメージアップを使います。透徹では攻撃力を透徹力に置き換え、防御係数を1とします。鋭撃では自身の防御力と暴傷を使います。</p>
+      <p>混沌・特殊効果・ボンプなどのダメージは、別途求めた値を「手入力ダメージ」で加算できます。</p>
+      <p>異常掌握の表示はディスクとバフを反映します。MABは入力した蓄積Ptから次の異常発動ラインを試算します。状態異常の発動はローテーションに行動として追加できます。状態異常ダメージの蓄積中の補正は、その行動時点の値で近似します。A / Bの設定はこのブラウザに保存されます。</p>
+      <p>ゲーム内画像の参照元は日本語Wikiのエージェント・音動機・ディスクの各ページです。 <a href="https://wikiwiki.jp/zenless/画像/エージェント" target="_blank" rel="noreferrer">エージェント画像 ↗</a></p>
+      <p><a href="https://wikiwiki.jp/zenless/ダメージ計算式" target="_blank" rel="noreferrer">ゼンレスゾーンゼロ Wiki* のダメージ計算式 ↗</a> <a href="https://wiki.hoyolab.com/pc/zzz/entry/85" target="_blank" rel="noreferrer">HoYoWikiの音動機効果 ↗</a> <a href="https://wikiwiki.jp/zenless/音動機" target="_blank" rel="noreferrer">音動機 ↗</a> <a href="https://wikiwiki.jp/zenless/ドライバディスク" target="_blank" rel="noreferrer">ドライバディスク ↗</a> <a href="https://wikiwiki.jp/zenless/状態異常" target="_blank" rel="noreferrer">状態異常・蓄積耐性 ↗</a> <a href="https://wikiwiki.jp/zenless/危局強襲戦" target="_blank" rel="noreferrer">危局強襲戦の敵 ↗</a> <a href="https://zenless-zone-zero.fandom.com/wiki/Basic_Attack%3A_Thunderbolt" target="_blank" rel="noreferrer">Fandomの倍率照合例 ↗</a></p>
+    </div>
+  </details>
+  <dialog id="picker-dialog" aria-labelledby="picker-title">
+    <header class="section-head"><div><div class="label">EQUIPMENT LIBRARY</div><h2 id="picker-title">画像から選ぶ</h2></div><button type="button" class="close" id="picker-close" aria-label="画像選択を閉じる">×</button></header>
+    <div class="picker-toolbar"><input type="search" id="picker-search" placeholder="名前や特性で検索" aria-label="名前や特性で検索"><button class="quiet" id="picker-clear" type="button">選択を外す</button></div>
+    <p class="hint" id="picker-count" role="status"></p><div id="picker-grid" class="picker-grid"></div>
+  </dialog>
+  <dialog id="skill-dialog" aria-labelledby="skill-dialog-title">
+    <header class="section-head"><div><div class="label">SKILL DATA</div><h2 id="skill-dialog-title">スキルを選ぶ</h2></div><button type="button" class="close" id="close-skills" aria-label="スキル一覧を閉じる">×</button></header>
+    <div id="skill-body"></div>
+  </dialog>
+  <dialog id="effects-dialog" aria-labelledby="effect-title">
+    <header class="section-head"><div><div class="label">TIMED EFFECTS</div><h2 id="effect-title">時限効果</h2></div><button type="button" class="close" id="close-effects" aria-label="時限効果を閉じる">×</button></header>
+    <div id="effect-body"></div>
+  </dialog>
+  <footer><span>ZZZ / DAMAGE LAB</span><span>ゼンレスゾーンゼロ 非公式シミュレーター · ゲーム画像 © COGNOSPHERE</span></footer>
+</main>
+<div id="status" class="sr" role="status"></div>
+</body>
+</html>
