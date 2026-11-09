@@ -83,12 +83,13 @@ export function reactionRows(agents,slot,source){
   if(base[2]!=null){
     const yanagiBonus=info.id==='1221'?rate(actor,s=>s.group==='core'&&s.label.includes('「混沌」効果'))??0:0;
     for(const [suffix,label,value] of [['min','基本倍率',base[2]],['max','残存分が最大',base[3]]]){
-      add('disorder-'+suffix,'混沌（'+label+'）',value+yanagiBonus);
+      const disorder={fixed:base[2],remaining:value-base[2],bonus:yanagiBonus};
+      add('disorder-'+suffix,'混沌（'+label+'）',value+yanagiBonus,source,{disorder});
       if(info.id==='1221'){
         for(const [group,skillName] of [['special','強化特殊'],['chain','終結']]){
           const scale=rate(actor,s=>s.group===group&&s.label.includes('追加ダメージ倍率'));
           add('polar-'+group+'-'+suffix,'極性混沌・'+skillName+'（'+label+'）',scale===null?null:value+yanagiBonus,source,
-            {polarScale:scale,actorMastery:true});
+            {polarScale:scale,actorMastery:true,disorder});
         }
       }
     }

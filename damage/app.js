@@ -1,4 +1,4 @@
-import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,calculate,skillDamage,reactionDamage} from './engine.js';
+import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,calculate,skillDamage,reactionDamage,damageDetails} from './engine.js';
 
 import {catalog,skillGroups,findAgent,effectiveLevel,attackRate,levelLabel,skillName} from './catalog.js';
 
@@ -13,6 +13,7 @@ const $ = id => document.getElementById(id);
 const storageKey = 'zzz-damage-lab-v1';
 const number = new Intl.NumberFormat('ja-JP',{maximumFractionDigits:0});
 const decimal = new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2});
+const detailNumber = new Intl.NumberFormat('ja-JP',{maximumFractionDigits:6});
 const fmt = n => number.format(n);
 const dec = n => decimal.format(n);
 const escape = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -151,6 +152,26 @@ function damageColumns(values){
   return values.map((value,i)=>`<span class="skill-estimate"><small>${i?'ブレイク中':'通常時'}</small><b>${value===null?'—':fmt(value)}</b></span>`).join('');
 }
 const selectedVoidflares=()=>voidflareChoices.filter(source=>source!==-1);
+const specialRows=()=>skillGroup==='luminize'?luminizeRows(current().agents,slot,selectedVoidflares()):reactionRows(current().agents,slot,reactionSource);
+const detailButton=(id,key,title)=>`<button type="button" class="quiet detail-toggle" data-damage-detail="${escape(key)}" aria-controls="${escape(id)}" aria-expanded="false" aria-label="${escape(title)}の計算詳細">計算詳細</button>`;
+const detailPanel=id=>`<section class="damage-detail" id="${escape(id)}" aria-label="計算詳細" hidden></section>`;
+
+function renderDamageDetails(results){
+  if(!results.length)return '<p class="hint">現在の設定で計算できる倍率や参照データがありません。</p>';
+  const term=value=>Array.isArray(value)?`${escape(value[0])}（${detailNumber.format(value[1])}）`:
+    typeof value==='number'?detailNumber.format(value):escape(value);
+  return `<p class="hint">倍率は小数で表示します（450% = 4.5）。途中の表示値は最大6桁まで丸めています。</p>
+    ${results.map(({label,total,steps})=>`<section class="damage-detail-phase"><h4>${label} · ${fmt(total)}</h4>
+      <ol>${steps.map(({label,value,terms,operator=''})=>`<li><strong>${escape(label)}</strong>
+        <span>${terms.map(term).join(operator)} = ${detailNumber.format(value)}</span></li>`).join('')}</ol></section>`).join('')}`;
+}
+
+function toggleDamageDetails(button,getDetails){
+  const panel=$(button.getAttribute('aria-controls'));
+  if(panel.hidden)panel.innerHTML=renderDamageDetails(getDetails());
+  panel.hidden=!panel.hidden;
+  button.setAttribute('aria-expanded',!panel.hidden);
+}
 
 function showSkills() {
   const a=current().agents[slot];
@@ -167,7 +188,7 @@ function showSkills() {
   const specialDamage=reaction||luminize;
   const agents=current().agents;
   const active=specialDamage?0:effectiveLevel(a,rows[0]);
-  const reactionOptions=luminize?luminizeRows(agents,slot,selectedVoidflares()):reaction?reactionRows(agents,slot,reactionSource):[];
+  const reactionOptions=specialDamage?specialRows():[];
   const voidflareSources=luminize?agents.flatMap((member,i)=>
     voidflareAttribute(agents,slot,i)?[[String(i),member.name]]:[]):[];
   const max=skillGroup==='core'?7:16;
@@ -190,14 +211,21 @@ function showSkills() {
     ${luminize?`<div class="field-grid">${voidflareChoices.map((choice,i)=>`<label class="field"><span>虚光 ${i+1} の付与元</span>
       <select id="voidflare-${i}" data-voidflare="${i}">${option('-1','なし',String(choice))}${voidflareSources.map(([value,name])=>option(value,name,String(choice))).join('')}</select></label>`).join('')}</div>
       <p class="hint">${voidflareSources.length?'昇華を起こした味方を虚光ごとに選択してください。同じ味方を複数回選べます。':'編成に昇華を起こす味方を追加してください。'} 各キャラの現在の設定値で試算します。凸で得る特殊「虚光」は対象外です。</p>`:''}
-    <div class="skill-list">${specialDamage?reactionOptions.map(row=>`<div class="skill-row"><div><strong>${escape(row.name)}</strong><small>${luminize?`Lv. ${row.level} · スキル倍率 ${dec(row.baseRate)}%`:`${escape(agents[row.source].name)}を参照${row.id.startsWith('disorder-')?' · '+dec(row.amount)+'%':''}`}</small></div>${damageColumns(reactionDamage(current(),slot,row))}<button type="button" class="add" data-reaction="${row.id}" aria-label="${escape(row.name)}を追加" ${row.amount==null?'disabled':''}>追加</button></div>`).join('')||'<p class="hint">状態異常の下地になるキャラを選んでください。</p>':rows.map(row=>{
+    <div class="skill-list">${specialDamage?reactionOptions.map(row=>{
+      const id='detail-skill-'+row.id;
+      return `<div class="skill-row"><div><strong>${escape(row.name)}</strong><small>${luminize?`Lv. ${row.level} · スキル倍率 ${dec(row.baseRate)}%`:`${escape(agents[row.source].name)}を参照${row.id.startsWith('disorder-')?' · '+dec(row.amount)+'%':''}`}</small>
+        ${row.amount==null?'':detailButton(id,row.id,row.name)}</div>
+        ${damageColumns(reactionDamage(current(),slot,row))}<button type="button" class="add" data-reaction="${row.id}" aria-label="${escape(row.name)}を追加" ${row.amount==null?'disabled':''}>追加</button>${detailPanel(id)}</div>`;
+    }).join('')||'<p class="hint">状態異常の下地になるキャラを選んでください。</p>':rows.map(row=>{
       const value=row.rates[selected-1];
       const title=skillName(row);
       const direct=directSkill(entry,row);
       const detail=(value==null?'倍率資料なし':dec(value)+'%')+(direct?'':' · 補正値');
-      return `<div class="skill-row"><div><strong>${escape(title)}</strong><small>${detail}</small></div>
+      const id='detail-skill-'+row.id;
+      return `<div class="skill-row"><div><strong>${escape(title)}</strong><small>${detail}</small>
+        ${value==null||!direct?'':detailButton(id,row.id,title)}</div>
         ${damageColumns(direct?skillDamage(current(),slot,row,selected):[null,null])}
-        <button type="button" class="add" data-skill="${row.id}" aria-label="${escape(title)}を追加" ${value==null||!direct?'disabled':''}>追加</button></div>`;
+        <button type="button" class="add" data-skill="${row.id}" aria-label="${escape(title)}を追加" ${value==null||!direct?'disabled':''}>追加</button>${detailPanel(id)}</div>`;
     }).join('')}</div>
     <div class="skill-foot"><p class="hint">追加した技は編成の「スキル・ダメージ」に入ります。</p>
       <p class="hint"><a href="${escape(entry.sources.wiki)}" target="_blank" rel="noreferrer">日本語Wiki ↗</a>${entry.sources.fandom?` · <a href="${escape(entry.sources.fandom)}" target="_blank" rel="noreferrer">Fandom ↗</a>`:''}</p></div>`;
@@ -328,11 +356,13 @@ function showRotation() {
         ${a.catalog&&catalogRate?.amount==null?`<button type="button" class="quiet" data-use-manual="${i}">倍率を手入力</button>`:''}
       </div>
         <div class="rot-actions">
+          ${detailButton('detail-action-'+i,String(i),a.name||'行動 '+(i+1))}
           <button type="button" class="quiet" data-move-row="-1" ${i===0?'disabled':''}>↑ 上へ</button>
           <button type="button" class="quiet" data-move-row="1" ${i===actions.length-1?'disabled':''}>↓ 下へ</button>
           <button type="button" class="quiet" data-copy-row>複製</button>
           <button type="button" class="quiet" data-remove="${i}" aria-label="行動 ${i+1} を削除">削除</button>
         </div>
+        ${detailPanel('detail-action-'+i)}
       </div>
     </article>`;
   }).join('')||'<p class="empty">行動を追加してダメージを計算できます。</p>';
@@ -357,6 +387,8 @@ function showResult() {
     $('row-name-'+i).textContent=a.name||'名称未設定';
     $('row-total-'+i).textContent=r.each===null?'—':fmt(r.total);
     $('row-unit-'+i).textContent=r.each===null?(linkedAction(a)?'参照編成と異なります':rate?'このLvの倍率資料なし':'参照した技の資料なし'):fmt(r.each)+' / 回（平均）';
+    const detail=$('detail-action-'+i);
+    if(detail&&!detail.hidden)detail.innerHTML=renderDamageDetails(damageDetails(current(),{index:i}));
   });
   const m=report.members[slot];
   const display=[['攻撃力',m.atk],['HP',m.hp],['防御力',m.ownDef],['会心率 %',m.rawCr*100],['会心ダメージ %',m.cd*100],['異常マスタリー',m.ap],['異常掌握',m.am],['透徹力',m.sheer],['防御補正 %',m.def*100]];
@@ -473,12 +505,24 @@ $('skill-body').addEventListener('change',event=>{
   }
 });
 $('skill-body').addEventListener('click',event=>{
+  const detail=event.target.closest('[data-damage-detail]');
+  if(detail){
+    const id=detail.dataset.damageDetail;
+    toggleDamageDetails(detail,()=>{
+      if(skillGroup==='reaction'||skillGroup==='luminize'){
+        const reaction=specialRows().find(row=>row.id===id);
+        return damageDetails(current(),{slot,reaction});
+      }
+      const a=editAgent();
+      const skill=findAgent(a).skills.find(row=>row.id===id);
+      return damageDetails(current(),{slot,skill,level:previewLevel||effectiveLevel(a,skill)});
+    });
+    return;
+  }
   const reactionButton=event.target.closest('[data-reaction]');
   if(reactionButton){
-    const agents=current().agents;
     const voidflares=skillGroup==='luminize'?selectedVoidflares():null;
-    const choices=voidflares?luminizeRows(agents,slot,voidflares):reactionRows(agents,slot,reactionSource);
-    const choice=choices.find(r=>r.id===reactionButton.dataset.reaction);
+    const choice=specialRows().find(r=>r.id===reactionButton.dataset.reaction);
     if(choice?.amount==null)return;
     activeRow=current().actions.length;
     const refs=voidflares?{voidflares}:{source:choice.source};
@@ -537,6 +581,8 @@ $('rotation-slots').addEventListener('click',event=>{
   $('rotation-slots').querySelector(`[data-rotation-slot="${slot}"]`).focus();
 });
 $('rotation').addEventListener('click',event=>{
+  const detail=event.target.closest('[data-damage-detail]');
+  if(detail){toggleDamageDetails(detail,()=>damageDetails(current(),{index:Number(detail.dataset.damageDetail)}));return;}
   const expand=event.target.closest('[data-expand-row]');
   if(expand){editRotationRow(Number(expand.dataset.expandRow));return;}
   const move=event.target.closest('[data-move-row]');

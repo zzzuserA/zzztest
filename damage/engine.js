@@ -36,6 +36,8 @@ export const custom = () => ({
 });
 const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
 const pos = n=>Math.max(0,n);
+const line=(label,value,...terms)=>({label,value,terms});
+const product=(label,value,...terms)=>({...line(label,value,...terms),operator:' × '});
 export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=0}={}) {
   const {base:b,main,sub,buffs:f}=member;
   const info=findAgent(member);
@@ -63,7 +65,9 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const sheer=pos(atk*b.sheerAtk/100+hp*b.sheerHp/100+bonus('sheer'));
   const effectiveDef=pos(enemy.def*(1-clamp((bonus('def')+defDown)/100,0,1))*(1-clamp((mp+bonus('pen'))/100,0,1))-sp);
   const def=794/(794+effectiveDef);
-  const res=pos(1+(bonus('res')+resDown-(enemy.damageRes?.[attr]??enemy.res))/100);
+  const enemyRes=enemy.damageRes?.[attr]??enemy.res;
+  const resReduction=bonus('res')+resDown;
+  const res=pos(1+(resReduction-enemyRes)/100);
   const stun=pos((enemy.stun+bonus('stun'))/100);
   const dmg=pos(1+(md+bonus('dmg')+damageBonusForAttack(g,attr,type)+(type==='basic'?bonus('basicDmg'):0))/100);
   const crit=1+cr*cd;
@@ -71,20 +75,30 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const sharpCrit=(1+cr*(severity-1))*(1+clamp(rawCr-1,0,1)*(severity-1));
   const anomalyBonus=pos(1+bonus('anomaly')/100);
   const anomalyCore=atk*(ap/100)*2*dmg*def;
-  return {atk,hp,ownDef,cr,rawCr,cd,ap,am,sheer,def,res,stun,crit,anomalyBonus,anomalyCore,
+  const sharpBonus=pos(1+(bonus('sharpDmg')+(g['sharp:'+attr]??0))/100);
+  const sheerBonus=pos(1+bonus('sheerDmg')/100);
+  return {atk,hp,ownDef,cr,rawCr,cd,ap,am,sheer,def,res,stun,crit,dmg,sharpCrit,sharpBonus,sheerBonus,effectiveDef,enemyRes,resReduction,anomalyBonus,anomalyCore,
     anomalyFactor:(ap/100)*2*dmg*def*res*anomalyBonus,
     skill:atk*dmg*crit*def*res,
     anomaly:anomalyCore*res*anomalyBonus,
-    sharp:ownDef*dmg*sharpCrit*def*res*pos(1+(bonus('sharpDmg')+(g['sharp:'+attr]??0))/100),
-    sheerDamage:sheer*dmg*crit*res*pos(1+bonus('sheerDmg')/100)};
+    sharp:ownDef*dmg*sharpCrit*def*res*sharpBonus,
+    sheerDamage:sheer*dmg*crit*res*sheerBonus};
 }
-function sheetEffect(kind,[remi,nan,ver]){
+function sheetEffect(kind,[remi,nan,ver],trace){
   const link=1.2+remi.ap*0.0002;
   const remiBoost=remi.res*remi.stun*remi.anomalyBonus;
   const yaoFactor=link*remiBoost*3.6*(1+remi.ap*0.002)*1.12*1.16;
-  if(kind==='yaoN')return nan.anomaly*yaoFactor;
-  if(kind==='yaoV')return ver.anomalyCore*yaoFactor;
-  return nan.anomaly*link*ver.res*remi.stun*ver.anomalyBonus*20.5*1.16;
+  if(kind==='turbulence'){
+    const total=nan.anomaly*link*ver.res*remi.stun*ver.anomalyBonus*20.5*1.16;
+    trace?.push(product('保存済みの参照式',total,['南宮羽の異常基礎値',nan.anomaly],['昇華補正',link],['ヴェリナの耐性補正',ver.res],
+      ['ブレイク補正',remi.stun],['異常ダメージ補正',ver.anomalyBonus],['参照倍率',20.5],['固有補正',1.16]));
+    return total;
+  }
+  const base=kind==='yaoN'?nan.anomaly:ver.anomalyCore;
+  trace?.push(product('保存済みの参照式',base*yaoFactor,[kind==='yaoN'?'南宮羽の異常基礎値':'ヴェリナの異常基礎値',base],
+    ['昇華補正',link],['耐性補正',remi.res],['ブレイク補正',remi.stun],['異常ダメージ補正',remi.anomalyBonus],
+    ['スキル倍率',3.6],['異常マスタリーによる補正',1+remi.ap*.002],['固有補正',1.12],['固有補正',1.16]));
+  return base*yaoFactor;
 }
 function plan(scenario) {
   const {agents,actions}=scenario;
@@ -106,24 +120,48 @@ function plan(scenario) {
       amount:reaction?.amount??selected?.amount??a.amount,reaction,attribute:attackAttribute(a,info,selected?.skill),type};
   });
 }
-function luminizeDamage(row,agents,enemy){
+const defenseLine=m=>line('防御補正',m.def,794,' ÷ (794 + ',['補正後の敵防御力',m.effectiveDef],')');
+const resistanceLine=(m,label='耐性補正')=>line(label,m.res,'max(0, 1 + ',['耐性ダウン・無視',m.resReduction/100],
+  ' − ',['敵耐性',m.enemyRes/100],')');
+const anomalyTerms=m=>[['攻撃力',m.atk],['異常マスタリー ÷ 100',m.ap/100],['レベル補正',2],
+  ['与ダメージ補正',m.dmg],['防御補正',m.def],['耐性補正',m.res]];
+
+function luminizeDamage(row,agents,enemy,trace){
   const {amount,luminize:{sources,refringe,masteryRate,mindscape,hits}}=row.reaction;
   const caster=stats(agents[row.slot],enemy,{gear:row.gearSlot===row.slot?row.gear:undefined});
   const refringeFactor=1+refringe+caster.ap*.0002;
   const multiplier=amount/100*(1+caster.ap*masteryRate/100)*(mindscape>=4?1.12:1);
-  const base=sources.reduce((sum,source)=>{
+  const base=sources.reduce((sum,source,i)=>{
     const member=stats(agents[source.slot],enemy,{attribute:source.attribute,
       gear:row.gearSlot===source.slot?row.gear:undefined,resDown:mindscape>=1?50:0});
-    return sum+member.anomalyCore*member.res;
+    const value=member.anomalyCore*member.res;
+    trace?.push(resistanceLine(member,'虚光 '+(i+1)+'の耐性補正'),
+      product('虚光 '+(i+1)+'の基礎値（'+agents[source.slot].name+'・'+source.attribute+'）',value,...anomalyTerms(member)));
+    return sum+value;
   },0);
-  return base*refringeFactor*multiplier*caster.anomalyBonus*hits*(row.stun?caster.stun:1);
+  const stun=row.stun?caster.stun:1;
+  const total=base*refringeFactor*multiplier*caster.anomalyBonus*hits*stun;
+  trace?.push(line('昇華補正',refringeFactor,1,' + ',['レミエールの異常マスタリー',caster.ap],' × ',.0002,' + ',['編成・凸による加算',refringe]),
+    line('異常マスタリーによる耀変倍率補正',1+caster.ap*masteryRate/100,1,' + ',['レミエールの異常マスタリー',caster.ap],' × ',masteryRate/100),
+    product('1回の耀変ダメージ',total,['虚光の基礎値の合計',base],['昇華補正',refringeFactor],['スキル倍率',amount/100],
+      ['異常マスタリーによる耀変倍率補正',1+caster.ap*masteryRate/100],['M4補正',mindscape>=4?1.12:1],
+      ['異常ダメージ補正',caster.anomalyBonus],['耀変の発動数',hits],['ブレイク補正',stun]));
+  return total;
 }
 
-function rowDamage(row,agents,enemy,members){
+function rowDamage(row,agents,enemy,members,trace){
   const actor=agents[row.slot];
-  if(row.kind==='fixed')return row.amount;
-  if(row.linked)return sheetEffect(row.kind,members)*row.amount/100;
-  if(row.reaction?.luminize)return luminizeDamage(row,agents,enemy);
+  if(row.kind==='fixed'){
+    trace?.push(line('1回のダメージ',row.amount,['手入力値',row.amount]));
+    return row.amount;
+  }
+  if(row.linked){
+    const base=sheetEffect(row.kind,members,trace);
+    const total=base*row.amount/100;
+    trace?.push(product('1回のダメージ',total,['参照式の結果',base],['手入力倍率',row.amount/100]));
+    return total;
+  }
+  if(row.reaction?.luminize)return luminizeDamage(row,agents,enemy,trace);
   if(row.reaction){
     const reaction=row.reaction;
     const donor=agents[reaction.source];
@@ -132,20 +170,64 @@ function rowDamage(row,agents,enemy,members){
     const source=stats(donor,enemy,{...condition,defDown:reaction.defDown,resDown:reaction.resDown});
     const caster=reaction.source===row.slot?source:stats(actor,enemy,{gear:row.gearSlot===row.slot?row.gear:undefined});
     let total=source.anomaly*reaction.amount/100;
-    if(reaction.polarScale)total=total*.15+caster.ap*reaction.polarScale/100*source.anomalyFactor;
-    if(reaction.scale)total*=caster[reaction.scale]/10;
+    if(trace&&reaction.disorder){
+      const {fixed,remaining,bonus}=reaction.disorder;
+      trace.push(line('混沌倍率',reaction.amount/100,['固定倍率',fixed/100],' + ',['残存分',remaining/100],' + ',['固有補正',bonus/100]));
+    }
+    trace?.push(defenseLine(source),resistanceLine(source),product('状態異常の基礎値（'+donor.name+'・'+reaction.attribute+'）',source.anomaly,
+      ...anomalyTerms(source),['異常ダメージ補正',source.anomalyBonus]),
+      product('技倍率の適用',total,['状態異常の基礎値',source.anomaly],['技倍率',reaction.amount/100]));
+    if(reaction.polarScale){
+      const base=total;
+      total=base*.15+caster.ap*reaction.polarScale/100*source.anomalyFactor;
+      trace?.push(line('極性混沌の補正',total,['技倍率の適用値',base],' × ',.15,' + ',['発動者の異常マスタリー',caster.ap],
+        ' × ',['追加倍率',reaction.polarScale/100],' × ',['下地の異常補正',source.anomalyFactor]));
+    }
+    if(reaction.scale){
+      const base=total;
+      total*=caster[reaction.scale]/10;
+      trace?.push(product('狂咲の固有補正',total,['直前の計算値',base],
+        [reaction.scale==='ap'?'発動者の異常マスタリー ÷ 10':'発動者の異常掌握 ÷ 10',caster[reaction.scale]/10]));
+    }
     if(reaction.fionyCrit!==undefined){
       const critRate=clamp(.30+Math.max(0,caster.am-155)*.007,0,1);
       const core=[12.5,14.6,16.7,18.8,20.8,22.9,25][(actor.levels?.core??7)-1];
       const additional=agents.some((m,i)=>i!==row.slot&&findAgent(m)?.specialty==='異常')?15:0;
-      total*=1+critRate*(core+additional+(actor.mindscape>=1?25:0)+reaction.fionyCrit)/100;
+      const base=total;
+      const critDamage=(core+additional+(actor.mindscape>=1?25:0)+reaction.fionyCrit)/100;
+      total*=1+critRate*critDamage;
+      trace?.push(line('狂咲の会心期待値',total,['直前の計算値',base],' × (1 + ',['会心率',critRate],
+        ' × ',['会心ダメージ',critDamage],')'));
     }
-    if(reaction.separate)total+=stats(donor,enemy,condition).anomaly*reaction.separate/100;
-    return row.stun?total*source.stun*(reaction.stunBoost??1):total;
+    if(reaction.separate){
+      const base=total;
+      const extra=stats(donor,enemy,condition).anomaly;
+      total+=extra*reaction.separate/100;
+      trace?.push(line('追加の状態異常分を加算',total,['直前の計算値',base],' + ',['追加分の異常基礎値',extra],
+        ' × ',['追加倍率',reaction.separate/100]));
+    }
+    const result=row.stun?total*source.stun*(reaction.stunBoost??1):total;
+    trace?.push(product('1回のダメージ',result,['補正適用後',total],['ブレイク補正',row.stun?source.stun:1],
+      ['ブレイク中の固有補正',row.stun?(reaction.stunBoost??1):1]));
+    return result;
   }
   const m=stats(actor,enemy,row);
   const multiplier=row.kind==='sheer'?m.sheerDamage:m[row.kind];
-  return (multiplier??0)*row.amount/100*(row.stun?m.stun:1);
+  const stun=row.stun?m.stun:1;
+  const total=(multiplier??0)*row.amount/100*stun;
+  if(trace){
+    if(row.kind!=='sheer')trace.push(defenseLine(m));
+    trace.push(resistanceLine(m));
+    if(row.kind==='skill'||row.kind==='sheer')trace.push(line('会心期待値補正',m.crit,1,' + ',['会心率',m.cr],' × ',['会心ダメージ',m.cd]));
+    const terms={
+      skill:[['攻撃力',m.atk],['与ダメージ補正',m.dmg],['会心期待値補正',m.crit],['防御補正',m.def],['耐性補正',m.res]],
+      anomaly:[...anomalyTerms(m),['異常ダメージ補正',m.anomalyBonus]],
+      sheer:[['透徹力',m.sheer],['与ダメージ補正',m.dmg],['会心期待値補正',m.crit],['耐性補正',m.res],['透徹ダメージ補正',m.sheerBonus]],
+      sharp:[['防御力',m.ownDef],['与ダメージ補正',m.dmg],['鋭撃の暴傷期待値補正',m.sharpCrit],['防御補正',m.def],['耐性補正',m.res],['鋭撃ダメージ補正',m.sharpBonus]],
+    }[row.kind]??[];
+    trace.push(product('1回のダメージ',total,...terms,['スキル倍率',row.amount/100],['ブレイク補正',stun]));
+  }
+  return total;
 }
 export function calculate(scenario) {
   const {enemy,agents}=scenario;
@@ -206,15 +288,34 @@ export function substatObjective(scenario,slot){
   return {score,axes,monotone};
 }
 
-export function skillDamage(scenario,slot,skill,level){
+function skillPreviewRow(scenario,slot,skill,level){
   const actor=scenario.agents[slot];
   const action={slot,kind:skill.kind,amount:0,phase:'normal',count:1,
     catalog:{agentId:findAgent(actor)?.id,skillId:skill.id,level}};
-  const row=plan({...scenario,actions:[action]})[0];
+  return plan({...scenario,actions:[action]})[0];
+}
+export function skillDamage(scenario,slot,skill,level){
+  const row=skillPreviewRow(scenario,slot,skill,level);
   return row.valid?[rowDamage(row,scenario.agents,scenario.enemy),rowDamage({...row,stun:true},scenario.agents,scenario.enemy)]:[null,null];
 }
 export function reactionDamage(scenario,slot,reaction){
   if(reaction.amount==null)return [null,null];
   const row={slot,reaction};
   return [rowDamage(row,scenario.agents,scenario.enemy),rowDamage({...row,stun:true},scenario.agents,scenario.enemy)];
+}
+
+export function damageDetails(scenario,{slot,skill,level,reaction,index}){
+  const {agents,enemy,actions}=scenario;
+  const saved=index!==undefined;
+  const row=saved?plan({...scenario,actions:[actions[index]]})[0]:reaction?
+    {slot,reaction,valid:reaction.amount!=null}:skillPreviewRow(scenario,slot,skill,level);
+  if(!row.valid)return [];
+  const members=row.linked?agents.map(agent=>stats(agent,enemy)):undefined;
+  return (saved?[row.stun]:[false,true]).map(stun=>{
+    const steps=[];
+    const each=rowDamage({...row,stun},agents,enemy,members,steps);
+    const total=saved?each*row.count:each;
+    if(saved)steps.push(product('行動合計',total,['1回のダメージ',each],['回数',row.count]));
+    return {label:row.linked||row.kind==='fixed'?'設定済みの計算条件':stun?'ブレイク中':'通常時',steps,total};
+  });
 }
