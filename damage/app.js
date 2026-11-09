@@ -4,7 +4,7 @@ import {catalog,skillGroups,findAgent,effectiveLevel,attackRate,levelLabel,skill
 
 import {attributes,weapons,weaponByName,weaponLevels,discSets,discLayouts,discSelection,gearLabels,attackAttribute} from './equipment.js';
 import {maxSubRolls} from './optimizer.js';
-import {reactionRows} from './reactions.js';
+import {luminizeRows,reactionRows,voidflareAttribute} from './reactions.js';
 
 import {assetFor} from './visual-assets.js';
 let allocationWorker=null;
@@ -26,6 +26,7 @@ let slot=0;
 let skillGroup='basic';
 let previewLevel=0;
 let reactionSource=0;
+let voidflareChoices=[-1,-1,-1];
 try {
   const data = JSON.parse(localStorage.getItem(storageKey));
   if(data?.scenarios?.length===2) {
@@ -149,36 +150,47 @@ function directSkill(entry,skill){
 function damageColumns(values){
   return values.map((value,i)=>`<span class="skill-estimate"><small>${i?'ブレイク中':'通常時'}</small><b>${value===null?'—':fmt(value)}</b></span>`).join('');
 }
+const selectedVoidflares=()=>voidflareChoices.filter(source=>source!==-1);
+
 function showSkills() {
   const a=current().agents[slot];
   const entry=findAgent(a);
   if(!entry) return;
   const groups=Object.entries(skillGroups).filter(([id])=>entry.skills.some(row=>row.group===id));
   if(entry.specialty==='異常')groups.push(['reaction','状態異常・特殊ダメージ']);
+  if(entry.id==='1581')groups.push(['luminize','耀変ダメージ']);
   if(entry.specialty==='鋭御'&&entry.skills.some(row=>row.label.includes('重傷')))groups.push(['sharp-special','鋭御・重傷']);
   if(!groups.some(([id])=>id===skillGroup)) skillGroup=groups[0][0];
   const rows=entry.skills.filter(row=>skillGroup==='sharp-special'?row.label.includes('重傷'):row.group===skillGroup);
   const reaction=skillGroup==='reaction';
-  const active=reaction?0:effectiveLevel(a,rows[0]);
-  const reactionOptions=reaction?reactionRows(current().agents,slot,reactionSource):[];
+  const luminize=skillGroup==='luminize';
+  const specialDamage=reaction||luminize;
+  const agents=current().agents;
+  const active=specialDamage?0:effectiveLevel(a,rows[0]);
+  const reactionOptions=luminize?luminizeRows(agents,slot,selectedVoidflares()):reaction?reactionRows(agents,slot,reactionSource):[];
+  const voidflareSources=luminize?agents.flatMap((member,i)=>
+    voidflareAttribute(agents,slot,i)?[[String(i),member.name]]:[]):[];
   const max=skillGroup==='core'?7:16;
   const selected=previewLevel||active;
   $('skill-dialog-title').textContent=entry.name+'のスキル別ダメージ';
   $('skill-body').innerHTML=`
     <p class="hint">${escape([entry.attribute,entry.specialty,entry.rarity].filter(Boolean).join(' · '))} / M${a.mindscape??0}。1回分の推定ダメージです。会心のある技は期待値で表示します。</p>
-    <div class="skill-levels">${groups.filter(([id])=>id!=='reaction'&&id!=='sharp-special').map(([id,label])=>`<label class="field"><span>${label}</span>
+    <div class="skill-levels">${groups.filter(([id])=>Object.hasOwn(skillGroups,id)).map(([id,label])=>`<label class="field"><span>${label}</span>
       <select data-train="${id}" aria-label="${label}の育成レベル">${Array.from({length:id==='core'?7:12},(_,i)=>
         option(String(i+1),levelLabel(id,i+1),String(a.levels?.[id]??(id==='core'?7:12)))).join('')}</select>
     </label>`).join('')}</div>
     <div class="skill-filters">
       <label class="field"><span>技の種類</span><select id="skill-group">${groups.map(([id,label])=>option(id,label,skillGroup)).join('')}</select></label>
-      ${reaction?`<label class="field"><span>下地の状態異常を付与するキャラ</span><select id="reaction-source">${current().agents.map((m,i)=>option(String(i),m.name,String(reactionSource))).join('')}</select></label>`:`<label class="field"><span>倍率の表示レベル</span><select id="preview-level">
+      ${reaction?`<label class="field"><span>下地の状態異常を付与するキャラ</span><select id="reaction-source">${agents.map((m,i)=>option(String(i),m.name,String(reactionSource))).join('')}</select></label>`:luminize?'':`<label class="field"><span>倍率の表示レベル</span><select id="preview-level">
         ${option('0','育成設定に連動（'+levelLabel(skillGroup,active)+'）',String(previewLevel))}
         ${Array.from({length:max},(_,i)=>option(String(i+1),levelLabel(skillGroup,i+1),String(previewLevel))).join('')}
       </select></label>`}
     </div>
-    ${reaction?'<p class="hint">発動条件を満たした場合の試算です。混沌は下地の残存分が最小・最大の場合を表示します。複数キャラの蓄積割合や未対応の固有補正は手動で調整してください。</p>':''}
-    <div class="skill-list">${reaction?reactionOptions.map(row=>`<div class="skill-row"><div><strong>${escape(row.name)}</strong><small>${escape(current().agents[row.source].name)}のステータスを参照</small></div>${damageColumns(reactionDamage(current(),slot,row))}<button type="button" class="add" data-reaction="${row.id}" aria-label="${escape(row.name)}を追加" ${row.amount==null?'disabled':''}>追加</button></div>`).join('')||'<p class="hint">状態異常の下地になるキャラを選んでください。</p>':rows.map(row=>{
+    ${reaction?'<p class="hint">混沌は下地の状態異常の基礎値に、固定倍率（通常450%、霜烈600%）と残存分を足した倍率を掛けます。下の「基本倍率」は残存分を含まない値、「残存分が最大」は下地の付与直後の値です。複数キャラの蓄積割合や未対応の固有補正は手動で調整してください。</p>':''}
+    ${luminize?`<div class="field-grid">${voidflareChoices.map((choice,i)=>`<label class="field"><span>虚光 ${i+1} の付与元</span>
+      <select id="voidflare-${i}" data-voidflare="${i}">${option('-1','なし',String(choice))}${voidflareSources.map(([value,name])=>option(value,name,String(choice))).join('')}</select></label>`).join('')}</div>
+      <p class="hint">${voidflareSources.length?'昇華を起こした味方を虚光ごとに選択してください。同じ味方を複数回選べます。':'編成に昇華を起こす味方を追加してください。'} 各キャラの現在の設定値で試算します。凸で得る特殊「虚光」は対象外です。</p>`:''}
+    <div class="skill-list">${specialDamage?reactionOptions.map(row=>`<div class="skill-row"><div><strong>${escape(row.name)}</strong><small>${luminize?`Lv. ${row.level} · スキル倍率 ${dec(row.baseRate)}%`:`${escape(agents[row.source].name)}を参照${row.id.startsWith('disorder-')?' · '+dec(row.amount)+'%':''}`}</small></div>${damageColumns(reactionDamage(current(),slot,row))}<button type="button" class="add" data-reaction="${row.id}" aria-label="${escape(row.name)}を追加" ${row.amount==null?'disabled':''}>追加</button></div>`).join('')||'<p class="hint">状態異常の下地になるキャラを選んでください。</p>':rows.map(row=>{
       const value=row.rates[selected-1];
       const title=skillName(row);
       const direct=directSkill(entry,row);
@@ -286,6 +298,7 @@ function showRotation() {
     const catalogRate=a.catalog?attackRate(agents[a.slot],a):null;
     const measured=a.kind==='fixed';
     const reaction=a.kind==='reaction';
+    const voidflares=a.reaction?.voidflares;
     const who=linked?special[a.kind]:a.slot;
     const amountLabel=measured?'1回のダメージ':linked?'参照値への倍率 %':'倍率 %';
     return `<article class="rot-row ${palette[who]}${i===activeRow?' rot-open':''}" data-row="${i}">
@@ -304,7 +317,7 @@ function showRotation() {
       ${linked||measured?`<span class="rot-static">${linked?'参照式の条件':'補正を適用済み'}</span>`:
       `<select data-key="phase" aria-label="敵の状態 ${i+1}">${option('normal','通常時',a.phase)}${option('stun','ブレイク中',a.phase)}</select>`}</div>
       <div class="rot-cell rot-quantity">
-      ${reaction?`<small>下地 ${escape(agents[a.reaction.source]?.name??'—')}</small>`:a.catalog?`<label><small id="row-rate-${i}">${amountLabel}</small>
+      ${reaction?`<small>${voidflares?'虚光 '+escape(voidflares.map(source=>agents[source]?.name??'—').join(' / ')):'下地 '+escape(agents[a.reaction.source]?.name??'—')}</small>`:a.catalog?`<label><small id="row-rate-${i}">${amountLabel}</small>
       <select data-rate-level aria-label="技のレベル ${i+1}" ${catalogRate?'':'disabled'}>
         ${option('0','育成設定に連動',String(a.catalog.level||0))}
         ${catalogRate?.skill.rates.map((rate,j)=>option(String(j+1),levelLabel(catalogRate.skill.group,j+1)+(rate==null?'（資料なし）':''),String(a.catalog.level||0))).join('')??''}
@@ -434,6 +447,7 @@ $('agent-controls').addEventListener('click',event=>{
   skillGroup='basic';
   previewLevel=0;
   reactionSource=slot;
+  voidflareChoices=[-1,-1,-1];
   showSkills();
   $('skill-dialog').showModal();
 });
@@ -443,15 +457,16 @@ $('skill-body').addEventListener('change',event=>{
   const group=el.dataset.train;
   if(group){
     (editAgent().levels??={})[group]=Number(el.value);
-    skillGroup=group;
+    if(skillGroup!=='luminize')skillGroup=group;
     previewLevel=0;
     save();showResult();showSkills();
     $('skill-body').querySelector(`[data-train="${group}"]`).focus();
-  } else if(el.id==='skill-group'||el.id==='preview-level'||el.id==='reaction-source'){
+  } else if(el.hasAttribute('data-voidflare')||el.id==='skill-group'||el.id==='preview-level'||el.id==='reaction-source'){
     if(el.id==='skill-group') {
       skillGroup=el.value;
       previewLevel=0;
-    } else if(el.id==='reaction-source')reactionSource=Number(el.value);
+    } else if(el.hasAttribute('data-voidflare'))voidflareChoices[Number(el.dataset.voidflare)]=Number(el.value);
+    else if(el.id==='reaction-source')reactionSource=Number(el.value);
     else previewLevel=Number(el.value);
     showSkills();
     $(el.id).focus();
@@ -460,10 +475,14 @@ $('skill-body').addEventListener('change',event=>{
 $('skill-body').addEventListener('click',event=>{
   const reactionButton=event.target.closest('[data-reaction]');
   if(reactionButton){
-    const choice=reactionRows(current().agents,slot,reactionSource).find(r=>r.id===reactionButton.dataset.reaction);
+    const agents=current().agents;
+    const voidflares=skillGroup==='luminize'?selectedVoidflares():null;
+    const choices=voidflares?luminizeRows(agents,slot,voidflares):reactionRows(agents,slot,reactionSource);
+    const choice=choices.find(r=>r.id===reactionButton.dataset.reaction);
     if(choice?.amount==null)return;
     activeRow=current().actions.length;
-    current().actions.push({...action(slot,choice.name,'reaction'),reaction:{id:choice.id,source:choice.source,agentId:findAgent(editAgent()).id}});
+    const refs=voidflares?{voidflares}:{source:choice.source};
+    current().actions.push({...action(slot,choice.name,'reaction'),reaction:{id:choice.id,...refs,agentId:findAgent(editAgent()).id}});
     save();showRotation();showResult();
     reactionButton.textContent='追加済み';
     return;

@@ -33,6 +33,39 @@ const fionyRate=(actor,group,start,step)=>{
   return n<=12?start+(n-1)*step:null;
 };
 
+// Released Remielle skill tables. Levels 13–16 continue the same increments.
+const luminizeSkills=[
+  ['luminize-rainbow','虹が立つ','basic',5],
+  ['luminize-foam','泡沫に舞う','basic',10],
+  ['luminize-assist','花と翼のロンド','assist',10],
+  ['luminize-ultimate','繚乱のフィナーレ','chain',10.5],
+];
+
+export function voidflareAttribute(agents,slot,source){
+  const member=agents[source];
+  const attribute=member&&source!==slot?sourceAttribute(member):'';
+  return conditions[attribute]?baseAttribute(attribute):'';
+}
+
+export function luminizeRows(agents,slot,voidflares){
+  const actor=agents[slot];
+  if(findAgent(actor)?.id!=='1581')return [];
+  const sources=voidflares.map(source=>{
+    const attribute=voidflareAttribute(agents,slot,source);
+    return attribute?{slot:source,attribute}:null;
+  });
+  const ready=sources.length>0&&sources.length<=3&&sources.every(Boolean);
+  const mindscape=actor.mindscape??0;
+  const refringe=(agents.every(member=>findAgent(member)?.specialty==='異常')?.10:0)+(mindscape>=2?.20:0);
+  const masteryRate=[.10,.12,.14,.15,.16,.18,.20][coreLevel(actor)-1];
+  return luminizeSkills.map(([id,title,group,step])=>{
+    const level=effectiveLevel(actor,{group});
+    const baseRate=(20+level)*step;
+    return {id,name:'耀変・'+title,amount:ready?baseRate:null,baseRate,level,actorMastery:true,
+      luminize:{sources,refringe,masteryRate,mindscape,hits:mindscape>=6&&group==='basic'?2:1}};
+  });
+}
+
 export function reactionRows(agents,slot,source){
   const actor=agents[slot], donor=agents[source];
   const info=findAgent(actor);

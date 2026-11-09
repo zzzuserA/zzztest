@@ -1,4 +1,4 @@
-import {reactionRows} from './reactions.js';
+import {luminizeRows,reactionRows} from './reactions.js';
 import {attackRate,findAgent} from './catalog.js';
 import {baseAttribute,damageBonusForAttack,equipmentStats,attackAttribute} from './equipment.js';
 
@@ -95,7 +95,9 @@ function plan(scenario) {
     const slot=linkedSlots[a.kind]??a.slot;
     const info=findAgent(agents[slot]);
     const selected=a.catalog?attackRate(agents[slot],a):null;
-    const reaction=a.reaction&&info?.id===a.reaction.agentId?reactionRows(agents,slot,a.reaction.source).find(r=>r.id===a.reaction.id):null;
+    const reactionOptions=a.reaction&&info?.id===a.reaction.agentId?
+      Array.isArray(a.reaction.voidflares)?luminizeRows(agents,slot,a.reaction.voidflares):reactionRows(agents,slot,a.reaction.source):[];
+    const reaction=reactionOptions.find(r=>r.id===a.reaction.id);
     const valid=(!linked||compatible)&&(!a.catalog||selected?.amount!=null)&&(a.kind!=='reaction'||reaction?.amount!=null);
     const title=selected?.skill.title??a.name;
     const type=/終結/.test(title)?'ultimate':/ダッシュ/.test(title)?'dash':/回避反撃/.test(title)?'after':
@@ -104,10 +106,24 @@ function plan(scenario) {
       amount:reaction?.amount??selected?.amount??a.amount,reaction,attribute:attackAttribute(a,info,selected?.skill),type};
   });
 }
+function luminizeDamage(row,agents,enemy){
+  const {amount,luminize:{sources,refringe,masteryRate,mindscape,hits}}=row.reaction;
+  const caster=stats(agents[row.slot],enemy,{gear:row.gearSlot===row.slot?row.gear:undefined});
+  const refringeFactor=1+refringe+caster.ap*.0002;
+  const multiplier=amount/100*(1+caster.ap*masteryRate/100)*(mindscape>=4?1.12:1);
+  const base=sources.reduce((sum,source)=>{
+    const member=stats(agents[source.slot],enemy,{attribute:source.attribute,
+      gear:row.gearSlot===source.slot?row.gear:undefined,resDown:mindscape>=1?50:0});
+    return sum+member.anomalyCore*member.res;
+  },0);
+  return base*refringeFactor*multiplier*caster.anomalyBonus*hits*(row.stun?caster.stun:1);
+}
+
 function rowDamage(row,agents,enemy,members){
   const actor=agents[row.slot];
   if(row.kind==='fixed')return row.amount;
   if(row.linked)return sheetEffect(row.kind,members)*row.amount/100;
+  if(row.reaction?.luminize)return luminizeDamage(row,agents,enemy);
   if(row.reaction){
     const reaction=row.reaction;
     const donor=agents[reaction.source];
@@ -149,11 +165,12 @@ export function substatObjective(scenario,slot){
   const actors=agents.slice();
   actors[slot]=actor;
   const gear=equipmentStats(actor,findAgent(actor));
-  const rows=plan(scenario).filter(row=>row.valid&&row.kind!=='fixed'&&row.amount>0&&row.count>0&&(row.linked||row.reaction?.source===slot||(row.slot===slot&&(!row.reaction||row.reaction.actorMastery))));
+  const supplies=row=>row.reaction?.source===slot||row.reaction?.luminize?.sources.some(source=>source.slot===slot);
+  const rows=plan(scenario).filter(row=>row.valid&&row.kind!=='fixed'&&row.amount>0&&row.count>0&&(row.linked||supplies(row)||(row.slot===slot&&(!row.reaction||row.reaction.actorMastery))));
   if(!rows.length)return null;
   rows.forEach(row=>{row.gear=gear;row.gearSlot=slot;});
   const kinds=new Set(rows.filter(r=>!r.reaction).map(r=>r.kind));
-  const suppliesReaction=rows.some(r=>r.reaction?.source===slot);
+  const suppliesReaction=rows.some(supplies);
   const usesMastery=rows.some(r=>r.reaction?.actorMastery&&r.slot===slot);
   const linked=rows.some(r=>r.linked);
   const members=linked?agents.map(a=>stats(a,enemy)):null;
