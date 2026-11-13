@@ -36,11 +36,17 @@ try{
 for(const id of fields.filter(id=>$(id).tagName==='SELECT'))if(!Object.hasOwn(presets,$(id).value))$(id).value='2025';
 let estimatedHp=0;
 const numericText=value=>/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(value);
-function readNumber(id){const value=$(id).value;return numericText(value)?Number(value):NaN}
+function readNumber(id){const value=$(id).value.replace(/,/g,'');return numericText(value)?Number(value):NaN}
+function formatInput(el){
+ const value=el.value;
+ if(!numericText(value))return;
+ const [integer,decimal]=value.split('.');
+ el.value=integer.replace(/\B(?=(\d{3})+(?!\d))/g,',')+(decimal===undefined?'':'.'+decimal);
+}
 
 for(const id of fields.filter(id=>$(id).tagName==='INPUT')){
  const el=$(id);el.type='text';
- el.addEventListener('focus',()=>requestAnimationFrame(()=>el.select()));
+ el.addEventListener('focus',()=>{normalizeNumber(el);requestAnimationFrame(()=>el.select())});
  el.addEventListener('input',event=>{if(event.isComposing)return;normalizeNumber(el)});
  el.addEventListener('compositionend',()=>{setTimeout(commitLimits,0)});
 }
@@ -78,7 +84,7 @@ $('useEstimatedHp').addEventListener('click',()=>{
  if(!estimatedHp)return;
  $('bossTotal').value=String(estimatedHp);
  $('estimateChoice').hidden=true;
- calculate();
+ commitLimits();
  $('estimateChoice').hidden=true;
 });
 function scoreAtFraction(fraction,rows){
@@ -100,6 +106,7 @@ function commitLimits(){
  for(const id of ['before','after'])capInput(id,Math.max(0,operation)+60000);
  capInput('currentScore',Math.max(0,forwardOperation)+60000);
 capInput('compareSourceScore',Math.min(5000,Math.max(0,readNumber('compareSourceOperation')||0))+60000);
+ for(const id of fields.filter(id=>$(id).tagName==='INPUT'))formatInput($(id));
  calculate();
 }
 function calculate(){
@@ -177,7 +184,7 @@ $('compareTargetScore').textContent=compareStarted&&!compareError?fmt(targetScor
 $('compareTargetDamageScore').textContent=compareStarted&&!compareError?fmt(targetDamage):'—';
 $('compareDealtHp').textContent=compareStarted&&dealtHp>0?fmt(Math.round(dealtHp)):compareStarted&&!compareError?'0':'—';
 $('compareDifference').textContent=compareStarted&&!compareError?(targetScore-sourceScore>=0?'+':'')+fmt(targetScore-sourceScore):'—';
-try{localStorage.setItem('zzz-deadly-hp-inverse-v1',JSON.stringify(Object.fromEntries(fields.map(id=>[id,$(id).value]))))}catch{}
+try{localStorage.setItem('zzz-deadly-hp-inverse-v1',JSON.stringify(Object.fromEntries(fields.map(id=>[id,$(id).value.replace(/,/g,'')]))))}catch{}
 }
 for(const id of fields)$(id).addEventListener('input',event=>{if(!event.isComposing)calculate()});
 commitLimits();
