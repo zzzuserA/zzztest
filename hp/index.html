@@ -41,7 +41,7 @@ for(const id of fields.filter(id=>$(id).tagName==='INPUT')){
 $('bossTotal').addEventListener('focus',()=>{if(estimatedHp)$('estimateChoice').hidden=false});
 $('bossTotal').addEventListener('blur',()=>setTimeout(()=>{$('estimateChoice').hidden=true},150));
 $('useEstimatedHp').addEventListener('pointerdown',event=>event.preventDefault());
-for(const [id,choice] of [['operation','operationChoice'],['forwardOperation','forwardOperationChoice'],['compareSourceOperation','compareSourceOperationChoice'],['compareTargetOperation','compareTargetOperationChoice'],['compareSourceOperation','compareSourceOperationChoice'],['compareTargetOperation','compareTargetOperationChoice']]){
+for(const [id,choice] of [['operation','operationChoice'],['forwardOperation','forwardOperationChoice'],['compareSourceOperation','compareSourceOperationChoice'],['compareTargetOperation','compareTargetOperationChoice']]){
  $(id).addEventListener('focus',()=>{$(choice).hidden=false});
  $(id).addEventListener('blur',()=>setTimeout(()=>{$(choice).hidden=true},150));
  for(const button of $(choice).querySelectorAll('button')){
@@ -56,6 +56,7 @@ for(const [id,choice] of [['operation','operationChoice'],['forwardOperation','f
 }
 for(const id of fields.filter(id=>$(id).tagName==='INPUT')){
  $(id).addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.isComposing){event.preventDefault();commitLimits();$(id).blur()}});
+ $(id).addEventListener('change',commitLimits);
  $(id).addEventListener('blur',commitLimits);
 }
 function normalizeNumber(el){
