@@ -1,7 +1,8 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>危局HP・スコア計算ツール</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
 :root{color-scheme:dark;--bg:#101218;--panel:#1c212b;--line:#434c59;--text:#f5f6f8;--muted:#b4becb;--accent:#80d8e9;--yellow:#f9d345}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Noto Sans JP',sans-serif}button,input,select{font:inherit}main{max-width:1100px;margin:auto;padding:16px 12px 70px}.head{position:relative;padding:18px 20px;border:1px solid var(--accent);border-radius:12px;background:var(--panel)}.head h1{margin:0;font-size:clamp(24px,5vw,34px)}.head p{color:var(--muted);margin:6px 0 0}.back{position:absolute;right:18px;top:18px;color:white;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px}.head h1,.head p{padding-right:125px}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.controls label{font-size:13px;color:var(--muted);font-weight:700}.controls input,.controls select{display:block;width:100%;margin-top:6px;background:#151922;color:white;border:1px solid #65707e;border-radius:8px;padding:10px;min-height:44px}.controls input:focus,.controls select:focus,.back:focus-visible{outline:2px solid var(--accent)}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}.stat span{display:block;font-size:12px;color:var(--muted)}.stat strong{display:block;margin-top:7px;font-size:clamp(20px,3vw,29px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.stat.primary{border-color:var(--yellow)}.stat.primary strong{color:var(--yellow)}.detail{line-height:1.65;color:var(--muted);font-size:13px;margin:17px 2px 25px}.detail strong{color:white}.tableWrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}table{border-collapse:collapse;width:100%;min-width:650px;font-variant-numeric:tabular-nums}th,td{padding:9px 12px;text-align:right;border-bottom:1px solid #3c444f}th:first-child,td:first-child{text-align:center}thead th{background:#193bc4;color:white;font-size:13px;white-space:nowrap}tbody tr:nth-child(even){background:#232a34}tbody tr.current{background:#4a4224}tbody tr.done td{color:#9da8b5}tbody tr:last-child td{border-bottom:0}.bar{height:8px;border-radius:9px;background:#363e48;margin:12px 0;overflow:hidden}.bar div{height:100%;background:var(--yellow)}.caption{color:var(--muted);font-size:12px;margin:15px 2px}.error{color:#ffb49d;min-height:20px;font-size:13px}@media(max-width:740px){.controls,.summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:420px){.head{padding:15px}.head h1,.head p{padding-right:0}.head p{margin-top:44px}.back{top:auto;bottom:48px;right:15px}.controls{gap:9px}.stat{padding:11px}.stat strong{font-size:20px}}
 
-@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
+
 :root{--bg:#141414;--panel:#101010;--line:#414141;--text:#f7f7f2;--muted:#bcbcbc;--accent:#f0eb00;--yellow:#f0eb00}
 body{background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);font-family:'Zen Kaku Gothic New','Noto Sans JP',system-ui,sans-serif;font-weight:500}
 main{max-width:1180px;padding:24px 10px 40px}
@@ -19,7 +20,7 @@ main{max-width:1180px;padding:24px 10px 40px}
 .inverseResults{grid-template-columns:repeat(2,minmax(0,1fr))}
 /* Centered menu and scalable outlined lettering. */
 .hpMenu summary{display:grid;place-items:center;padding:0;gap:0}.hpMenu .menuIcon{width:28px;height:28px;display:block}.head h1{-webkit-text-stroke:2px #fff;paint-order:stroke fill;text-shadow:none}
-</style></head><body><main><header class="head"><h1>危局HP・スコア計算ツール</h1><details class="hpMenu"><summary aria-label="メニューを開く"><svg class="menuIcon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 6H26M6 16H26M6 26H26"/></svg></summary><nav aria-label="関連ページ"><a href="../">チームビルダー</a><a href="../hp/" aria-current="page">危局HP</a><a href="../damage/">ダメージシミュレーター</a></nav></details></header><h2 class="calcTitle">ボスHP逆算</h2><p class="sectionDescription">攻撃前後のスコアとその攻撃のダメージ量からボスHPを算出</p><section class="controls" aria-label="逆算条件"><label>危局モード<select id="preset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label>攻撃前の合計スコア<input id="before" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label>攻撃後の合計スコア<input id="after" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label>攻撃のダメージ量<input id="attack" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">操作スコア（最大5,000）<input id="operation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="operationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0" data-operation-target="operation">0</button><button type="button" data-operation-value="5000" data-operation-target="operation">5000</button></span></label></section><div class="error" id="error" role="status"></div><section class="summary inverseResults"><div class="stat primary"><span>ボスHP</span><strong id="total">—</strong></div><div class="stat"><span>削ったHP割合</span><strong id="fraction">—</strong></div></section><section class="calcPanel"><h2 class="calcTitle">スコアカンストまでの残りHP</h2><p>ボスHPと現在のスコアからボスの残りHPを算出</p><div class="controls forwardControls"><label>危局モード<select id="forwardPreset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label class="bossHpField">ボスHP<input id="bossTotal" type="number" min="0" step="1" inputmode="numeric" autocomplete="off" value="0"><span id="estimateChoice" class="estimateChoice" hidden><button id="useEstimatedHp" type="button"></button></span></label><label>現在の合計スコア<input id="currentScore" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">操作スコア（最大5,000）<input id="forwardOperation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="forwardOperationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0" data-operation-target="forwardOperation">0</button><button type="button" data-operation-value="5000" data-operation-target="forwardOperation">5000</button></span></label></div><div class="error" id="forwardError" role="status"></div><div class="summary forwardResults"><div class="stat primary"><span>スコアカンストまでの残りHP</span><strong id="toCap">—</strong></div><div class="stat"><span>現在までに削ったHP</span><strong id="alreadyDealt">—</strong></div><div class="stat"><span>残りHPの割合</span><strong id="damageScore">—</strong></div><div class="stat"><span>削ったHP割合</span><strong id="scoreLeft">—</strong></div></div></section><section class="calcPanel comparePanel"><h2 class="calcTitle">ボスHP増減時の変動スコア</h2><p>変化前のボスHPとスコアを入力することでボスHP変化後のスコアを算出</p><div class="controls compareControls"><label>ボス(比較元)の危局モード<select id="compareSourcePreset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label>ボス(比較元)の総HP<input id="compareSourceHp" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label>ボス(比較元)の合計スコア<input id="compareSourceScore" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">ボス(比較元)の操作スコア<input id="compareSourceOperation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="compareSourceOperationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0">0</button><button type="button" data-operation-value="5000">5000</button></span></label><label>ボス(比較先)の危局モード<select id="compareTargetPreset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label>ボス(比較先)の総HP<input id="compareTargetHp" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">ボス(比較先)の操作スコア<input id="compareTargetOperation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="compareTargetOperationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0">0</button><button type="button" data-operation-value="5000">5000</button></span></label></div><div class="error" id="compareError" role="status"></div><div class="summary compareResults"><div class="stat primary"><span>ボス(比較先)の合計スコア</span><strong id="compareTargetScore">—</strong></div><div class="stat"><span>ボス(比較先)のダメージスコア</span><strong id="compareTargetDamageScore">—</strong></div><div class="stat"><span>削ったHP量</span><strong id="compareDealtHp">—</strong></div><div class="stat"><span>ボス(比較元)の合計スコアとの差</span><strong id="compareDifference">—</strong></div></div></section><div class="tableWrap"><table><thead><tr><th>残りHPゲージ</th><th>HP割合</th><th>総HP比</th><th>ダメージスコア</th><th>累計スコア</th></tr></thead><tbody id="rows"></tbody></table></div><p class="caption">引用元：<a href="https://x.com/voya_zzz/status/2082480583440298411" target="_blank" rel="noopener noreferrer">逆境のHP・スコア検証（@voya_zzz）</a> ／ <a href="https://x.com/voya_zzz/status/1958504907088302241" target="_blank" rel="noopener noreferrer">試練のHP・スコア検証（@voya_zzz）</a></p><footer style="margin:24px 2px 0;color:var(--muted);font-size:11px;line-height:1.6">本サイトは『ゼンレスゾーンゼロ』の非公式ファンメイドツール（二次創作）であり、HoYoverseおよび株式会社COGNOSPHEREとは関係ありません。 © All rights reserved by miHoYo. Other properties belong to their respective owners.</footer></main><script>
+</style></head><body><main><header class="head"><h1>危局HP・スコア計算ツール</h1><details class="hpMenu"><summary aria-label="メニューを開く"><svg class="menuIcon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 6H26M6 16H26M6 26H26"/></svg></summary><nav aria-label="関連ページ"><a href="../">チームビルダー</a><a href="../hp/" aria-current="page">危局HP</a><a href="../damage/">ダメージシミュレーター</a></nav></details></header><h2 class="calcTitle">ボスHP逆算</h2><p class="sectionDescription">攻撃前後のスコアとその攻撃のダメージ量からボスHPを算出</p><section class="controls" aria-label="逆算条件"><label>危局モード<select id="preset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label>攻撃前の合計スコア<input id="before" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label>攻撃後の合計スコア<input id="after" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label>攻撃のダメージ量<input id="attack" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">操作スコア（最大5,000）<input id="operation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="operationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0" data-operation-target="operation">0</button><button type="button" data-operation-value="5000" data-operation-target="operation">5000</button></span></label></section><div class="error" id="error" role="status"></div><section class="summary inverseResults"><div class="stat primary"><span>ボスHP</span><strong id="total">—</strong></div><div class="stat"><span>削ったHP割合</span><strong id="fraction">—</strong></div></section><section class="calcPanel"><h2 class="calcTitle">スコアカンストまでの残りHP</h2><p>ボスHPと現在のスコアからボスの残りHPを算出</p><div class="controls forwardControls"><label>危局モード<select id="forwardPreset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label class="bossHpField">ボスHP<input id="bossTotal" type="number" min="0" step="1" inputmode="numeric" autocomplete="off" value="0"><span id="estimateChoice" class="estimateChoice" hidden><button id="useEstimatedHp" type="button"></button></span></label><label>現在の合計スコア<input id="currentScore" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">操作スコア（最大5,000）<input id="forwardOperation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="forwardOperationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0" data-operation-target="forwardOperation">0</button><button type="button" data-operation-value="5000" data-operation-target="forwardOperation">5000</button></span></label></div><div class="error" id="forwardError" role="status"></div><div class="summary forwardResults"><div class="stat primary"><span>スコアカンストまでの残りHP</span><strong id="toCap">—</strong></div><div class="stat"><span>現在までに削ったHP</span><strong id="alreadyDealt">—</strong></div><div class="stat"><span>残りHPの割合</span><strong id="damageScore">—</strong></div><div class="stat"><span>削ったHP割合</span><strong id="scoreLeft">—</strong></div></div></section><section class="calcPanel comparePanel"><h2 class="calcTitle">ボスHP増減時の変動スコア</h2><p>変化前のボスHPとスコアを入力することでボスHP変化後のスコアを算出</p><div class="controls compareControls"><label>ボス(比較元)の危局モード<select id="compareSourcePreset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label>ボス(比較元)の総HP<input id="compareSourceHp" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label>ボス(比較元)の合計スコア<input id="compareSourceScore" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">ボス(比較元)の操作スコア<input id="compareSourceOperation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="compareSourceOperationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0">0</button><button type="button" data-operation-value="5000">5000</button></span></label><label>ボス(比較先)の危局モード<select id="compareTargetPreset"><option value="2025" selected>試練</option><option value="2026">逆境</option></select></label><label>ボス(比較先)の総HP<input id="compareTargetHp" type="number" min="0" step="1" inputmode="numeric" value="0"></label><label class="operationField">ボス(比較先)の操作スコア<input id="compareTargetOperation" type="number" min="0" max="5000" step="1" inputmode="numeric" value="0" autocomplete="off"><span id="compareTargetOperationChoice" class="operationChoice" hidden><button type="button" data-operation-value="0">0</button><button type="button" data-operation-value="5000">5000</button></span></label></div><div class="error" id="compareError" role="status"></div><div class="summary compareResults"><div class="stat primary"><span>ボス(比較先)の合計スコア</span><strong id="compareTargetScore">—</strong></div><div class="stat"><span>ボス(比較先)のダメージスコア</span><strong id="compareTargetDamageScore">—</strong></div><div class="stat"><span>削ったHP量</span><strong id="compareDealtHp">—</strong></div><div class="stat"><span>ボス(比較元)の合計スコアとの差</span><strong id="compareDifference">—</strong></div></div></section><div class="tableWrap"><table><thead><tr><th>残りHPゲージ</th><th>HP割合</th><th>総HP比</th><th>ダメージスコア</th><th>累計スコア</th></tr></thead><tbody id="rows"></tbody></table></div><p class="caption">引用元：<a href="https://x.com/voya_zzz/status/1958504907088302241" target="_blank" rel="noopener noreferrer">試練のHP・スコア検証（@voya_zzz）</a> ／ <a href="https://x.com/voya_zzz/status/2082480583440298411" target="_blank" rel="noopener noreferrer">逆境のHP・スコア検証（@voya_zzz）</a></p><footer style="margin:24px 2px 0;color:var(--muted);font-size:11px;line-height:1.6">本サイトは『ゼンレスゾーンゼロ』の非公式ファンメイドツール（二次創作）であり、HoYoverseおよび株式会社COGNOSPHEREとは関係ありません。 © All rights reserved by miHoYo. Other properties belong to their respective owners.</footer></main><script>
 const presets={2026:[[24,21,9,395,750],[20,17,9,395,1000],[16,15,9,395,1500],[14,12,3,79,3500],[11,11,3,79,3500],[10,10,4,79,3500],[9,3,5,79,3500],[2,1,5,79,4000]],2025:[[29,26,6,437,1000],[25,22,17,874,1200],[21,18,11,437,1800],[17,14,25,874,2400],[13,10,15,437,2600],[9,7,25,437,2600],[6,1,25,437,2700]]};
 const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2}).format(n);
 const fields=['preset','before','after','attack','operation','forwardPreset','bossTotal','currentScore','forwardOperation','compareSourcePreset','compareSourceHp','compareSourceScore','compareSourceOperation','compareTargetPreset','compareTargetHp','compareTargetOperation'];
@@ -31,7 +32,12 @@ try{
   localStorage.setItem('zzz-deadly-hp-number-defaults-v3','1');
  }
 }catch{}
+// Ignore obsolete or corrupted saved mode identifiers.
+for(const id of fields.filter(id=>$(id).tagName==='SELECT'))if(!Object.hasOwn(presets,$(id).value))$(id).value='2025';
 let estimatedHp=0;
+const numericText=value=>/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(value);
+function readNumber(id){const value=$(id).value;return numericText(value)?Number(value):NaN}
+
 for(const id of fields.filter(id=>$(id).tagName==='INPUT')){
  const el=$(id);el.type='text';
  el.addEventListener('focus',()=>requestAnimationFrame(()=>el.select()));
@@ -85,50 +91,55 @@ function scoreAtFraction(fraction,rows){
  return 60000;
 }
 function rowsFor(p){const a=[];for(const [hi,lo,num,den,points]of presets[p])for(let gauge=hi;gauge>=lo;gauge--)a.push({gauge,num,den,points,share:num/den});return a}
-function fractionAtScore(score,rows){let used=0,share=0;for(const row of rows){if(score<=used+row.points)return share+Math.max(0,score-used)/row.points*row.share;used+=row.points;share+=row.share}return 1}
-function capInput(id,max){const el=$(id);el.max=String(max);if(el.value!==''&&Number.isFinite(Number(el.value))&&Number(el.value)>max)el.value=String(max)}
+function fractionAtScore(score,rows){if(score<=0)return 0;if(score>=60000)return 1;let used=0,share=0;for(const row of rows){if(score<=used+row.points)return share+Math.max(0,score-used)/row.points*row.share;used+=row.points;share+=row.share}return 1}
+function capInput(id,max){const el=$(id);el.max=String(max);if(el.value!==''&&numericText(el.value)&&Number(el.value)>max)el.value=String(max)}
 function commitLimits(){
  for(const id of fields.filter(id=>$(id).tagName==='INPUT'))normalizeNumber($(id));
  for(const id of ['operation','forwardOperation','compareSourceOperation','compareTargetOperation'])capInput(id,5000);
- const operation=Number($('operation').value),forwardOperation=Number($('forwardOperation').value);
+ const operation=Math.min(5000,Math.max(0,readNumber('operation')||0)),forwardOperation=Math.min(5000,Math.max(0,readNumber('forwardOperation')||0));
  for(const id of ['before','after'])capInput(id,Math.max(0,operation)+60000);
  capInput('currentScore',Math.max(0,forwardOperation)+60000);
-capInput('compareSourceScore',Math.max(0,Number($('compareSourceOperation').value))+60000);
+capInput('compareSourceScore',Math.min(5000,Math.max(0,readNumber('compareSourceOperation')||0))+60000);
  calculate();
 }
 function calculate(){
-const operation=Math.min(5000,Number($('operation').value));
-const forwardOperation=Math.min(5000,Number($('forwardOperation').value));
+const operation=Math.min(5000,readNumber('operation'));
+const forwardOperation=Math.min(5000,readNumber('forwardOperation'));
 const rows=rowsFor($('preset').value);
 let cumulative=0,html='';
 for(const row of rows){cumulative+=row.points;html+='<tr><td>'+row.gauge+'</td><td>'+row.num+'/'+row.den+'</td><td>'+fmt(row.share*100)+'%</td><td>'+fmt(row.points)+'</td><td>'+fmt(cumulative)+'</td></tr>'}
 $('rows').innerHTML=html;
 const scoreMax=Math.max(0,operation)+60000;
-const before=Math.min(scoreMax,Number($('before').value)),after=Math.min(scoreMax,Number($('after').value)),attack=Number($('attack').value);
-const hasInverse=['before','after','attack','operation'].every(id=>$(id).value!=='')&&['before','after','attack'].some(id=>Number($(id).value)!==0);
+const before=Math.min(scoreMax,readNumber('before')),after=Math.min(scoreMax,readNumber('after')),attack=readNumber('attack');
+const hasInverse=['before','after','attack','operation'].every(id=>$(id).value!=='')&&['before','after','attack'].some(id=>readNumber(id)!==0);
 let err='';
 if(hasInverse){
- if(!Number.isFinite(before)||!Number.isFinite(after)||!Number.isFinite(attack)||!Number.isFinite(operation))err='数値を確認してください。';
+ if(!Number.isFinite(readNumber('before'))||!Number.isFinite(readNumber('after'))||!Number.isFinite(readNumber('operation'))||!Number.isFinite(before)||!Number.isFinite(after)||!Number.isFinite(attack)||!Number.isFinite(operation))err='数値を確認してください。';
  else if(operation<0)err='操作スコアは0以上にしてください。';
  else if(before<operation)err='攻撃前スコアが操作スコアより小さくなっています。';
  else if(after<=before)err='攻撃後スコアは攻撃前より大きい数値にしてください。カンスト後の攻撃からは逆算できません。';
+ else if(after-operation>=60000)err='攻撃後にダメージスコアがカンストしているため、超過ダメージが分からずボスHPを逆算できません。';
  else if(attack<=0)err='攻撃ダメージは0より大きい数値にしてください。';
 }
 const validInverse=hasInverse&&!err;
 const f0=validInverse?fractionAtScore(before-operation,rows):0,f1=validInverse?fractionAtScore(after-operation,rows):0;
 const delta=f1-f0,total=validInverse&&delta>0?attack/delta:0;
+if(total&&!Number.isSafeInteger(Math.round(total)))err='算出されるHPが大きすぎます。入力値を確認してください。';
+const usableTotal=total>0&&Number.isSafeInteger(Math.round(total));
 $('error').textContent=err;
-$('total').textContent=total?fmt(Math.round(total)):'—';
-$('fraction').textContent=total?fmt(delta*100)+'%':'—';
-estimatedHp=total?Math.round(total):0;
+$('total').textContent=usableTotal?fmt(Math.round(total)):'—';
+$('fraction').textContent=usableTotal?fmt(delta*100)+'%':'—';
+estimatedHp=usableTotal?Math.round(total):0;
 $('useEstimatedHp').textContent=estimatedHp?'算出したHPを使用：'+fmt(estimatedHp):'';
 $('estimateChoice').hidden=!estimatedHp||document.activeElement!==$('bossTotal');
 const forwardRows=rowsFor($('forwardPreset').value);
-const bossTotal=Number($('bossTotal').value),current=Math.min(Math.max(0,forwardOperation)+60000,Number($('currentScore').value));
+const bossTotal=readNumber('bossTotal'),current=Math.min(Math.max(0,forwardOperation)+60000,readNumber('currentScore'));
 const hasForward=$('bossTotal').value!==''&&$('currentScore').value!==''&&$('forwardOperation').value!==''&&(bossTotal!==0||current!==0);
 let forwardError='';
 if(hasForward){
- if(!Number.isFinite(bossTotal)||!Number.isFinite(current)||bossTotal<=0)forwardError='ボスHPは0より大きい数値にしてください。';
+ if(!Number.isSafeInteger(Math.round(bossTotal)))forwardError='ボスHPに有効な数値を入力してください。大きすぎる数値は計算できません。';
+ else if(bossTotal<=0)forwardError='ボスHPは0より大きい数値にしてください。';
+ else if(!Number.isFinite(readNumber('currentScore'))||!Number.isFinite(readNumber('forwardOperation')))forwardError='合計スコアと操作スコアに有効な数値を入力してください。';
  else if(forwardOperation<0||current<forwardOperation)forwardError='現在の合計スコアは操作スコア以上にしてください。';
 }
 const validForward=hasForward&&!forwardError;
@@ -140,18 +151,21 @@ $('toCap').textContent=validForward?fmt(Math.round(remaining)):'—';
 $('alreadyDealt').textContent=validForward?fmt(Math.round(bossTotal-remaining)):'—';
 $('damageScore').textContent=validForward?fmt(remainingShare*100)+'%':'—';
 $('scoreLeft').textContent=validForward?fmt((1-remainingShare)*100)+'%':'—';
-const sourceHp=Number($('compareSourceHp').value),targetHp=Number($('compareTargetHp').value);
-const sourceOperation=Math.min(5000,Number($('compareSourceOperation').value));
-const targetOperation=Math.min(5000,Number($('compareTargetOperation').value));
-const sourceScore=Math.min(Math.max(0,sourceOperation)+60000,Number($('compareSourceScore').value));
+const sourceHp=readNumber('compareSourceHp'),targetHp=readNumber('compareTargetHp');
+const sourceOperation=Math.min(5000,readNumber('compareSourceOperation'));
+const targetOperation=Math.min(5000,readNumber('compareTargetOperation'));
+const sourceScore=Math.min(Math.max(0,sourceOperation)+60000,readNumber('compareSourceScore'));
 const compareStarted=sourceHp!==0||targetHp!==0||sourceScore!==0||sourceOperation!==0||targetOperation!==0;
 let compareError='',dealtHp=0,targetDamage=0,targetScore=0;
 if(compareStarted){
- if(!Number.isFinite(sourceHp)||!Number.isFinite(targetHp)||sourceHp<=0||targetHp<=0)compareError='両方のボスHPは0より大きい数値にしてください。';
- else if(!Number.isFinite(sourceScore)||!Number.isFinite(sourceOperation)||!Number.isFinite(targetOperation)||sourceOperation<0||targetOperation<0||sourceScore<sourceOperation)compareError='元の合計スコアは操作スコア以上にしてください。';
+ if(!Number.isSafeInteger(Math.round(sourceHp))||!Number.isSafeInteger(Math.round(targetHp)))compareError='両方のボスHPに有効な数値を入力してください。大きすぎる数値は計算できません。';
+ else if(sourceHp<=0||targetHp<=0)compareError='両方のボスHPは0より大きい数値にしてください。';
+ else if(!Number.isFinite(readNumber('compareSourceScore'))||!Number.isFinite(readNumber('compareSourceOperation'))||!Number.isFinite(readNumber('compareTargetOperation')))compareError='合計スコアと操作スコアに有効な数値を入力してください。';
+ else if(sourceOperation<0||targetOperation<0)compareError='操作スコアは0以上にしてください。';
+ else if(sourceScore<sourceOperation)compareError='元の合計スコアは操作スコア以上にしてください。';
  else{
   dealtHp=sourceHp*fractionAtScore(sourceScore-sourceOperation,rowsFor($('compareSourcePreset').value));
-  if(dealtHp>targetHp+1e-8)compareError='削ったHP量が比較先のボスHPを超えるため、同じHP量は削れません。';
+  if(dealtHp>targetHp+Math.max(1e-8,targetHp*Number.EPSILON*16))compareError='削ったHP量が比較先のボスHPを超えるため、同じHP量は削れません。';
   else{
    targetDamage=Math.round(scoreAtFraction(Math.min(1,dealtHp/targetHp),rowsFor($('compareTargetPreset').value)));
    targetScore=targetDamage+targetOperation;
@@ -165,6 +179,6 @@ $('compareDealtHp').textContent=compareStarted&&dealtHp>0?fmt(Math.round(dealtHp
 $('compareDifference').textContent=compareStarted&&!compareError?(targetScore-sourceScore>=0?'+':'')+fmt(targetScore-sourceScore):'—';
 try{localStorage.setItem('zzz-deadly-hp-inverse-v1',JSON.stringify(Object.fromEntries(fields.map(id=>[id,$(id).value]))))}catch{}
 }
-for(const id of fields)$(id).addEventListener('input',calculate);
+for(const id of fields)$(id).addEventListener('input',event=>{if(!event.isComposing)calculate()});
 commitLimits();
 </script></body></html>
