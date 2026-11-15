@@ -350,8 +350,8 @@ main > .chars .char .conv{
 
 /* Keep long constellation and weapon labels inside one line. */
 .slot .meta2,.char .meta2{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap!important;overflow-wrap:normal;word-break:normal;flex-shrink:0}
-main > .teams .slot .meta2{font-size:14px!important;font-weight:900}
-main > .chars .char .meta2{font-size:13px!important;font-weight:900}
+main > .teams .slot .meta2{font-size:14px!important;font-weight:600}
+main > .chars .char .meta2{font-size:13px!important;font-weight:600}
 
 /* Shared navigation button: equal bars and an unclipped dropdown. */
 .headerDecor{overflow:visible}
