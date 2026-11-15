@@ -1,5 +1,5 @@
 /* Visual theme only. Application behavior and storage remain in index.html. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
 :root{--bg:#141414;--panel:#101010;--card:#202020;--line:#414141;--text:#f7f7f2;--muted:#bcbcbc;--accent:#f0eb00;--accentbg:#373600}
 body{background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);font-family:'Inter','Zen Kaku Gothic New',sans-serif;font-variant-numeric:tabular-nums;font-weight:500}
 button,input,select,textarea{font-family:inherit;font-style:normal}
@@ -371,8 +371,8 @@ main > .teams .teamhead .teamCost{
   line-height:20.4px;
   letter-spacing:-.04em;
 }
-main > .teams .teamhead b{font-weight:700}
 main > .teams .groupLabel .groupCost,
 main > .teams .groupLabel .allCost,
-main > .teams .teamhead .teamCost{font-weight:500}
+main > .teams .teamhead b,
+main > .teams .teamhead .teamCost{font-weight:600}
 .headerDecor::before{letter-spacing:.14em;font-weight:700}
