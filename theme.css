@@ -293,7 +293,7 @@ main > .teams .bangbooSlot.empty:active{
 main > .teams .groupLabel.firstGroup{position:relative;margin-top:43px;padding-top:var(--section-space)}
 main > .teams .moveActions{position:absolute;top:-43px;left:var(--section-space);display:flex;gap:var(--section-space)}
 main > .teams .moveActions button{
-  width:53px;height:33px;min-width:53px;min-height:33px;padding:0;
+  width:53px;height:41px;min-width:53px;min-height:41px;padding:0;
   display:inline-flex;align-items:center;justify-content:center;line-height:1;
   background:transparent;color:#d9371d;border:0;border-radius:0;box-shadow:none;
 }
