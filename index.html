@@ -505,14 +505,15 @@ async function saveSelectedGroupImage(){
             el.style.setProperty('line-height','18px','important');
           });
           cloned.querySelectorAll('.slot .meta2').forEach(el=>{
-            const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize)||14;
+            const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
+            if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.6)+'px','important');
             el.style.alignSelf='end';
             el.style.setProperty('line-height','24px','important');
             el.style.setProperty('margin-top','0','important');
             el.style.setProperty('margin-bottom','0','important');
             el.style.setProperty('padding-top','0','important');
-            shrinkSingleLine(el,base,doc.defaultView);
           });
+          cloned.querySelectorAll('.slot .meta2').forEach(el=>shrinkSingleLine(el,20.8,doc.defaultView));
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             let size=parseFloat(el.style.fontSize);
             const style=doc.defaultView.getComputedStyle(el);
