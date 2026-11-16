@@ -474,7 +474,7 @@ async function saveSelectedGroupImage(){
             el.style.alignItems='center';
           });
           // Summary labels inherit the same Inter size and weight as the site.
-          window.__exportTypographyDebug=['.groupCost','.teamCost','.teamhead b','.slot .meta2'].map(sel=>{
+          console.log('__EXPORT_FONT__'+JSON.stringify(['.groupCost','.teamCost','.teamhead b','.slot .meta2'].map(sel=>{
             const el=cloned.querySelector(sel),style=doc.defaultView.getComputedStyle(el),range=doc.createRange();
             range.selectNodeContents(el);
             return {selector:sel,font:style.fontFamily,size:style.fontSize,weight:style.fontWeight,spacing:style.letterSpacing,numeric:style.fontVariantNumeric,textWidth:range.getBoundingClientRect().width,loaded:doc.fonts?.check(`${style.fontWeight} ${style.fontSize} Inter`,el.textContent)};
@@ -498,7 +498,7 @@ async function saveSelectedGroupImage(){
             el.style.setProperty('height','60px','important');
             el.style.alignSelf='start';
             el.style.setProperty('margin-bottom','0','important');
-          });
+          })));
           cloned.querySelectorAll('.slot strong').forEach(el=>{
             el.style.setProperty('padding-left','2px','important');
             el.style.setProperty('padding-right','2px','important');
