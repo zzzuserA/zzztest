@@ -28,6 +28,7 @@
 .bangbooSlot:not(.empty) .initial{position:absolute;top:3.75px;left:50%;transform:translateX(-50%);width:44px;height:44px;margin:0}
 .bangbooSlot:not(.empty) strong{position:absolute;left:2px;right:2px;bottom:4px;width:auto!important;max-width:none!important;text-align:center;white-space:nowrap}
 /* Scale the live agent content together, leaving export and frame dimensions intact. */
+body:not(.image-export) .slot:not(.empty):has(.meta2){grid-template-columns:minmax(0,1fr)}
 body:not(.image-export) .slot:not(.empty):has(.meta2) img,
 body:not(.image-export) .slot:not(.empty):has(.meta2) .initial{transform:translateY(.8px) scale(1.04)}
 body:not(.image-export) .slot:not(.empty):has(.meta2) strong{transform:translateY(3.4px) scale(1.04)}
