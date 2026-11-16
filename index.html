@@ -477,7 +477,7 @@ async function saveSelectedGroupImage(){
           window.__exportTypographyDebug=['.groupCost','.teamCost','.teamhead b','.slot .meta2'].map(sel=>{
             const el=cloned.querySelector(sel),style=doc.defaultView.getComputedStyle(el),range=doc.createRange();
             range.selectNodeContents(el);
-            return {selector:sel,font:style.fontFamily,size:style.fontSize,weight:style.fontWeight,spacing:style.letterSpacing,numeric:style.fontVariantNumeric,textWidth:range.getBoundingClientRect().width,loaded:doc.fonts?.check(style.font,el.textContent)};
+            return {selector:sel,font:style.fontFamily,size:style.fontSize,weight:style.fontWeight,spacing:style.letterSpacing,numeric:style.fontVariantNumeric,textWidth:range.getBoundingClientRect().width,loaded:doc.fonts?.check(`${style.fontWeight} ${style.fontSize} Inter`,el.textContent)};
           });
 
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
