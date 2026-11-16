@@ -200,4 +200,13 @@ main>.damage-intro h1{max-width:calc(100% - 45px);margin-bottom:9px}
 .damage-detail-phase h4{margin:4px 0;color:var(--accent);font-size:13px}
 .damage-detail-phase ol{display:grid;gap:5px;margin:0;padding-left:20px;font-size:12px;font-variant-numeric:tabular-nums}
 .damage-detail-phase li span{display:block;color:var(--muted);line-height:1.55}
+.effect-details{margin-top:10px}
+.effect-details summary{cursor:pointer;width:fit-content;color:var(--accent);font-size:13px;font-weight:700}
+.effect-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
+.effect-table th,.effect-table td{padding:6px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.effect-table th,.effect-table td:last-child{color:var(--muted)}
+.effect-table td:nth-child(3){white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--accent)}
+.effect-reference{font-size:12px;margin:6px 0 10px;padding-left:20px}
+.effect-reference li+li{margin-top:3px}
+.skill-core-effects{padding:8px 10px;border:1px solid var(--line);border-radius:7px}
 @media(max-width:485px){.skill-row{grid-template-columns:minmax(0,1fr) minmax(42px,.45fr) minmax(42px,.45fr) auto;gap:5px}.skill-row .add{padding:5px 7px}}

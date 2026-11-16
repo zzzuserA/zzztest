@@ -47,15 +47,26 @@ export function voidflareAttribute(agents,slot,source){
   return conditions[attribute]?baseAttribute(attribute):'';
 }
 
+export const specialVoidflares=[
+  {id:-2,min:1,label:'特殊虚光（M1入場／M4再獲得）',power:1},
+  {id:-3,min:6,label:'特殊虚光（M6通常4段目）',power:.25},
+];
+
 export function luminizeRows(agents,slot,voidflares){
   const actor=agents[slot];
   if(findAgent(actor)?.id!=='1581')return [];
+  const mindscape=actor.mindscape??0;
   const sources=voidflares.map(source=>{
+    const special=specialVoidflares.find(item=>item.id===source&&mindscape>=item.min);
+    if(special){
+      const next=(slot+1)%agents.length;
+      const attribute=voidflareAttribute(agents,slot,next)||'流明';
+      return {slot,attribute,special};
+    }
     const attribute=voidflareAttribute(agents,slot,source);
     return attribute?{slot:source,attribute}:null;
   });
   const ready=sources.length>0&&sources.length<=3&&sources.every(Boolean);
-  const mindscape=actor.mindscape??0;
   const refringe=(agents.every(member=>findAgent(member)?.specialty==='異常')?.10:0)+(mindscape>=2?.20:0);
   const masteryRate=[.10,.12,.14,.15,.16,.18,.20][coreLevel(actor)-1];
   return luminizeSkills.map(([id,title,group,step])=>{

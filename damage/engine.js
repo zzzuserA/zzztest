@@ -1,6 +1,7 @@
 import {luminizeRows,reactionRows} from './reactions.js';
 import {attackRate,findAgent} from './catalog.js';
 import {baseAttribute,damageBonusForAttack,equipmentStats,attackAttribute} from './equipment.js';
+import {coreBonuses} from './core-upgrades.js';
 
 export const baseFields = [
   ['atk','基礎攻撃力（音動機込み）',1500], ['hp','基礎HP',7673], ['cr','基礎会心率 %',5],
@@ -38,20 +39,22 @@ const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
 const pos = n=>Math.max(0,n);
 const line=(label,value,...terms)=>({label,value,terms});
 const product=(label,value,...terms)=>({...line(label,value,...terms),operator:' × '});
-export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=0}={}) {
+export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=0,fixedDmgBonus}={}) {
   const {base:b,main,sub,buffs:f}=member;
   const info=findAgent(member);
+  const core=coreBonuses(info,member.levels?.core);
   const {stats:g,counts,weapon}=gear??equipmentStats(member,info);
   const attr=baseAttribute(attribute||info?.attribute);
   const physicalDiscs=Array.isArray(member.equipment?.discs);
   const [ma,mh,mp,md,mcr,mcd,map,mam]=main.map((n,i)=>physicalDiscs?0:n*mainFields[i][1]);
   const [sa,sap,sh,shp,scr,scd,sp,sapm,sdef,sdefPct]=subFields.map(([,value],i)=>(sub[i]??0)*value);
-  const bonus=key=>(f[key]??0)+(g[key]??0);
-  const baseAtk=weapon&&b.weaponAtk===undefined?(info?.stats.atk??b.atk):b.atk;
+  const bonus=key=>(f[key]??0)+(g[key]??0)+(core[key]??0);
+  const baseAtk=(weapon&&b.weaponAtk===undefined?(info?.stats.atk??b.atk):b.atk)+(core.atk??0);
   const weaponAtk=weapon?(g.weaponAtk??0):(b.weaponAtk??0);
+  const baseHp=b.hp+(core.hp??0);
   const atk=pos(((baseAtk+weaponAtk)*(1+(ma+sap+bonus('atkPct'))/100)+sa+
     (physicalDiscs?(g.atkFlat??0):b.diskAtk))*(1+bonus('atkCombat')/100)+(f.atkFlat??0));
-  const hp=pos((b.hp*(1+(mh+shp+bonus('hpPct'))/100)+sh+
+  const hp=pos((baseHp*(1+(mh+shp+bonus('hpPct'))/100)+sh+
     (physicalDiscs?(g.hpFlat??0):b.diskHp))*(1+bonus('hpCombat')/100)+(f.hpFlat??0));
   const baseDef=(b.ownDef??info?.stats.ownDef??0)+(g.weaponDef??0);
   const openingDef=baseDef*(1+(sdefPct+(f.defPct??0)+(g.defPct??0))/100)+(g.defFlat??0)+sdef;
@@ -60,8 +63,9 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const rawCr=(b.cr+mcr+scr+bonus('cr')+roseCr)/100;
   const cr=clamp(rawCr,0,1);
   const ap=pos(b.ap+map+sapm+bonus('ap'));
-  const am=pos(b.am*(1+(mam+bonus('am'))/100)+bonus('amFlat'));
-  const cd=pos((b.cd+mcd+scd+bonus('cd')+(counts['折枝の刀歌']>=4&&am>=115?30:0))/100);
+  const am=pos((b.am+(core.am??0))*(1+(mam+(f.am??0)+(g.am??0))/100)+bonus('amFlat'));
+  const branchCd=counts['折枝の刀歌']>=4&&am>=115?30:0;
+  const cd=pos((b.cd+mcd+scd+bonus('cd')+branchCd)/100);
   const sheer=pos(atk*b.sheerAtk/100+hp*b.sheerHp/100+bonus('sheer'));
   const effectiveDef=pos(enemy.def*(1-clamp((bonus('def')+defDown)/100,0,1))*(1-clamp((mp+bonus('pen'))/100,0,1))-sp);
   const def=794/(794+effectiveDef);
@@ -69,7 +73,7 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const resReduction=bonus('res')+resDown;
   const res=pos(1+(resReduction-enemyRes)/100);
   const stun=pos((enemy.stun+bonus('stun'))/100);
-  const dmg=pos(1+(md+bonus('dmg')+damageBonusForAttack(g,attr,type)+(type==='basic'?bonus('basicDmg'):0))/100);
+  const dmg=pos(1+(fixedDmgBonus??md+bonus('dmg')+damageBonusForAttack(g,attr,type)+(type==='basic'?bonus('basicDmg'):0))/100);
   const crit=1+cr*cd;
   const severity=pos((b.critSeverity??250)/100);
   const sharpCrit=(1+cr*(severity-1))*(1+clamp(rawCr-1,0,1)*(severity-1));
@@ -77,7 +81,8 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const anomalyCore=atk*(ap/100)*2*dmg*def;
   const sharpBonus=pos(1+(bonus('sharpDmg')+(g['sharp:'+attr]??0))/100);
   const sheerBonus=pos(1+bonus('sheerDmg')/100);
-  return {atk,hp,ownDef,cr,rawCr,cd,ap,am,sheer,def,res,stun,crit,dmg,sharpCrit,sharpBonus,sheerBonus,effectiveDef,enemyRes,resReduction,anomalyBonus,anomalyCore,
+  return {atk,baseAtk,weaponAtk,hp,baseHp,ownDef,openingDef,roseCr,branchCd,cr,rawCr,cd,ap,am,sheer,def,res,stun,crit,dmg,
+    sharpCrit,sharpBonus,sheerBonus,effectiveDef,enemyRes,resReduction,anomalyBonus,anomalyCore,
     anomalyFactor:(ap/100)*2*dmg*def*res*anomalyBonus,
     skill:atk*dmg*crit*def*res,
     anomaly:anomalyCore*res*anomalyBonus,
@@ -132,11 +137,16 @@ function luminizeDamage(row,agents,enemy,trace){
   const refringeFactor=1+refringe+caster.ap*.0002;
   const multiplier=amount/100*(1+caster.ap*masteryRate/100)*(mindscape>=4?1.12:1);
   const base=sources.reduce((sum,source,i)=>{
+    const {special}=source;
+    // The simulator evaluates agents at level 60, giving special Voidflares 150% DMG Bonus.
     const member=stats(agents[source.slot],enemy,{attribute:source.attribute,
-      gear:row.gearSlot===source.slot?row.gear:undefined,resDown:mindscape>=1?50:0});
-    const value=member.anomalyCore*member.res;
+      gear:row.gearSlot===source.slot?row.gear:undefined,resDown:mindscape>=1?50:0,
+      fixedDmgBonus:special?150:undefined});
+    const power=special?.power??1;
+    const value=member.anomalyCore*member.res*power;
     trace?.push(resistanceLine(member,'虚光 '+(i+1)+'の耐性補正'),
-      product('虚光 '+(i+1)+'の基礎値（'+agents[source.slot].name+'・'+source.attribute+'）',value,...anomalyTerms(member)));
+      product('虚光 '+(i+1)+'の基礎値（'+(special?.label??agents[source.slot].name)+'・'+source.attribute+'）',value,
+        ...anomalyTerms(member),...(special?[['特殊虚光の獲得条件による補正',power]]:[])));
     return sum+value;
   },0);
   const stun=row.stun?caster.stun:1;
@@ -263,14 +273,13 @@ export function substatObjective(scenario,slot){
   };
   const {base,buffs}=actor;
   const info=findAgent(actor);
-  const baseAtk=gear.weapon?(base.weaponAtk===undefined?(info?.stats.atk??base.atk):base.atk)+(gear.stats.weaponAtk??0):
-    base.atk+(base.weaponAtk??0);
+  const {baseAtk,weaponAtk,baseHp}=stats(actor,enemy,{gear});
   const baseDef=(base.ownDef??info?.stats.ownDef??0)+(gear.stats.weaponDef??0);
   const atkDirection=1+((buffs.atkCombat??0)+(gear.stats.atkCombat??0))/100;
   const hpDirection=1+(buffs.hpCombat??0)/100;
   const defDirection=1+(buffs.ownDefCombat??0)/100;
-  const atkAxis=(baseAtk*.03>=19)===(atkDirection>=0)?1:0;
-  const hpAxis=(base.hp*.03>=112)===(hpDirection>=0)?3:2;
+  const atkAxis=((baseAtk+weaponAtk)*.03>=19)===(atkDirection>=0)?1:0;
+  const hpAxis=(baseHp*.03>=112)===(hpDirection>=0)?3:2;
   const defAxis=baseDef*.048>=15?9:8;
   const rose=gear.counts['棘まとう薔薇']>=4;
   const axes=[];

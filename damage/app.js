@@ -2,9 +2,12 @@ import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,cal
 
 import {catalog,skillGroups,findAgent,effectiveLevel,attackRate,levelLabel,skillName} from './catalog.js';
 
-import {attributes,weapons,weaponByName,weaponLevels,discSets,discLayouts,discSelection,gearLabels,attackAttribute} from './equipment.js';
+import {attributes,weapons,weaponByName,weaponLevels,discSets,discLayouts,discSelection,gearLabels,attackAttribute,baseAttribute,
+  equipmentStats,discReference,fourPieceConditions} from './equipment.js';
+import {coreBonuses} from './core-upgrades.js';
+import {corePassiveValues} from './core-passives.js';
 import {maxSubRolls} from './optimizer.js';
-import {luminizeRows,reactionRows,voidflareAttribute} from './reactions.js';
+import {luminizeRows,reactionRows,specialVoidflares,voidflareAttribute} from './reactions.js';
 
 import {assetFor} from './visual-assets.js';
 let allocationWorker=null;
@@ -152,6 +155,79 @@ function damageColumns(values){
   return values.map((value,i)=>`<span class="skill-estimate"><small>${i?'ブレイク中':'通常時'}</small><b>${value===null?'—':fmt(value)}</b></span>`).join('');
 }
 const selectedVoidflares=()=>voidflareChoices.filter(source=>source!==-1);
+const voidflareName=(agents,source)=>specialVoidflares.find(item=>item.id===source)?.label??agents[source]?.name??'—';
+
+const effectLabels={
+  ...Object.fromEntries(buffFields.map(([key,label])=>[key,label])),
+  ...gearLabels,
+  atk:'基礎攻撃力',hp:'基礎HP',weaponAtk:'基礎攻撃力',weaponDef:'基礎防御力',impact:'衝撃力 %',energyFlat:'基礎エネルギー自動回復',
+  ultimate:'終結の与ダメージ %',basic:'通常攻撃の与ダメージ %',dash:'ダッシュ攻撃の与ダメージ %',
+  dashAfter:'ダッシュ・追加攻撃の与ダメージ %',shield:'シールド量 %',daze:'与えるブレイク値 %',
+  defPct:'防御力 %',energyGain:'エネルギー獲得効率 %',buildup:'状態異常蓄積効率 %',
+};
+const displayOnlyStats=new Set(['impact','energy','energyFlat','energyGain','shield','daze','buildup']);
+function effectValue(key,value,isCore=false){
+  const [type,attribute]=key.split(':');
+  let label=effectLabels[key];
+  if(attribute){
+    const suffix={element:'ダメージ',buildup:'状態異常蓄積効率',sharp:'鋭撃ダメージ'}[type];
+    label=attribute+'属性'+suffix+' %';
+  }
+  if(isCore&&key==='impact')label='基礎衝撃力';
+  if(isCore&&key==='am')label='基礎異常掌握';
+  label??=key;
+  const units=label.endsWith(' %')?'%':key==='energyFlat'?'Pt/秒':'Pt';
+  return [label.replace(/ %$/,''),(value>=0?'+':'')+dec(value)+units];
+}
+function coreReference(info,level){
+  if(!info)return '';
+  const scales=corePassiveValues[info.id]??[];
+  const labels=scales.flatMap(([label,unit,values])=>values[level-1]==null?[]:
+    [escape(label)+' '+dec(values[level-1])+unit]);
+  if(info.id==='1311')labels.push('コアパッシブの攻撃力アップ上限 1,200Pt（M2で1,600Pt）');
+  if(info.id==='1581')labels.push('昇華倍率 +0.02%／異常マスタリー1Pt。異常3人で+10%、M2で+20%。',
+    '追加能力の攻撃力アップは異常1／2／3人で開幕攻撃力の6%／12%／40%（上限1,600Pt）。');
+  return `<p class="hint">コアパッシブ・追加能力の参照値（${levelLabel('core',level)}）。発動条件は<a href="${escape(info.sources.wiki)}" target="_blank" rel="noreferrer">キャラ別のスキル資料</a>で確認できます。</p>
+    ${labels.length?`<ul class="effect-reference">${labels.map(label=>`<li>${label}</li>`).join('')}</ul>`:''}`;
+}
+function showBuffDetails(member,combat){
+  const target=$('buff-detail-content');
+  if(!target)return;
+  const info=findAgent(member);
+  const level=member.levels?.core??7;
+  const effects=[];
+  const record=(source,key,value,isCore=false)=>{
+    if(!value)return;
+    const [label,amount]=effectValue(key,value,isCore);
+    effects.push([source,label,amount,displayOnlyStats.has(key.split(':')[0])?'効果の参照値':'自動反映']);
+  };
+  for(const [key,value] of Object.entries(coreBonuses(info,level)))record('コア強化 '+levelLabel('core',level),key,value,true);
+  const {counts,weapon}=equipmentStats(member,info,record);
+  if(counts['棘まとう薔薇']>=4)effects.push(['棘まとう薔薇 4セット','会心率','+'+dec(combat.roseCr)+'%',
+    '開幕防御力 '+dec(combat.openingDef)+'（1,000で+8%／1,800で+16%）']);
+  if(counts['折枝の刀歌']>=4)effects.push(['折枝の刀歌 4セット','会心ダメージ','+'+dec(combat.branchCd)+'%',
+    '異常掌握 '+dec(combat.am)+'（115以上で+30%）']);
+  if(counts['夜明けの紀行']>=4&&baseAttribute(info?.attribute)!=='エーテル')effects.push(['夜明けの紀行 4セット','会心ダメージ','+0%',
+    'エーテルの装備者は+30%']);
+  for(const [key,value] of Object.entries(member.buffs)){
+    if(value)effects.push(['手入力',...effectValue(key,value),'手入力値を反映']);
+  }
+  const discNotes=Object.entries(counts).flatMap(([name,count])=>count>=4&&fourPieceConditions[name]?
+    [`<li><strong>${escape(name)} 4セット</strong> ${escape(fourPieceConditions[name])}</li>`]:[]);
+  const weaponNotes=weapon?.passives.map(([label,values])=>{
+    const value=values[(member.equipment?.refine??1)-1];
+    return `<li>${escape(label)} ${value==null?'資料なし':dec(value)}</li>`;
+  })??[];
+  target.innerHTML=`
+    ${effects.length?`<table class="effect-table"><thead><tr><th scope="col">効果元</th><th scope="col">ステータス</th><th scope="col">補正値</th><th scope="col">適用条件</th></tr></thead>
+      <tbody>${effects.map(row=>`<tr>${row.map(value=>`<td>${escape(value)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="hint">適用している補正はありません。</p>'}
+    ${coreReference(info,level)}
+    ${discNotes.length?`<p class="hint"><a href="${discReference}" target="_blank" rel="noreferrer">ディスクの条件付き効果</a></p><ul class="effect-reference">${discNotes.join('')}</ul>`:''}
+    ${weaponNotes.length?`<p class="hint">${escape(weapon.name)}の効果（★${member.equipment?.refine??1}）${weapon.role!==info?.specialty?' · 特性不一致のため効果無効':''}</p>
+      <ul class="effect-reference">${weaponNotes.join('')}</ul>`:''}
+    <p class="hint">条件付きの効果を常時適用して比較する場合は、適用済みの補正値を確認し、追加分を「常時バフ・デバフの手入力」に入力してください。</p>`;
+}
+
 const specialRows=()=>skillGroup==='luminize'?luminizeRows(current().agents,slot,selectedVoidflares()):reactionRows(current().agents,slot,reactionSource);
 const detailButton=(id,key,title)=>`<button type="button" class="quiet detail-toggle" data-damage-detail="${escape(key)}" aria-controls="${escape(id)}" aria-expanded="false" aria-label="${escape(title)}の計算詳細">計算詳細</button>`;
 const detailPanel=id=>`<section class="damage-detail" id="${escape(id)}" aria-label="計算詳細" hidden></section>`;
@@ -177,7 +253,7 @@ function showSkills() {
   const a=current().agents[slot];
   const entry=findAgent(a);
   if(!entry) return;
-  const groups=Object.entries(skillGroups).filter(([id])=>entry.skills.some(row=>row.group===id));
+  const groups=Object.entries(skillGroups).filter(([id])=>id==='core'||entry.skills.some(row=>row.group===id));
   if(entry.specialty==='異常')groups.push(['reaction','状態異常・特殊ダメージ']);
   if(entry.id==='1581')groups.push(['luminize','耀変ダメージ']);
   if(entry.specialty==='鋭御'&&entry.skills.some(row=>row.label.includes('重傷')))groups.push(['sharp-special','鋭御・重傷']);
@@ -187,10 +263,12 @@ function showSkills() {
   const luminize=skillGroup==='luminize';
   const specialDamage=reaction||luminize;
   const agents=current().agents;
-  const active=specialDamage?0:effectiveLevel(a,rows[0]);
+  const active=specialDamage?0:effectiveLevel(a,rows[0]??{group:skillGroup});
   const reactionOptions=specialDamage?specialRows():[];
-  const voidflareSources=luminize?agents.flatMap((member,i)=>
-    voidflareAttribute(agents,slot,i)?[[String(i),member.name]]:[]):[];
+  const voidflareSources=luminize?[
+    ...agents.flatMap((member,i)=>voidflareAttribute(agents,slot,i)?[[String(i),member.name]]:[]),
+    ...specialVoidflares.filter(item=>(a.mindscape??0)>=item.min).map(item=>[String(item.id),item.label]),
+  ]:[];
   const max=skillGroup==='core'?7:16;
   const selected=previewLevel||active;
   $('skill-dialog-title').textContent=entry.name+'のスキル別ダメージ';
@@ -210,8 +288,13 @@ function showSkills() {
     ${reaction?'<p class="hint">混沌は下地の状態異常の基礎値に、固定倍率（通常450%、霜烈600%）と残存分を足した倍率を掛けます。下の「基本倍率」は残存分を含まない値、「残存分が最大」は下地の付与直後の値です。複数キャラの蓄積割合や未対応の固有補正は手動で調整してください。</p>':''}
     ${luminize?`<div class="field-grid">${voidflareChoices.map((choice,i)=>`<label class="field"><span>虚光 ${i+1} の付与元</span>
       <select id="voidflare-${i}" data-voidflare="${i}">${option('-1','なし',String(choice))}${voidflareSources.map(([value,name])=>option(value,name,String(choice))).join('')}</select></label>`).join('')}</div>
-      <p class="hint">${voidflareSources.length?'昇華を起こした味方を虚光ごとに選択してください。同じ味方を複数回選べます。':'編成に昇華を起こす味方を追加してください。'} 各キャラの現在の設定値で試算します。凸で得る特殊「虚光」は対象外です。</p>`:''}
-    <div class="skill-list">${specialDamage?reactionOptions.map(row=>{
+      <p class="hint">${voidflareSources.length?'各枠の付与元を選択してください。同じ付与元を複数回選べます。':'編成に昇華を起こす味方を追加してください。特殊虚光はレミエールのM1から選べます。'} 現在の設定値で試算します。</p>`:''}
+    ${skillGroup==='core'?`<div class="skill-core-effects">
+      <p class="hint">コア強化によるステータス上昇（未強化からの合計）</p>
+      <ul class="effect-reference">${Object.entries(coreBonuses(entry,selected)).filter(([,value])=>value).map(([key,value])=>
+        `<li>${effectValue(key,value,true).join(' ')}</li>`).join('')||'<li>上昇値なし</li>'}</ul>
+      ${coreReference(entry,selected)}</div>`:''}
+    <div class="skill-list">${skillGroup==='core'?'':specialDamage?reactionOptions.map(row=>{
       const id='detail-skill-'+row.id;
       return `<div class="skill-row"><div><strong>${escape(row.name)}</strong><small>${luminize?`Lv. ${row.level} · スキル倍率 ${dec(row.baseRate)}%`:`${escape(agents[row.source].name)}を参照${row.id.startsWith('disorder-')?' · '+dec(row.amount)+'%':''}`}</small>
         ${row.amount==null?'':detailButton(id,row.id,row.name)}</div>
@@ -241,12 +324,14 @@ function showBuild() {
     <section class="edit-group"><div class="edit-top"><h3>基礎値</h3><label class="field"><span>エージェント名</span><input maxlength="36" value="${escape(a.name)}" data-key="name"></label></div>
       <div class="field-grid">${baseFields.map(([key,label])=>field(key==='atk'&&a.base.weaponAtk!==undefined?'キャラの基礎攻撃力':label,a.base[key]??(key==='ownDef'?findAgent(a)?.stats.ownDef:undefined)??(key==='critSeverity'?250:''),`base.${key}`)).join('')}
       ${a.base.weaponAtk!==undefined?field('音動機の基礎攻撃力',a.base.weaponAtk,'base.weaponAtk'):''}</div>
+      ${findAgent(a)?'<p class="hint">キャラの基礎値はコア未強化時の値です。コア強化分は戦闘時ステータスとダメージに加算されます。</p>':''}
     </section>
     ${a.equipment?.discs?'<p class="hint">以前のディスクメイン効果を引き継いでいます。入力方法は音動機・ディスク欄から切り替えられます。</p>':diskGroup('ディスクメインステータスの個数','main',mainFields,a.main)}
     <section class="edit-group"><h3>常時バフ・デバフの手入力</h3><div class="field-grid">
     ${buffFields.map(([key,label])=>field(label,a.buffs[key],`buffs.${key}`,{min:-1000000})).join('')}
     </div></section>
-    <section class="edit-group"><h3>戦闘時ステータス</h3><div class="field-grid" id="combat-stats"></div></section>`;
+    <section class="edit-group"><h3>戦闘時ステータス</h3><div class="field-grid" id="combat-stats"></div>
+      <details class="effect-details" id="buff-details"><summary>バフ・デバフ詳細</summary><div id="buff-detail-content"></div></details></section>`;
 }
 function showEquipment() {
   allocationWorker?.terminate();
@@ -345,7 +430,7 @@ function showRotation() {
       ${linked||measured?`<span class="rot-static">${linked?'参照式の条件':'補正を適用済み'}</span>`:
       `<select data-key="phase" aria-label="敵の状態 ${i+1}">${option('normal','通常時',a.phase)}${option('stun','ブレイク中',a.phase)}</select>`}</div>
       <div class="rot-cell rot-quantity">
-      ${reaction?`<small>${voidflares?'虚光 '+escape(voidflares.map(source=>agents[source]?.name??'—').join(' / ')):'下地 '+escape(agents[a.reaction.source]?.name??'—')}</small>`:a.catalog?`<label><small id="row-rate-${i}">${amountLabel}</small>
+      ${reaction?`<small>${voidflares?'虚光 '+escape(voidflares.map(source=>voidflareName(agents,source)).join(' / ')):'下地 '+escape(agents[a.reaction.source]?.name??'—')}</small>`:a.catalog?`<label><small id="row-rate-${i}">${amountLabel}</small>
       <select data-rate-level aria-label="技のレベル ${i+1}" ${catalogRate?'':'disabled'}>
         ${option('0','育成設定に連動',String(a.catalog.level||0))}
         ${catalogRate?.skill.rates.map((rate,j)=>option(String(j+1),levelLabel(catalogRate.skill.group,j+1)+(rate==null?'（資料なし）':''),String(a.catalog.level||0))).join('')??''}
@@ -391,8 +476,10 @@ function showResult() {
     if(detail&&!detail.hidden)detail.innerHTML=renderDamageDetails(damageDetails(current(),{index:i}));
   });
   const m=report.members[slot];
-  const display=[['攻撃力',m.atk],['HP',m.hp],['防御力',m.ownDef],['会心率 %',m.rawCr*100],['会心ダメージ %',m.cd*100],['異常マスタリー',m.ap],['異常掌握',m.am],['透徹力',m.sheer],['防御補正 %',m.def*100]];
+  const display=[['攻撃力',m.atk],['基礎攻撃力',m.baseAtk+m.weaponAtk],['HP',m.hp],['防御力',m.ownDef],['会心率 %',m.rawCr*100],['会心ダメージ %',m.cd*100],
+    ['異常マスタリー',m.ap],['異常掌握',m.am],['透徹力',m.sheer],['防御補正 %',m.def*100]];
   $('combat-stats').innerHTML=display.map(([label,n])=>`<div class="stat"><span>${label}</span><strong>${dec(n)}</strong></div>`).join('');
+  if($('buff-details')?.open)showBuffDetails(editAgent(),m);
   $('sub-roll-total').textContent=editAgent().sub.reduce((sum,n)=>sum+(n??0),0);
 }
 function show() {
@@ -432,6 +519,9 @@ function normalize(event,resolve) {
 const editAgent=()=>current().agents[slot];
 const editEnemy=()=>current().enemy;
 const editAction=el=>current().actions[el.closest('[data-row]').dataset.row];
+$('build-content').addEventListener('toggle',event=>{
+  if(event.target.id==='buff-details'&&event.target.open)showBuffDetails(editAgent(),calculate(current()).members[slot]);
+},true);
 $('build-content').addEventListener('input',event=>{
   setInput(event,editAgent);
   if(event.target.dataset.key==='name') {
