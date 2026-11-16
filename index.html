@@ -435,8 +435,8 @@ async function saveSelectedGroupImage(){
     const teamWidth=target.querySelector('.team')?.getBoundingClientRect().width||0;
     const exportGap=2;
     const exportWidth=teamWidth*3+exportGap*2;
-    const canvas=await html2canvas(target,{
-      backgroundColor:'#141414',
+    const rendered=await html2canvas(target,{
+      backgroundColor:null,
       useCORS:true,
       allowTaint:false,
       scale:2,
@@ -449,8 +449,6 @@ async function saveSelectedGroupImage(){
       onclone:(doc)=>{
         const cloned=doc.getElementById('teams');
         if(cloned){
-          cloned.style.backgroundImage=doc.defaultView.getComputedStyle(doc.body).backgroundImage;
-          cloned.style.backgroundColor='#141414';
           cloned.querySelectorAll('.moveActions').forEach(el=>el.remove());
           cloned.querySelectorAll('.firstGroup').forEach(el=>el.classList.remove('firstGroup'));
           if(teamWidth){
@@ -537,6 +535,20 @@ async function saveSelectedGroupImage(){
         }
       }
     });
+    const canvas=document.createElement('canvas');
+    canvas.width=rendered.width;
+    canvas.height=rendered.height;
+    const context=canvas.getContext('2d');
+    context.fillStyle='#141414';
+    context.fillRect(0,0,canvas.width,canvas.height);
+    context.save();
+    context.translate(canvas.width/2,canvas.height/2);
+    context.rotate(Math.PI/4);
+    context.fillStyle='#171717';
+    const extent=Math.ceil(Math.hypot(canvas.width,canvas.height));
+    for(let x=-extent;x<extent;x+=14)context.fillRect(x,-extent,6,extent*2);
+    context.restore();
+    context.drawImage(rendered,0,0);
     if(typeof canvas.toBlob==='function'){
       canvas.toBlob(blob=>{
         if(blob)showGroupImagePreview(blob);
