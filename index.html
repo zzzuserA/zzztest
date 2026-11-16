@@ -474,34 +474,9 @@ async function saveSelectedGroupImage(){
             el.style.alignItems='center';
           });
           // Summary labels inherit the same Inter size and weight as the site.
-          // Place each export glyph at the browser's measured Inter position.
-          // html2canvas can otherwise add extra spacing around tabular cost digits.
+          // Keep summary strings intact so html2canvas cannot separate cost digits.
           cloned.querySelectorAll('.groupCost,.allCost,.teamhead b,.teamCost').forEach(el=>{
-            const node=el.firstChild;
-            if(!node||node.nodeType!==3)return;
-            const box=el.getBoundingClientRect();
-            const chars=Array.from(node.textContent);
-            const range=doc.createRange();
-            const offsets=chars.map((ch,i)=>{
-              range.setStart(node,i);range.setEnd(node,i+1);
-              return range.getBoundingClientRect().left-box.left;
-            });
-            el.textContent='';
-            el.style.position='relative';
-            el.style.setProperty('display','inline-block','important');
-            el.style.setProperty('width',box.width+'px','important');
-            el.style.setProperty('height',box.height+'px','important');
             el.style.setProperty('letter-spacing','0','important');
-            chars.forEach((ch,i)=>{
-              const glyph=doc.createElement('span');
-              glyph.textContent=ch;
-              glyph.style.position='absolute';
-              glyph.style.left=offsets[i]+'px';
-              glyph.style.top='0';
-              glyph.style.whiteSpace='pre';
-              glyph.style.letterSpacing='0';
-              el.appendChild(glyph);
-            });
           });
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
@@ -543,6 +518,24 @@ async function saveSelectedGroupImage(){
             el.style.setProperty('padding-top','0','important');
           });
           cloned.querySelectorAll('.slot .meta2').forEach(el=>shrinkSingleLine(el,20.8,doc.defaultView));
+          // Reserve one equal-width Inter digit cell for every M/W value.
+          cloned.querySelectorAll('.slot .meta2').forEach(el=>{
+            const value=el.textContent;
+            el.textContent='';
+            for(const ch of value){
+              if(/[0-9]/.test(ch)){
+                const digit=doc.createElement('span');
+                digit.textContent=ch;
+                digit.style.display='inline-block';
+                digit.style.width='1ch';
+                digit.style.textAlign='center';
+                digit.style.fontVariantNumeric='tabular-nums';
+                el.appendChild(digit);
+              }else{
+                el.appendChild(doc.createTextNode(ch));
+              }
+            }
+          });
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             let size=parseFloat(el.style.fontSize);
             const style=doc.defaultView.getComputedStyle(el);
