@@ -474,6 +474,12 @@ async function saveSelectedGroupImage(){
             el.style.alignItems='center';
           });
           // Summary labels inherit the same Inter size and weight as the site.
+          window.__exportTypographyDebug=['.groupCost','.teamCost','.teamhead b','.slot .meta2'].map(sel=>{
+            const el=cloned.querySelector(sel),style=doc.defaultView.getComputedStyle(el),range=doc.createRange();
+            range.selectNodeContents(el);
+            return {selector:sel,font:style.fontFamily,size:style.fontSize,weight:style.fontWeight,spacing:style.letterSpacing,numeric:style.fontVariantNumeric,textWidth:range.getBoundingClientRect().width,loaded:doc.fonts?.check(style.font,el.textContent)};
+          });
+
           cloned.querySelectorAll('.slot strong,.bangbooSlot strong').forEach(el=>{
             const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
             if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.18)+'px','important');
