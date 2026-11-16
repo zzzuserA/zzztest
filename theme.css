@@ -392,6 +392,7 @@ main > .teamTopActions > button{font-size:13px}
 main > .teams .groupLabel.firstGroup{margin-top:51px}
 main > .teams .moveActions{top:-51px}
 @media(max-width:560px){
+  main > .teamTopActions{align-items:center}
   main > .teamTopActions > button,main > .teamTopActions #builder-transfer > button{font-size:12px;padding:8px 10px}
 }
 @media(max-width:360px){
