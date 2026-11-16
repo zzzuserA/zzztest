@@ -8,6 +8,7 @@
 <title>ゼンゼロ ダメージシミュレーター</title>
 <link rel="stylesheet" href="../theme.css?v=20261116-inter">
 <link rel="stylesheet" href="./style.css">
+<script src="../data-transfer.js" defer></script>
 <script type="module" src="./app.js"></script>
 </head>
 <body>
@@ -26,6 +27,7 @@
       <button type="button" id="new-lineup" class="quiet">新規編成</button>
     </div>
   </div>
+  <div class="data-transfer" id="damage-transfer" aria-label="ダメージ計算データの共有"></div>
   <div class="board">
     <div class="work">
       <section class="panel" aria-labelledby="party-title">
@@ -69,6 +71,12 @@
   <dialog id="skill-dialog" aria-labelledby="skill-dialog-title">
     <header class="section-head"><div><div class="label">SKILL DATA</div><h2 id="skill-dialog-title">スキルを選ぶ</h2></div><button type="button" class="close" id="close-skills" aria-label="スキル一覧を閉じる">×</button></header>
     <div id="skill-body"></div>
+  </dialog>
+  <dialog id="select-dialog" aria-labelledby="select-title">
+    <header class="section-head"><h2 id="select-title">項目を選ぶ</h2>
+      <form method="dialog"><button type="submit" class="close" aria-label="選択を閉じる">×</button></form>
+    </header>
+    <div id="select-options"></div>
   </dialog>
   <footer><span>ZZZ / DAMAGE LAB</span><span>ゼンレスゾーンゼロ 非公式シミュレーター · ゲーム画像 © COGNOSPHERE</span></footer>
 </main>

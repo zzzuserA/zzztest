@@ -10,6 +10,7 @@ import {maxSubRolls} from './optimizer.js';
 import {luminizeRows,reactionRows,specialVoidflares,voidflareAttribute} from './reactions.js';
 
 import {assetFor} from './visual-assets.js';
+import {prepareSelects,focusSelect} from './ios-select.js';
 let allocationWorker=null;
 let activeRow=-1;
 const $ = id => document.getElementById(id);
@@ -42,6 +43,48 @@ try {
 const current = () => scenarios[side];
 function save() {
   try { localStorage.setItem(storageKey,JSON.stringify({scenarios,side})); } catch {}
+}
+function validateDamageBackup(data){
+  const record=zzzDataTransfer.isRecord;
+  const number=value=>typeof value==='number'&&Number.isFinite(value);
+  const integer=(value,min,max)=>Number.isInteger(value)&&value>=min&&value<=max;
+  const numberMap=value=>record(value)&&Object.values(value).every(number);
+  const optionalText=value=>value===undefined||typeof value==='string';
+  const setSelection=value=>record(value)&&Object.hasOwn(discLayouts,value.mode)&&Array.isArray(value.names)&&
+    value.names.length<=discLayouts[value.mode].length&&value.names.every(name=>name===null||typeof name==='string');
+  const equipment=value=>value===undefined||(record(value)&&optionalText(value.weapon)&&
+    (value.weaponLevel===undefined||weaponLevels.includes(value.weaponLevel))&&
+    (value.refine===undefined||integer(value.refine,1,5))&&
+    (value.discSelection===undefined||setSelection(value.discSelection))&&
+    (value.discLayoutDrafts===undefined||(record(value.discLayoutDrafts)&&Object.entries(value.discLayoutDrafts)
+      .every(([mode,names])=>setSelection({mode,names}))))&&
+    (value.discs===undefined||(Array.isArray(value.discs)&&value.discs.length<=6&&value.discs.every(piece=>
+      record(piece)&&optionalText(piece.set)&&typeof piece.main==='string'&&['S','A','B'].includes(piece.rank)&&integer(piece.level,0,15)))));
+  const member=value=>record(value)&&typeof value.name==='string'&&optionalText(value.agentId)&&numberMap(value.base)&&numberMap(value.buffs)&&
+    Array.isArray(value.main)&&value.main.length===mainFields.length&&value.main.every(number)&&
+    Array.isArray(value.sub)&&value.sub.length<=subFields.length&&value.sub.every(number)&&
+    (value.mindscape===undefined||integer(value.mindscape,0,6))&&
+    (value.subBudget===undefined||integer(value.subBudget,0,maxSubRolls))&&
+    (value.levels===undefined||(record(value.levels)&&Object.entries(value.levels).every(([key,level])=>
+      Object.hasOwn(skillGroups,key)&&integer(level,1,key==='core'?7:12))))&&equipment(value.equipment);
+  const skill=value=>value===undefined||(record(value)&&typeof value.agentId==='string'&&typeof value.skillId==='string'&&
+    (value.level===undefined||integer(value.level,0,16)));
+  const reaction=value=>record(value)&&typeof value.agentId==='string'&&typeof value.id==='string'&&
+    (value.voidflares===undefined?integer(value.source,0,2):Array.isArray(value.voidflares)&&value.voidflares.length>=1&&
+      value.voidflares.length<=3&&value.voidflares.every(source=>[-3,-2,0,1,2].includes(source)));
+  const actionRow=row=>record(row)&&integer(row.slot,0,2)&&typeof row.name==='string'&&Object.hasOwn(kinds,row.kind)&&
+    number(row.amount)&&integer(row.count,0,10000)&&['normal','stun'].includes(row.phase)&&optionalText(row.attribute)&&
+    skill(row.catalog)&&(row.reaction!==undefined||row.kind==='reaction'?reaction(row.reaction):true);
+  if(!record(data)||!integer(data.side,0,1)||!Array.isArray(data.scenarios)||data.scenarios.length!==2)throw Error();
+  for(const scenario of data.scenarios){
+    if(!record(scenario)||!Array.isArray(scenario.agents)||scenario.agents.length!==3||!scenario.agents.every(member)||
+      !record(scenario.enemy)||!['def','res','stun'].every(key=>number(scenario.enemy[key]))||
+      (scenario.enemy.damageRes!==undefined&&!numberMap(scenario.enemy.damageRes))||
+      !Array.isArray(scenario.actions)||!scenario.actions.every(actionRow))throw Error();
+    const result=calculate(scenario);
+    if(!number(result.total)||!result.members.every(stats=>['atk','hp','ap','am','sheer','def','res','crit'].every(key=>number(stats[key]))))throw Error();
+  }
+  return data;
 }
 function announce(text) { $('status').textContent=text; }
 function numeric(value,key,config={}) {
@@ -147,6 +190,7 @@ function showAgentControls() {
       <button class="add" id="open-skills" ${entry?'':'disabled'}>スキル別ダメージ</button>
     </div>
     <p class="hint agent-hint">${entry?`参照データあり / ${entry.skills.length}項目`:'キャラを選ぶと、基礎ステータスとレベル別のスキル倍率を使えます。'}</p>`;
+  prepareSelects($('agent-controls'));
 }
 function directSkill(entry,skill){
   return skill.group!=='core'&&!(entry.id==='1221'&&skill.label.includes('追加ダメージ倍率'));
@@ -312,6 +356,7 @@ function showSkills() {
     }).join('')}</div>
     <div class="skill-foot"><p class="hint">追加した技は編成の「スキル・ダメージ」に入ります。</p>
       <p class="hint"><a href="${escape(entry.sources.wiki)}" target="_blank" rel="noreferrer">日本語Wiki ↗</a>${entry.sources.fandom?` · <a href="${escape(entry.sources.fandom)}" target="_blank" rel="noreferrer">Fandom ↗</a>`:''}</p></div>`;
+  prepareSelects($('skill-body'));
 }
 function diskGroup(title,which,fields,values) {
   return `<section class="edit-group"><h3>${title}</h3><div class="field-grid">${fields.map(([label,increment],i)=>
@@ -377,6 +422,7 @@ function showEquipment() {
       <p class="hint">登録済みのスキル・回数で編成の合計ダメージが最大になるよう、選択中のキャラの振り数を置き換えます。ディスク1枚ごとの付与制限は考慮しません。</p>
       <p id="allocation-status" class="hint" role="status"></p>
     </section>`;
+  prepareSelects($('equipment-content'));
 }
 function showEnemy() {
   const e=current().enemy;
@@ -451,6 +497,7 @@ function showRotation() {
       </div>
     </article>`;
   }).join('')||'<p class="empty">行動を追加してダメージを計算できます。</p>';
+  prepareSelects($('rotation'));
 }
 function showResult() {
   const reports=scenarios.map(calculate);
@@ -541,7 +588,7 @@ $('rotation').addEventListener('input',event=>{
     const row=event.target.closest('[data-row]').dataset.row;
     showRotation();
     showResult();
-    $('rotation').querySelector(`[data-row="${row}"] [data-key="${event.target.dataset.key}"]`).focus();
+    focusSelect($('rotation').querySelector(`[data-row="${row}"] [data-key="${event.target.dataset.key}"]`));
   }
 });
 for(const [id,resolver] of [['build-content',editAgent],['enemy-content',editEnemy],['rotation',editAction]]) {
@@ -582,7 +629,7 @@ $('skill-body').addEventListener('change',event=>{
     if(skillGroup!=='luminize')skillGroup=group;
     previewLevel=0;
     save();showResult();showSkills();
-    $('skill-body').querySelector(`[data-train="${group}"]`).focus();
+    focusSelect($('skill-body').querySelector(`[data-train="${group}"]`));
   } else if(el.hasAttribute('data-voidflare')||el.id==='skill-group'||el.id==='preview-level'||el.id==='reaction-source'){
     if(el.id==='skill-group') {
       skillGroup=el.value;
@@ -591,7 +638,7 @@ $('skill-body').addEventListener('change',event=>{
     else if(el.id==='reaction-source')reactionSource=Number(el.value);
     else previewLevel=Number(el.value);
     showSkills();
-    $(el.id).focus();
+    focusSelect($(el.id));
   }
 });
 $('skill-body').addEventListener('click',event=>{
@@ -718,7 +765,7 @@ $('equipment-content').addEventListener('change',event=>{
   if(!el.dataset.weapon)return;
   config[el.dataset.weapon]=Number(el.value);
   save();showEquipment();showResult();
-  $('equipment-content').querySelector(`[data-weapon="${el.dataset.weapon}"]`)?.focus();
+  focusSelect($('equipment-content').querySelector(`[data-weapon="${el.dataset.weapon}"]`));
 });
 $('equipment-content').addEventListener('click',event=>{
   const layout=event.target.closest('[data-disc-layout]');
@@ -800,5 +847,16 @@ $('equipment-content').addEventListener('click',event=>{
     status.textContent='自動配分を完了できませんでした。';
   });
   worker.postMessage({scenario,slot:agentSlot,budget});
+});
+zzzDataTransfer.install($('damage-transfer'),{
+  tool:'damage',label:'ダメージシミュレーター',filename:'zzz-damage',
+  snapshot:()=>({scenarios,side}),validate:validateDamageBackup,
+  restore:data=>{
+    localStorage.setItem(storageKey,JSON.stringify(data));
+    ({scenarios,side}=data);
+    slot=0;
+    activeRow=-1;
+    show();
+  },
 });
 show();
