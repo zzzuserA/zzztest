@@ -379,3 +379,20 @@ main > .teams .teamhead b,
 main > .teams .teamCost,
 main > .teams .slot .meta2,
 main > .chars .char .meta2{font-weight:700!important}
+
+/* Actions sit over the right edge of the first Total Cost band. */
+main > .teamTopActions{
+  position:relative;z-index:2;display:flex;justify-content:flex-end;align-items:flex-start;
+  gap:5px;height:41px;margin-bottom:-41px;padding-right:10px;
+}
+main > .teamTopActions #builder-transfer{width:auto;margin:0;gap:0;flex-wrap:nowrap}
+main > .teamTopActions #builder-transfer > .data-transfer-status:not(:empty){position:absolute;right:10px;top:100%;max-width:220px;text-align:right}
+main > .teamTopActions > button{font-size:13px}
+main > .teams .groupLabel.firstGroup{margin-top:51px}
+main > .teams .moveActions{top:-51px}
+@media(max-width:560px){
+  main > .teamTopActions{height:82px;margin-bottom:-82px;align-items:flex-end}
+  main > .teamTopActions > button{font-size:12px;padding:8px 10px}
+  main > .teams .groupLabel.firstGroup{margin-top:92px}
+  main > .teams .moveActions{top:-92px}
+}
