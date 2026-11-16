@@ -371,3 +371,11 @@ main > .chars .char .meta2{font-size:13px!important;font-weight:900}
 .data-share label{display:grid;gap:4px;margin:12px 0 6px;font-size:13px}
 .data-share textarea{width:100%;min-width:0;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font:inherit;font-size:16px;overflow-wrap:anywhere;resize:vertical}
 .data-share .data-transfer-status{min-height:1.5em;margin:10px 0 0}
+
+/* Use one Arial bold weight for builder labels and the image clone. */
+main > .teams .groupCost,
+main > .teams .allCost,
+main > .teams .teamhead b,
+main > .teams .teamCost,
+main > .teams .slot .meta2,
+main > .chars .char .meta2{font-weight:700!important}
