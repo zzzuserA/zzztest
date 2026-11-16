@@ -204,7 +204,7 @@ for(const id of fields)$(id).addEventListener('input',event=>{if(!event.isCompos
 function hpInputs(){
  return Object.fromEntries(fields.map(id=>[id,$(id).value.replace(/,/g,'')]));
 }
-zzzDataTransfer.install($('hp-transfer'),{
+window.zzzDataTransfer?.install($('hp-transfer'),{
  tool:'hp',label:'危局HP',filename:'zzz-deadly-assault-hp',
  snapshot:hpInputs,
  validate:data=>{

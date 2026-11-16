@@ -848,7 +848,7 @@ $('equipment-content').addEventListener('click',event=>{
   });
   worker.postMessage({scenario,slot:agentSlot,budget});
 });
-zzzDataTransfer.install($('damage-transfer'),{
+window.zzzDataTransfer?.install($('damage-transfer'),{
   tool:'damage',label:'ダメージシミュレーター',filename:'zzz-damage',
   snapshot:()=>({scenarios,side}),validate:validateDamageBackup,
   restore:data=>{

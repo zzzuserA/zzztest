@@ -654,7 +654,7 @@ function validateBuilderBackup(data){
  if(!validAgentLayout(checkedTeams,data.noOverlap)||!validBangbooLayout(checkedBangboos,data.noOverlap))throw Error();
  return {...data,teams:checkedTeams,bangboos:checkedBangboos,convData:restoreConv(Object.assign(Object.create(null),data.convData))};
 }
-zzzDataTransfer.install($('builder-transfer'),{
+window.zzzDataTransfer?.install($('builder-transfer'),{
  tool:'builder',label:'チームビルダー',filename:'zzz-team-builder',
  snapshot:()=>({teams,bangboos,customAgents,customBangboos,convData,noOverlap,showConv,showDuplicateCost}),
  validate:validateBuilderBackup,
