@@ -16,7 +16,7 @@
   <header class="headerDecor damage-intro">
     <details class="hpMenu"><summary aria-label="メニューを開く"><svg class="menuIcon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 6H26M6 16H26M6 26H26"/></svg></summary><nav aria-label="関連ページ"><a href="../">チームビルダー</a><a href="../hp/">危局HP</a><a href="../damage/" aria-current="page">ダメージシミュレーター</a></nav></details>
     <h1>ダメージシミュレーター</h1>
-    <p class="hint">3人のビルドとスキルの合計ダメージを比較できます。</p>
+    <p class="hint">これは試験的に作ったもので正しく機能していない部分もあると思います</p>
   </header>
   <div class="toolbar" aria-label="編成比較">
     <div class="switch" role="group" aria-label="編集する編成">
@@ -53,14 +53,12 @@
       <div class="comparison"><h3>編成 A / B 比較</h3><div id="comparison"></div></div>
     </aside>
   </div>
-  <details class="panel notes"><summary>計算式と参照データ</summary>
+  <details class="panel notes"><summary>計算式と収録データ</summary>
     <div class="notes-body">
-      <p>収録範囲はVer.3.3前半（2026年11月8日時点）です。技の倍率はキャラ別の参照リンクから確認できます。欠けているレベルは「資料なし」と表示します。心象映画はM3・M5のスキルレベル加算を反映します。一部の装備効果を自動適用します。条件付きの効果はビルドのバフ・デバフ欄で設定できます。</p>
+      <p>収録範囲はVer.3.3前半（2026年11月8日時点）です。欠けているレベルは「資料なし」と表示します。心象映画はM3・M5のスキルレベル加算を反映します。一部の装備効果を自動適用します。条件付きの効果はビルドのバフ・デバフ欄で設定できます。</p>
       <p>Lv.60を前提とします。通常は戦闘時攻撃力 × スキル倍率 × 与ダメージ補正 × 会心期待値 × 防御補正 × 耐性補正 × ブレイク補正。状態異常では会心の代わりに異常マスタリー・レベル係数・異常ダメージアップを使います。透徹では攻撃力を透徹力に置き換え、防御係数を1とします。鋭撃では自身の防御力と暴傷を使います。</p>
       <p>混沌・特殊効果・ボンプなどのダメージは、別途求めた値を「手入力ダメージ」で加算できます。</p>
       <p>A / Bの設定はこのブラウザに保存されます。</p>
-      <p>ゲーム内画像の参照元は日本語Wikiのエージェント・音動機・ディスクの各ページです。 <a href="https://wikiwiki.jp/zenless/画像/エージェント" target="_blank" rel="noreferrer">エージェント画像 ↗</a></p>
-      <p><a href="https://wikiwiki.jp/zenless/ダメージ計算式" target="_blank" rel="noreferrer">ゼンレスゾーンゼロ Wiki* のダメージ計算式 ↗</a> <a href="https://wiki.hoyolab.com/pc/zzz/entry/85" target="_blank" rel="noreferrer">HoYoWikiの音動機効果 ↗</a> <a href="https://wikiwiki.jp/zenless/音動機" target="_blank" rel="noreferrer">音動機 ↗</a> <a href="https://wikiwiki.jp/zenless/ドライバディスク" target="_blank" rel="noreferrer">ドライバディスク ↗</a> <a href="https://wikiwiki.jp/zenless/状態異常" target="_blank" rel="noreferrer">状態異常ダメージ ↗</a> <a href="https://wikiwiki.jp/zenless/危局強襲戦" target="_blank" rel="noreferrer">危局強襲戦の敵 ↗</a> <a href="https://zenless-zone-zero.fandom.com/wiki/Basic_Attack%3A_Thunderbolt" target="_blank" rel="noreferrer">Fandomの倍率照合例 ↗</a></p>
     </div>
   </details>
   <dialog id="picker-dialog" aria-labelledby="picker-title">
