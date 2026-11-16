@@ -27,8 +27,9 @@ window.zzzDataTransfer=(()=>{
     return bytes;
   }
 
+  const toolIds={builder:1,hp:2,damage:3};
   async function encodeShare(backup){
-    let bytes=new TextEncoder().encode(JSON.stringify(backup));
+    let bytes=new TextEncoder().encode(JSON.stringify([toolIds[backup.tool],backup.data]));
     if(bytes.length>maxBytes)throw Error('共有データは16MB以下にしてください。');
     let marker='R';
     if(typeof CompressionStream==='function'){
@@ -42,25 +43,33 @@ window.zzzDataTransfer=(()=>{
     for(let start=0;start<bytes.length;start+=8192){
       chunks.push(String.fromCharCode(...bytes.subarray(start,start+8192)));
     }
-    return 'ZZZ1'+marker+'.'+btoa(chunks.join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    return (marker==='G'?'2':'3')+btoa(chunks.join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   }
 
   async function decodeShare(text){
     const code=text.replace(/\s/g,'');
     if(code.length>Math.ceil(maxBytes*4/3)+6)throw Error('共有コードが長すぎます。');
-    const match=/^ZZZ1([GR])\.([A-Za-z0-9_-]+)$/.exec(code);
+    const match=/^(?:ZZZ1([GR])\.|([23]))([A-Za-z0-9_-]+)$/.exec(code);
     if(!match)throw Error('共有コードを最初から最後まで貼り付けてください。');
-    if(match[1]==='G'&&typeof DecompressionStream!=='function'){
-      throw Error('このブラウザで圧縮コードを開けません。JSONファイルでインポートしてください。');
+    const compressed=match[1]==='G'||match[2]==='2';
+    if(compressed&&typeof DecompressionStream!=='function'){
+      throw Error('このブラウザでは圧縮された共有コードを開けません。');
     }
     try{
-      const binary=atob(match[2].replace(/-/g,'+').replace(/_/g,'/'));
+      const binary=atob(match[3].replace(/-/g,'+').replace(/_/g,'/'));
       let bytes=Uint8Array.from(binary,char=>char.charCodeAt(0));
       if(bytes.length>maxBytes)throw Error();
-      if(match[1]==='G'){
+      if(compressed){
         bytes=await readBytes(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')));
       }
-      return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+      const value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+      if(match[2]){
+        if(!Array.isArray(value)||value.length!==2)throw Error();
+        const tool=Object.keys(toolIds).find(name=>toolIds[name]===value[0]);
+        if(!tool)throw Error();
+        return {format:'zzz-tool-data',version:1,tool,data:value[1]};
+      }
+      return value;
     }catch{throw Error('共有コードを読み込めませんでした。コード全体をコピーしてください。');}
   }
 
@@ -82,12 +91,9 @@ window.zzzDataTransfer=(()=>{
     }
   }
 
-  function install(container,{tool,label,filename,snapshot,validate,restore}){
+  function install(container,{tool,label,snapshot,validate,restore}){
     container.innerHTML=`
-      <button type="button">エクスポート</button>
-      <button type="button">インポート</button>
       <button type="button" aria-haspopup="dialog">共有コード</button>
-      <input type="file" accept=".json,application/json" aria-label="インポートするJSONファイル" hidden>
       <span class="data-transfer-status" role="status"></span>
       <dialog class="data-share" aria-label="共有コード">
         <header>
@@ -100,7 +106,7 @@ window.zzzDataTransfer=(()=>{
         <button type="button" data-share-import>コードを読み込む</button>
         <p class="data-transfer-status" role="status"></p>
       </dialog>`;
-    const [download,upload,share,input,status,dialog]=container.children;
+    const [share,status,dialog]=container.children;
     const [outgoing,incoming]=dialog.querySelectorAll('textarea');
     const copy=dialog.querySelector('[data-share-copy]');
     const importCode=dialog.querySelector('[data-share-import]');
@@ -116,7 +122,7 @@ window.zzzDataTransfer=(()=>{
       try{data=validate(backup.data);}
       catch{target.textContent='データ形式が正しくありません。';return false;}
       if(!confirm(label+'の現在の入力・設定を読み込んだデータで置き換えますか？')){
-        target.textContent='インポートをキャンセルしました。';
+        target.textContent='読み込みをキャンセルしました。';
         return false;
       }
       try{restore(data);}
@@ -165,36 +171,6 @@ window.zzzDataTransfer=(()=>{
       }catch(error){
         if(current===generation)codeStatus.textContent=error.message;
       }finally{importCode.disabled=false;}
-    });
-    download.addEventListener('click',()=>{
-      const json=JSON.stringify(backupOf(),null,2);
-      const url=URL.createObjectURL(new Blob([json],{type:'application/json'}));
-      const link=document.createElement('a');
-      link.href=url;
-      link.download=filename+'.json';
-      document.body.append(link);
-      link.click();
-      link.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),60000);
-      status.textContent=label+'のデータを書き出しました。';
-    });
-    upload.addEventListener('click',()=>input.click());
-    input.addEventListener('change',async ()=>{
-      const file=input.files[0];
-      input.value='';
-      if(!file)return;
-      upload.disabled=true;
-      try{
-        status.textContent='';
-        if(file.size>maxBytes){
-          status.textContent='16MB以下のJSONファイルを選択してください。';
-          return;
-        }
-        let backup;
-        try{backup=JSON.parse((await file.text()).replace(/^\uFEFF/,''));}
-        catch{status.textContent='JSONファイルを読み込めませんでした。';return;}
-        applyBackup(backup,status,'JSONファイル');
-      }finally{upload.disabled=false;}
     });
   }
 
