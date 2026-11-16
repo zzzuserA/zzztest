@@ -483,14 +483,14 @@ async function saveSelectedGroupImage(){
           });
           cloned.querySelectorAll('.slot').forEach(el=>{
             el.style.display='grid';
-            el.style.gridTemplateRows=el.querySelector('.meta2')?'64px 18px 22px':'64px 18px';
+            el.style.gridTemplateRows=el.querySelector('.meta2')?'64px 16px 18px':'64px 16px';
             el.style.rowGap='4px';
             el.style.alignContent='center';
-            el.style.setProperty('padding','1px','important');
+            el.style.setProperty('padding','0','important');
             el.style.justifyItems='center';
             el.style.alignItems='end';
-            el.style.height='114px';
-            el.style.minHeight='114px';
+            el.style.height='108px';
+            el.style.minHeight='108px';
           });
           cloned.querySelectorAll('.slot img,.slot .initial').forEach(el=>{
             el.style.setProperty('width','64px','important');
@@ -511,13 +511,13 @@ async function saveSelectedGroupImage(){
             el.style.setProperty('white-space','nowrap','important');
             el.style.alignSelf='end';
             el.style.setProperty('margin-top','0','important');
-            el.style.setProperty('line-height','18px','important');
+            el.style.setProperty('line-height','16px','important');
           });
           cloned.querySelectorAll('.slot .meta2').forEach(el=>{
             const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
             if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.6)+'px','important');
             el.style.alignSelf='end';
-            el.style.setProperty('line-height','22px','important');
+            el.style.setProperty('line-height','18px','important');
             el.style.setProperty('margin-top','0','important');
             el.style.setProperty('margin-bottom','0','important');
             el.style.setProperty('padding-top','0','important');
