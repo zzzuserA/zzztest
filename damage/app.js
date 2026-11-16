@@ -189,7 +189,7 @@ function showAgentControls() {
       </label>
       <button class="add" id="open-skills" ${entry?'':'disabled'}>スキル別ダメージ</button>
     </div>
-    <p class="hint agent-hint">${entry?`参照データあり / ${entry.skills.length}項目`:'キャラを選ぶと、基礎ステータスとレベル別のスキル倍率を使えます。'}</p>`;
+    <p class="hint agent-hint">${entry?`収録データ / ${entry.skills.length}項目`:'キャラを選ぶと、基礎ステータスとレベル別のスキル倍率を使えます。'}</p>`;
   prepareSelects($('agent-controls'));
 }
 function directSkill(entry,skill){
@@ -231,7 +231,7 @@ function coreReference(info,level){
   if(info.id==='1311')labels.push('コアパッシブの攻撃力アップ上限 1,200Pt（M2で1,600Pt）');
   if(info.id==='1581')labels.push('昇華倍率 +0.02%／異常マスタリー1Pt。異常3人で+10%、M2で+20%。',
     '追加能力の攻撃力アップは異常1／2／3人で開幕攻撃力の6%／12%／40%（上限1,600Pt）。');
-  return `<p class="hint">コアパッシブ・追加能力の参照値（${levelLabel('core',level)}）。発動条件は<a href="${escape(info.sources.wiki)}" target="_blank" rel="noreferrer">キャラ別のスキル資料</a>で確認できます。</p>
+  return `<p class="hint">コアパッシブ・追加能力の参照値（${levelLabel('core',level)}）。発動条件は各効果の説明を確認してください。</p>
     ${labels.length?`<ul class="effect-reference">${labels.map(label=>`<li>${label}</li>`).join('')}</ul>`:''}`;
 }
 function showBuffDetails(member,combat){
@@ -266,7 +266,7 @@ function showBuffDetails(member,combat){
     ${effects.length?`<table class="effect-table"><thead><tr><th scope="col">効果元</th><th scope="col">ステータス</th><th scope="col">補正値</th><th scope="col">適用条件</th></tr></thead>
       <tbody>${effects.map(row=>`<tr>${row.map(value=>`<td>${escape(value)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'<p class="hint">適用している補正はありません。</p>'}
     ${coreReference(info,level)}
-    ${discNotes.length?`<p class="hint"><a href="${discReference}" target="_blank" rel="noreferrer">ディスクの条件付き効果</a></p><ul class="effect-reference">${discNotes.join('')}</ul>`:''}
+    ${discNotes.length?`<p class="hint">ディスクの条件付き効果</p><ul class="effect-reference">${discNotes.join('')}</ul>`:''}
     ${weaponNotes.length?`<p class="hint">${escape(weapon.name)}の効果（★${member.equipment?.refine??1}）${weapon.role!==info?.specialty?' · 特性不一致のため効果無効':''}</p>
       <ul class="effect-reference">${weaponNotes.join('')}</ul>`:''}
     <p class="hint">条件付きの効果を常時適用して比較する場合は、適用済みの補正値を確認し、追加分を「常時バフ・デバフの手入力」に入力してください。</p>`;
@@ -355,7 +355,7 @@ function showSkills() {
         <button type="button" class="add" data-skill="${row.id}" aria-label="${escape(title)}を追加" ${value==null||!direct?'disabled':''}>追加</button>${detailPanel(id)}</div>`;
     }).join('')}</div>
     <div class="skill-foot"><p class="hint">追加した技は編成の「スキル・ダメージ」に入ります。</p>
-      <p class="hint"><a href="${escape(entry.sources.wiki)}" target="_blank" rel="noreferrer">日本語Wiki ↗</a>${entry.sources.fandom?` · <a href="${escape(entry.sources.fandom)}" target="_blank" rel="noreferrer">Fandom ↗</a>`:''}</p></div>`;
+</div>`;
   prepareSelects($('skill-body'));
 }
 function diskGroup(title,which,fields,values) {
