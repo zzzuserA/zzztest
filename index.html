@@ -483,18 +483,24 @@ async function saveSelectedGroupImage(){
           });
           cloned.querySelectorAll('.slot').forEach(el=>{
             el.style.display='grid';
-            el.style.gridTemplateRows=el.querySelector('.meta2')?'minmax(0,1fr) 18px 24px':'minmax(0,1fr) 18px';
+            el.style.gridTemplateRows=el.querySelector('.meta2')?'64px 18px 22px':'64px 18px';
+            el.style.rowGap='4px';
+            el.style.alignContent='center';
             el.style.setProperty('padding','1px','important');
             el.style.justifyItems='center';
             el.style.alignItems='end';
-            el.style.height='108px';
-            el.style.minHeight='108px';
+            el.style.height='114px';
+            el.style.minHeight='114px';
           });
           cloned.querySelectorAll('.slot img,.slot .initial').forEach(el=>{
-            el.style.setProperty('width','60px','important');
-            el.style.setProperty('height','60px','important');
+            el.style.setProperty('width','64px','important');
+            el.style.setProperty('height','64px','important');
             el.style.alignSelf='start';
             el.style.setProperty('margin-bottom','0','important');
+          });
+          cloned.querySelectorAll('.bangbooSlot img,.bangbooSlot .initial').forEach(el=>{
+            el.style.setProperty('width','34px','important');
+            el.style.setProperty('height','34px','important');
           });
           cloned.querySelectorAll('.slot strong').forEach(el=>{
             el.style.setProperty('padding-left','2px','important');
@@ -511,7 +517,7 @@ async function saveSelectedGroupImage(){
             const base=parseFloat(doc.defaultView.getComputedStyle(el).fontSize);
             if(Number.isFinite(base))el.style.setProperty('font-size',(base*1.6)+'px','important');
             el.style.alignSelf='end';
-            el.style.setProperty('line-height','24px','important');
+            el.style.setProperty('line-height','22px','important');
             el.style.setProperty('margin-top','0','important');
             el.style.setProperty('margin-bottom','0','important');
             el.style.setProperty('padding-top','0','important');
