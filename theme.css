@@ -1,7 +1,7 @@
 /* Visual theme only. Application behavior and storage remain in index.html. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap');
 :root{--bg:#141414;--panel:#101010;--card:#202020;--line:#414141;--text:#f7f7f2;--muted:#bcbcbc;--accent:#f0eb00;--accentbg:#373600}
-body{background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);font-family:'Inter','Zen Kaku Gothic New',sans-serif;font-variant-numeric:tabular-nums;font-weight:500}
+body{background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);font-family:Arial,'Zen Kaku Gothic New',sans-serif;font-variant-numeric:tabular-nums;font-weight:500}
 button,input,select,textarea{font-family:inherit;font-style:normal}
 button{border-width:2px;border-radius:24px;font-weight:900;background:#101010}
 button:hover{border-color:var(--accent)}
@@ -59,7 +59,7 @@ input,select{border:2px solid #414141;border-radius:24px;background:#101010}
     repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 2px,transparent 2px 8px),
     linear-gradient(115deg,#0a0a0a 0%,#1b1b1d 38%,#101113 60%,#090909 100%);
   box-shadow:7px 7px 0 #050505,inset 0 0 0 5px #151515;
-  font-family:'Inter','Noto Sans JP','Noto Sans CJK JP',system-ui,sans-serif;
+  font-family:Arial,'Noto Sans JP','Noto Sans CJK JP',system-ui,sans-serif;
 }
 .headerDecor::before{
   content:"ZENLESS ZONE ZERO / TEAM BUILDER";
@@ -350,8 +350,8 @@ main > .chars .char .conv{
 
 /* Keep long constellation and weapon labels inside one line. */
 .slot .meta2,.char .meta2{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap!important;overflow-wrap:normal;word-break:normal;flex-shrink:0}
-main > .teams .slot .meta2{font-size:14px!important;font-weight:600}
-main > .chars .char .meta2{font-size:13px!important;font-weight:600}
+main > .teams .slot .meta2{font-size:14px!important;font-weight:900}
+main > .chars .char .meta2{font-size:13px!important;font-weight:900}
 
 /* Shared navigation button: equal bars and an unclipped dropdown. */
 .headerDecor{overflow:visible}
@@ -362,20 +362,6 @@ main > .chars .char .meta2{font-size:13px!important;font-weight:600}
 /* Smooth outlined title at any zoom level. */
 .headerDecor h1{color:#080808;-webkit-text-fill-color:#080808;-webkit-text-stroke:2px #fff;paint-order:stroke fill;text-shadow:none}
 
-/* Keep Inter's Latin labels close to the production builder's visual weight and width. */
-main > .teams .groupLabel .groupCost,
-main > .teams .groupLabel .allCost,
-main > .teams .teamhead b,
-main > .teams .teamhead .teamCost{
-  font-size:16px!important;
-  line-height:20.4px;
-  letter-spacing:-.04em;
-}
-main > .teams .groupLabel .groupCost,
-main > .teams .groupLabel .allCost,
-main > .teams .teamhead b,
-main > .teams .teamhead .teamCost{font-weight:600}
-.headerDecor::before{letter-spacing:.14em;font-weight:700}
 .data-transfer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}
 .data-transfer-status{font-size:12px;color:var(--muted)}
 .data-share{width:min(520px,calc(100% - 24px));max-height:85dvh;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text)}
