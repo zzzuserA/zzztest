@@ -410,7 +410,7 @@ function showEquipment() {
         <button type="button" data-disc-layout="trio" aria-pressed="${selection.mode==='trio'}">2セット × 3</button>
       </div>
       <div class="disc-choices">${sizes.map((size,i)=>pickerButton('disc',selection.names[i]??'',size+'セット'+(selection.mode==='trio'?' '+(i+1):''),i,selection.names[i])).join('')}</div>
-      <p class="hint">メインステータスはビルド欄で設定できます。</p>
+      <p class="hint">メインステータスの個数は下の欄で設定できます。</p>
       ${e.discs?'<p class="hint">以前のディスクメイン効果を適用中</p><button type="button" class="quiet" id="use-manual-discs">メイン効果を手入力に切り替え</button>':''}
     </section>
     ${e.discs?'<p class="hint">以前のディスクメイン効果を適用中です。上の「メイン効果を手入力に切り替え」から変更できます。</p>':diskGroup('ディスクメインステータスの個数','main',mainFields,a.main)}
