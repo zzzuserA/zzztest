@@ -1,9 +1,9 @@
-import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,calculate,skillDamage,reactionDamage,damageDetails} from './engine.js';
+import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,calculate,stats,skillDamage,reactionDamage,damageDetails} from './engine.js';
 
 import {catalog,skillGroups,findAgent,effectiveLevel,attackRate,levelLabel,skillName} from './catalog.js';
 
 import {attributes,weapons,weaponByName,weaponLevels,discSets,discLayouts,discSelection,gearLabels,attackAttribute,baseAttribute,
-  equipmentStats,discReference,fourPieceConditions} from './equipment.js';
+  equipmentStats,discReference,fourPieceConditions} from './equipment.js?v=20261117-precombat';
 import {coreBonuses} from './core-upgrades.js';
 import {corePassiveValues} from './core-passives.js';
 import {maxSubRolls} from './optimizer.js';
@@ -371,10 +371,11 @@ function showBuild() {
       ${a.base.weaponAtk!==undefined?field('音動機の基礎攻撃力',a.base.weaponAtk,'base.weaponAtk'):''}</div>
       ${findAgent(a)?'<p class="hint">キャラの基礎値はコア未強化時の値です。コア強化分は戦闘時ステータスとダメージに加算されます。</p>':''}
     </section>
-    ${a.equipment?.discs?'<p class="hint">以前のディスクメイン効果を引き継いでいます。入力方法は音動機・ディスク欄から切り替えられます。</p>':diskGroup('ディスクメインステータスの個数','main',mainFields,a.main)}
     <section class="edit-group"><h3>常時バフ・デバフの手入力</h3><div class="field-grid">
     ${buffFields.map(([key,label])=>field(label,a.buffs[key],`buffs.${key}`,{min:-1000000})).join('')}
     </div></section>
+    <section class="edit-group"><h3>戦闘前ステータス</h3><div class="field-grid" id="precombat-stats"></div>
+      <p class="hint">装備の基礎値・上級ステータス、ディスクのメイン・2セット効果、コア強化を含みます。戦闘中に発動する装備効果と手入力バフは除外します。</p></section>
     <section class="edit-group"><h3>戦闘時ステータス</h3><div class="field-grid" id="combat-stats"></div>
       <details class="effect-details" id="buff-details"><summary>バフ・デバフ詳細</summary><div id="buff-detail-content"></div></details></section>`;
 }
@@ -412,6 +413,7 @@ function showEquipment() {
       <p class="hint">メインステータスはビルド欄で設定できます。</p>
       ${e.discs?'<p class="hint">以前のディスクメイン効果を適用中</p><button type="button" class="quiet" id="use-manual-discs">メイン効果を手入力に切り替え</button>':''}
     </section>
+    ${e.discs?'<p class="hint">以前のディスクメイン効果を適用中です。上の「メイン効果を手入力に切り替え」から変更できます。</p>':diskGroup('ディスクメインステータスの個数','main',mainFields,a.main)}
     ${diskGroup('ディスクのサブステータス（振り数）','sub',subFields,a.sub)}
     <section class="edit-group allocation">
       <div class="allocation-controls">
@@ -523,6 +525,13 @@ function showResult() {
     if(detail&&!detail.hidden)detail.innerHTML=renderDamageDetails(damageDetails(current(),{index:i}));
   });
   const m=report.members[slot];
+  const beforeMember=editAgent();
+  const beforeGear=equipmentStats(beforeMember,findAgent(beforeMember),undefined,{passives:false});
+  const before=stats({...beforeMember,buffs:{}},current().enemy,{gear:{...beforeGear,counts:{}}});
+  const beforeDisplay=[['攻撃力',before.atk],['HP',before.hp],['防御力',before.ownDef],
+    ['会心率 %',before.rawCr*100],['会心ダメージ %',before.cd*100],
+    ['異常マスタリー',before.ap],['異常掌握',before.am],['透徹力',before.sheer]];
+  $('precombat-stats').innerHTML=beforeDisplay.map(([label,n])=>`<div class="stat"><span>${label}</span><strong>${dec(n)}</strong></div>`).join('');
   const display=[['攻撃力',m.atk],['基礎攻撃力',m.baseAtk+m.weaponAtk],['HP',m.hp],['防御力',m.ownDef],['会心率 %',m.rawCr*100],['会心ダメージ %',m.cd*100],
     ['異常マスタリー',m.ap],['異常掌握',m.am],['透徹力',m.sheer],['防御補正 %',m.def*100]];
   $('combat-stats').innerHTML=display.map(([label,n])=>`<div class="stat"><span>${label}</span><strong>${dec(n)}</strong></div>`).join('');

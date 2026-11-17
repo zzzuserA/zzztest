@@ -104,7 +104,7 @@ export function discSelection(config={}){
   const entries=Object.entries(setCounts(config.discs)).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]);
   return {mode:entries[0]?.[1]<4?'trio':'pair',names:entries.map(([name])=>name)};
 }
-export function equipmentStats(agent,info,record) {
+export function equipmentStats(agent,info,record,{passives=true}={}) {
   const config=agent.equipment??{};
   const weapon=weaponByName.get(config.weapon);
   const level=weaponLevels.indexOf(config.weaponLevel??60);
@@ -118,7 +118,7 @@ export function equipmentStats(agent,info,record) {
   if(weapon&&weapon.base[level]!=null){
     add(weapon.baseKind==='atk'?'weaponAtk':'weaponDef',weapon.base[level],'音動機の基礎値');
     add(weaponSubs[weapon.subName],weapon.sub[level],'音動機の上級ステータス');
-    if(info?.specialty===weapon.role){
+    if(passives&&info?.specialty===weapon.role){
       for(const [index,key] of steadyWeaponEffects[weapon.name]??[]){
         add(key,weapon.passives[index]?.[1][(config.refine??1)-1],'音動機の効果');
       }
@@ -130,7 +130,7 @@ export function equipmentStats(agent,info,record) {
     if(count<2)continue;
     const [,key,value]=setByName.get(name);
     add(key,value,name+' 2セット');
-    if(count<4)continue;
+    if(count<4||!passives)continue;
     for(const [stat,bonus] of steadyFour[name]??[])add(stat,bonus,name+' 4セット');
     if(name==='夜明けの紀行'&&baseAttribute(info?.attribute)==='エーテル')add('cd',30,name+' 4セット');
   }
