@@ -41,6 +41,12 @@ summary:hover{color:var(--acid)}
 .panel>details:last-child summary{padding-bottom:1px}
 .panel>details[open]:last-child summary{padding-bottom:9px}
 .edit-group{border-top:1px solid var(--line);padding:10px 0}
+.effect-switches{display:grid;gap:7px}
+.effect-switch{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(120px,1fr) 82px;gap:6px;align-items:center;padding:6px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.effect-switch label{display:flex;align-items:center;gap:7px;min-width:0;font-size:12px}
+.effect-switch label input{width:18px;min-width:18px;min-height:18px;accent-color:var(--acid)}
+.effect-switch select,.effect-switch input[type=number]{font-size:11px}
+@media(max-width:620px){.effect-switch{grid-template-columns:minmax(0,1fr) 75px}.effect-switch label{grid-column:1/-1}}
 .edit-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
 .edit-top h3{margin:0}
 .field-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}

@@ -1,11 +1,12 @@
-import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,calculate,stats,skillDamage,reactionDamage,damageDetails} from './engine.js';
+import {baseFields,mainFields,subFields,buffFields,kinds,custom,agent,action,calculate,stats,skillDamage,reactionDamage,damageDetails} from './engine.js?v=20261117-buff-ledger';
 
 import {catalog,skillGroups,findAgent,effectiveLevel,attackRate,levelLabel,skillName} from './catalog.js';
 
 import {attributes,weapons,weaponByName,weaponLevels,discSets,discLayouts,discSelection,gearLabels,attackAttribute,baseAttribute,
-  equipmentStats,discReference,fourPieceConditions} from './equipment.js?v=20261117-precombat';
+  equipmentStats,discReference,fourPieceConditions} from './equipment.js?v=20261117-buff-ledger';
 import {coreBonuses} from './core-upgrades.js';
 import {corePassiveValues} from './core-passives.js';
+import {effectOptions,resolvedBuffs} from './effect-buffs.js';
 import {maxSubRolls} from './optimizer.js';
 import {luminizeRows,reactionRows,specialVoidflares,voidflareAttribute} from './reactions.js';
 
@@ -64,6 +65,9 @@ function validateDamageBackup(data){
     Array.isArray(value.main)&&value.main.length===mainFields.length&&value.main.every(number)&&
     Array.isArray(value.sub)&&value.sub.length<=subFields.length&&value.sub.every(number)&&
     (value.mindscape===undefined||integer(value.mindscape,0,6))&&
+    (value.enabledEffects===undefined||(record(value.enabledEffects)&&Object.values(value.enabledEffects).every(v=>typeof v==='boolean')))&&
+    (value.effectValues===undefined||numberMap(value.effectValues))&&
+    (value.effectKeys===undefined||(record(value.effectKeys)&&Object.values(value.effectKeys).every(v=>typeof v==='string')))&&
     (value.subBudget===undefined||integer(value.subBudget,0,maxSubRolls))&&
     (value.levels===undefined||(record(value.levels)&&Object.entries(value.levels).every(([key,level])=>
       Object.hasOwn(skillGroups,key)&&integer(level,1,key==='core'?7:12))))&&equipment(value.equipment);
@@ -247,12 +251,10 @@ function showBuffDetails(member,combat){
   };
   for(const [key,value] of Object.entries(coreBonuses(info,level)))record('コア強化 '+levelLabel('core',level),key,value,true);
   const {counts,weapon}=equipmentStats(member,info,record);
-  if(counts['棘まとう薔薇']>=4)effects.push(['棘まとう薔薇 4セット','会心率','+'+dec(combat.roseCr)+'%',
-    '開幕防御力 '+dec(combat.openingDef)+'（1,000で+8%／1,800で+16%）']);
-  if(counts['折枝の刀歌']>=4)effects.push(['折枝の刀歌 4セット','会心ダメージ','+'+dec(combat.branchCd)+'%',
-    '異常掌握 '+dec(combat.am)+'（115以上で+30%）']);
-  if(counts['夜明けの紀行']>=4&&baseAttribute(info?.attribute)!=='エーテル')effects.push(['夜明けの紀行 4セット','会心ダメージ','+0%',
-    'エーテルの装備者は+30%']);
+  current().agents.forEach((source,i)=>effectOptions(source).forEach(effect=>{
+    if(!source.enabledEffects?.[effect.id]||!effect.key||effect.targets==='self'&&i!==slot)return;
+    effects.push([source.name+' · '+effect.label,...effectValue(effect.key,effect.value),'オン']);
+  }));
   for(const [key,value] of Object.entries(member.buffs)){
     if(value)effects.push(['手入力',...effectValue(key,value),'手入力値を反映']);
   }
@@ -365,19 +367,30 @@ function diskGroup(title,which,fields,values) {
 }
 function showBuild() {
   const a=current().agents[slot];
+  const total=resolvedBuffs(current().agents,slot);
+  const options=effectOptions(a);
   $('build-content').innerHTML=`
     <section class="edit-group"><div class="edit-top"><h3>基礎値</h3><label class="field"><span>エージェント名</span><input maxlength="36" value="${escape(a.name)}" data-key="name"></label></div>
       <div class="field-grid">${baseFields.map(([key,label])=>field(key==='atk'&&a.base.weaponAtk!==undefined?'キャラの基礎攻撃力':label,a.base[key]??(key==='ownDef'?findAgent(a)?.stats.ownDef:undefined)??(key==='critSeverity'?250:''),`base.${key}`)).join('')}
       ${a.base.weaponAtk!==undefined?field('音動機の基礎攻撃力',a.base.weaponAtk,'base.weaponAtk'):''}</div>
       ${findAgent(a)?'<p class="hint">キャラの基礎値はコア未強化時の値です。コア強化分は戦闘時ステータスとダメージに加算されます。</p>':''}
     </section>
-    <section class="edit-group"><h3>常時バフ・デバフの手入力</h3><div class="field-grid">
-    ${buffFields.map(([key,label])=>field(label,a.buffs[key],`buffs.${key}`,{min:-1000000})).join('')}
+    <section class="edit-group"><h3>効果のオン・オフ</h3><p class="hint">効果をオンにした分は下の入力欄の合計値に反映されます。条件付き効果は発動時だけオンにしてください。</p>
+      <div class="effect-switches">${options.length?options.map(effect=>`<div class="effect-switch"><label><input type="checkbox" data-effect="${escape(effect.id)}" ${a.enabledEffects?.[effect.id]?'checked':''}>
+        <span>${escape(effect.label)}${effect.targets==='team'?' · 味方全員':''}</span></label>
+        <select data-effect-key="${escape(effect.id)}" aria-label="${escape(effect.label)}の反映先">
+          ${option('','計算には反映しない',effect.key??'')}${buffFields.map(([key,label])=>option(key,label,effect.key??'')).join('')}</select>
+        <input type="number" inputmode="decimal" step="any" data-effect-value="${escape(effect.id)}" value="${effect.value}" aria-label="${escape(effect.label)}の数値">
+      </div>`).join(''):'<p class="hint">選択中の効果はありません。</p>'}</div>
+      <p class="hint">技固有の倍率や状態異常蓄積値など、通常のバフ欄に対応しない効果は反映先を選んで数値を設定できます。</p></section>
+    <section class="edit-group"><h3>常時バフ・デバフの手入力</h3><p class="hint">表示値は手入力とオンにした効果の合計です。数値を変更すると手入力分だけを調整します。</p><div class="field-grid">
+    ${buffFields.map(([key,label])=>field(label,total[key]??0,`buffTotal.${key}`,{min:-1000000})).join('')}
     </div></section>
     <section class="edit-group"><h3>戦闘前ステータス</h3><div class="field-grid" id="precombat-stats"></div>
-      <p class="hint">装備の基礎値・上級ステータス、ディスクのメイン・2セット効果、コア強化を含みます。戦闘中に発動する装備効果と手入力バフは除外します。</p></section>
+      <p class="hint">装備の基礎値・上級ステータス、ディスクのメイン効果、コア強化を含みます。ディスクセットとオンにした効果、手入力バフは除外します。</p></section>
     <section class="edit-group"><h3>戦闘時ステータス</h3><div class="field-grid" id="combat-stats"></div>
       <details class="effect-details" id="buff-details"><summary>バフ・デバフ詳細</summary><div id="buff-detail-content"></div></details></section>`;
+  prepareSelects($('build-content'));
 }
 function showEquipment() {
   allocationWorker?.terminate();
@@ -401,7 +414,7 @@ function showEquipment() {
       </div>
       ${weapon?`<p class="hint">基礎${weapon.baseKind==='ownDef'?'防御力':'攻撃力'} ${dec(weapon.base[wIndex])} / ${escape(weapon.subName)} ${weapon.sub[wIndex]==null?'資料なし':dec(weapon.sub[wIndex])}${weapon.role!==info?.specialty?' · 特性不一致または未設定のためパッシブ無効':''}</p>
       <div class="gear-chips">${weapon.passives.map(([label,values])=>`<span>${escape(label)} <b>${values[refine-1]==null?'資料なし':dec(values[refine-1])}</b></span>`).join('')}</div>
-      <p class="hint">条件付きの効果は、適用したい値をビルドのバフ・デバフ欄に入力してください。</p>`:''}
+      <p class="hint">効果はビルドのスイッチから適用できます。</p>`:''}
     </section>
     <section class="edit-group gear-group">
       <h3>ドライバディスク</h3>
@@ -527,7 +540,7 @@ function showResult() {
   const m=report.members[slot];
   const beforeMember=editAgent();
   const beforeGear=equipmentStats(beforeMember,findAgent(beforeMember),undefined,{passives:false});
-  const before=stats({...beforeMember,buffs:{}},current().enemy,{gear:{...beforeGear,counts:{}}});
+  const before=stats({...beforeMember,buffs:{},resolvedBuffs:{}},current().enemy,{gear:{...beforeGear,counts:{}}});
   const beforeDisplay=[['攻撃力',before.atk],['HP',before.hp],['防御力',before.ownDef],
     ['会心率 %',before.rawCr*100],['会心ダメージ %',before.cd*100],
     ['異常マスタリー',before.ap],['異常掌握',before.am],['透徹力',before.sheer]];
@@ -535,6 +548,10 @@ function showResult() {
   const display=[['攻撃力',m.atk],['基礎攻撃力',m.baseAtk+m.weaponAtk],['HP',m.hp],['防御力',m.ownDef],['会心率 %',m.rawCr*100],['会心ダメージ %',m.cd*100],
     ['異常マスタリー',m.ap],['異常掌握',m.am],['透徹力',m.sheer],['防御補正 %',m.def*100]];
   $('combat-stats').innerHTML=display.map(([label,n])=>`<div class="stat"><span>${label}</span><strong>${dec(n)}</strong></div>`).join('');
+  const totalBuffs=resolvedBuffs(current().agents,slot);
+  $('build-content').querySelectorAll('[data-key^="buffTotal."]').forEach(input=>{
+    if(document.activeElement!==input)input.value=totalBuffs[input.dataset.key.slice(10)]??0;
+  });
   if($('buff-details')?.open)showBuffDetails(editAgent(),m);
   $('sub-roll-total').textContent=editAgent().sub.reduce((sum,n)=>sum+(n??0),0);
 }
@@ -561,7 +578,11 @@ function setInput(event,resolve) {
     return;
   }
   if(key===undefined) target[group]=group==='slot'?Number(value):value;
-  else (target[group]??={})[key]=value;
+  else if(group==='buffTotal'){
+    const withoutManual={...target,buffs:{}};
+    const team=current().agents.map((agent,i)=>i===slot?withoutManual:agent);
+    (target.buffs??={})[key]=value-(resolvedBuffs(team,slot)[key]??0);
+  } else (target[group]??={})[key]=value;
   save();
   showResult();
 }
@@ -570,7 +591,7 @@ function normalize(event,resolve) {
   if(el.type!=='number'||!el.dataset.key) return;
   const [group,key]=el.dataset.key.split('.');
   const target=resolve(el);
-  el.value=(key===undefined?target[group]:target[group]?.[key])??(group==='damageRes'?'':el.defaultValue);
+  el.value=(group==='buffTotal'?resolvedBuffs(current().agents,slot)[key]:key===undefined?target[group]:target[group]?.[key])??(group==='damageRes'?'':el.defaultValue);
 }
 const editAgent=()=>current().agents[slot];
 const editEnemy=()=>current().enemy;
@@ -579,6 +600,19 @@ $('build-content').addEventListener('toggle',event=>{
   if(event.target.id==='buff-details'&&event.target.open)showBuffDetails(editAgent(),calculate(current()).members[slot]);
 },true);
 $('build-content').addEventListener('input',event=>{
+  if(event.target.matches('[data-effect],[data-effect-key],[data-effect-value]')){
+    if(event.target.hasAttribute('data-effect-value')){
+      const value=event.target.valueAsNumber;
+      if(Number.isFinite(value))(editAgent().effectValues??={})[event.target.dataset.effectValue]=value;
+      save();showResult();return;
+    }
+    if(event.target.hasAttribute('data-effect-key')){
+      (editAgent().effectKeys??={})[event.target.dataset.effectKey]=event.target.value;
+      save();showBuild();showResult();return;
+    }
+    (editAgent().enabledEffects??={})[event.target.dataset.effect]=event.target.checked;
+    save();showBuild();showResult();return;
+  }
   setInput(event,editAgent);
   if(event.target.dataset.key==='name') {
     showRoster();
@@ -617,7 +651,7 @@ $('roster').addEventListener('click',event=>{
 $('agent-controls').addEventListener('change',event=>{
   if(event.target.id==='mindscape'){
     editAgent().mindscape=Number(event.target.value);
-    save();showResult();
+    save();showBuild();showResult();
   }
 });
 $('agent-controls').addEventListener('click',event=>{
@@ -637,7 +671,7 @@ $('skill-body').addEventListener('change',event=>{
     (editAgent().levels??={})[group]=Number(el.value);
     if(skillGroup!=='luminize')skillGroup=group;
     previewLevel=0;
-    save();showResult();showSkills();
+    save();showBuild();showResult();showSkills();
     focusSelect($('skill-body').querySelector(`[data-train="${group}"]`));
   } else if(el.hasAttribute('data-voidflare')||el.id==='skill-group'||el.id==='preview-level'||el.id==='reaction-source'){
     if(el.id==='skill-group') {
@@ -773,7 +807,7 @@ $('equipment-content').addEventListener('change',event=>{
   const config=(a.equipment??={});
   if(!el.dataset.weapon)return;
   config[el.dataset.weapon]=Number(el.value);
-  save();showEquipment();showResult();
+  save();showBuild();showEquipment();showResult();
   focusSelect($('equipment-content').querySelector(`[data-weapon="${el.dataset.weapon}"]`));
 });
 $('equipment-content').addEventListener('click',event=>{
@@ -786,7 +820,7 @@ $('equipment-content').addEventListener('click',event=>{
       const drafts=(e.discLayoutDrafts??={});
       drafts[old.mode]=old.names.slice();
       e.discSelection={mode,names:(drafts[mode]??old.names).slice(0,discLayouts[mode].length)};
-      save();showEquipment();showResult();
+      save();showBuild();showEquipment();showResult();
       $('equipment-content').querySelector(`[data-disc-layout="${mode}"]`)?.focus();
     }
   } else if(event.target.id==='use-manual-discs'){

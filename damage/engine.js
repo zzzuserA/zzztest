@@ -1,7 +1,8 @@
 import {luminizeRows,reactionRows} from './reactions.js';
 import {attackRate,findAgent} from './catalog.js';
-import {baseAttribute,damageBonusForAttack,equipmentStats,attackAttribute} from './equipment.js';
+import {baseAttribute,damageBonusForAttack,equipmentStats,attackAttribute} from './equipment.js?v=20261117-buff-ledger';
 import {coreBonuses} from './core-upgrades.js';
+import {resolveAgents,resolvedBuffs} from './effect-buffs.js';
 
 export const baseFields = [
   ['atk','基礎攻撃力（音動機込み）',1500], ['hp','基礎HP',7673], ['cr','基礎会心率 %',5],
@@ -18,6 +19,11 @@ export const buffFields = [
   ['cr','会心率 %'],['cd','会心ダメージ %'],['dmg','与ダメージ %'],['def','防御ダウン／無視 %'],
   ['pen','貫通率 %'],['res','耐性ダウン %'],['anomaly','異常ダメージアップ %'],['sheerDmg','透徹ダメージアップ %'],
   ['am','異常掌握 %'],['stun','ブレイク弱体倍率 加算 %'],
+  ['defPct','防御力 %'],['ownDefCombat','戦闘時防御力 乗算 %'],['ownDefFlat','戦闘時防御力 加算'],
+  ['basic','通常攻撃の与ダメージ %'],['dash','ダッシュ攻撃の与ダメージ %'],['ultimate','終結スキルの与ダメージ %'],
+  ...['物理','炎','氷','電気','エーテル','風','流明'].map(attr=>['element:'+attr,attr+'属性ダメージ %']),
+  ...['物理','炎','氷','電気','エーテル','風','流明'].map(attr=>['sharp:'+attr,attr+'属性の鋭撃ダメージ %']),
+  ['sharpDmg','鋭撃ダメージ %'],
 ];
 export const kinds = {
   skill:'通常スキル', anomaly:'状態異常', sheer:'透徹', sharp:'鋭撃', fixed:'手入力ダメージ', reaction:'状態異常・特殊ダメージ',
@@ -40,7 +46,8 @@ const pos = n=>Math.max(0,n);
 const line=(label,value,...terms)=>({label,value,terms});
 const product=(label,value,...terms)=>({...line(label,value,...terms),operator:' × '});
 export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=0,fixedDmgBonus}={}) {
-  const {base:b,main,sub,buffs:f}=member;
+  const {base:b,main,sub}=member;
+  const f=member.resolvedBuffs??resolvedBuffs([member],0);
   const info=findAgent(member);
   const core=coreBonuses(info,member.levels?.core);
   const {stats:g,counts,weapon}=gear??equipmentStats(member,info);
@@ -59,13 +66,13 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const baseDef=(b.ownDef??info?.stats.ownDef??0)+(g.weaponDef??0);
   const openingDef=baseDef*(1+(sdefPct+(f.defPct??0)+(g.defPct??0))/100)+(g.defFlat??0)+sdef;
   const ownDef=pos(openingDef*(1+bonus('ownDefCombat')/100)+bonus('ownDefFlat'));
-  const roseCr=counts['棘まとう薔薇']>=4?(openingDef>=1800?16:openingDef>=1000?8:0):0;
-  const rawCr=(b.cr+mcr+scr+bonus('cr')+roseCr)/100;
+  const roseCr=0;
+  const rawCr=(b.cr+mcr+scr+bonus('cr'))/100;
   const cr=clamp(rawCr,0,1);
   const ap=pos(b.ap+map+sapm+bonus('ap'));
   const am=pos((b.am+(core.am??0))*(1+(mam+(f.am??0)+(g.am??0))/100)+bonus('amFlat'));
-  const branchCd=counts['折枝の刀歌']>=4&&am>=115?30:0;
-  const cd=pos((b.cd+mcd+scd+bonus('cd')+branchCd)/100);
+  const branchCd=0;
+  const cd=pos((b.cd+mcd+scd+bonus('cd'))/100);
   const sheer=pos(atk*b.sheerAtk/100+hp*b.sheerHp/100+bonus('sheer'));
   const effectiveDef=pos(enemy.def*(1-clamp((bonus('def')+defDown)/100,0,1))*(1-clamp((mp+bonus('pen'))/100,0,1))-sp);
   const def=794/(794+effectiveDef);
@@ -73,13 +80,14 @@ export function stats(member,enemy,{attribute='',type='',gear,defDown=0,resDown=
   const resReduction=bonus('res')+resDown;
   const res=pos(1+(resReduction-enemyRes)/100);
   const stun=pos((enemy.stun+bonus('stun'))/100);
-  const dmg=pos(1+(fixedDmgBonus??md+bonus('dmg')+damageBonusForAttack(g,attr,type)+(type==='basic'?bonus('basicDmg'):0))/100);
+  const dmg=pos(1+(fixedDmgBonus??md+bonus('dmg')+damageBonusForAttack(f,attr,type)+
+    damageBonusForAttack(g,attr,type)+(type==='basic'?bonus('basicDmg'):0))/100);
   const crit=1+cr*cd;
   const severity=pos((b.critSeverity??250)/100);
   const sharpCrit=(1+cr*(severity-1))*(1+clamp(rawCr-1,0,1)*(severity-1));
   const anomalyBonus=pos(1+bonus('anomaly')/100);
   const anomalyCore=atk*(ap/100)*2*dmg*def;
-  const sharpBonus=pos(1+(bonus('sharpDmg')+(g['sharp:'+attr]??0))/100);
+  const sharpBonus=pos(1+(bonus('sharpDmg')+(f['sharp:'+attr]??0)+(g['sharp:'+attr]??0))/100);
   const sheerBonus=pos(1+bonus('sheerDmg')/100);
   return {atk,baseAtk,weaponAtk,hp,baseHp,ownDef,openingDef,roseCr,branchCd,cr,rawCr,cd,ap,am,sheer,def,res,stun,crit,dmg,
     sharpCrit,sharpBonus,sheerBonus,effectiveDef,enemyRes,resReduction,anomalyBonus,anomalyCore,
@@ -240,7 +248,8 @@ function rowDamage(row,agents,enemy,members,trace){
   return total;
 }
 export function calculate(scenario) {
-  const {enemy,agents}=scenario;
+  const {enemy}=scenario;
+  const agents=resolveAgents(scenario.agents);
   const members=agents.map(a=>stats(a,enemy));
   const byAgent=[0,0,0];
   const rows=plan(scenario).map(row=>{
@@ -252,7 +261,8 @@ export function calculate(scenario) {
   return {members,rows,byAgent,total:byAgent.reduce((sum,damage)=>sum+damage,0)};
 }
 export function substatObjective(scenario,slot){
-  const {enemy,agents}=scenario;
+  const {enemy}=scenario;
+  const agents=resolveAgents(scenario.agents);
   const actor={...agents[slot]};
   const actors=agents.slice();
   actors[slot]=actor;
@@ -271,17 +281,18 @@ export function substatObjective(scenario,slot){
     if(members)members[slot]=stats(actor,enemy,{gear});
     return rows.reduce((sum,row)=>sum+rowDamage(row,actors,enemy,members)*row.count,0);
   };
-  const {base,buffs}=actor;
+  const {base}=actor;
+  const buffs=actor.resolvedBuffs;
   const info=findAgent(actor);
   const {baseAtk,weaponAtk,baseHp}=stats(actor,enemy,{gear});
   const baseDef=(base.ownDef??info?.stats.ownDef??0)+(gear.stats.weaponDef??0);
-  const atkDirection=1+((buffs.atkCombat??0)+(gear.stats.atkCombat??0))/100;
+  const atkDirection=1+(buffs.atkCombat??0)/100;
   const hpDirection=1+(buffs.hpCombat??0)/100;
   const defDirection=1+(buffs.ownDefCombat??0)/100;
   const atkAxis=((baseAtk+weaponAtk)*.03>=19)===(atkDirection>=0)?1:0;
   const hpAxis=(baseHp*.03>=112)===(hpDirection>=0)?3:2;
   const defAxis=baseDef*.048>=15?9:8;
-  const rose=gear.counts['棘まとう薔薇']>=4;
+  const rose=false;
   const axes=[];
   if(linked||suppliesReaction||kinds.has('skill')||kinds.has('anomaly')||(kinds.has('sheer')&&base.sheerAtk!==0))axes.push(atkAxis);
   if(kinds.has('sheer')&&base.sheerHp!==0)axes.push(hpAxis);
@@ -305,16 +316,19 @@ function skillPreviewRow(scenario,slot,skill,level){
 }
 export function skillDamage(scenario,slot,skill,level){
   const row=skillPreviewRow(scenario,slot,skill,level);
-  return row.valid?[rowDamage(row,scenario.agents,scenario.enemy),rowDamage({...row,stun:true},scenario.agents,scenario.enemy)]:[null,null];
+  const agents=resolveAgents(scenario.agents);
+  return row.valid?[rowDamage(row,agents,scenario.enemy),rowDamage({...row,stun:true},agents,scenario.enemy)]:[null,null];
 }
 export function reactionDamage(scenario,slot,reaction){
   if(reaction.amount==null)return [null,null];
   const row={slot,reaction};
-  return [rowDamage(row,scenario.agents,scenario.enemy),rowDamage({...row,stun:true},scenario.agents,scenario.enemy)];
+  const agents=resolveAgents(scenario.agents);
+  return [rowDamage(row,agents,scenario.enemy),rowDamage({...row,stun:true},agents,scenario.enemy)];
 }
 
 export function damageDetails(scenario,{slot,skill,level,reaction,index}){
-  const {agents,enemy,actions}=scenario;
+  const {enemy,actions}=scenario;
+  const agents=resolveAgents(scenario.agents);
   const saved=index!==undefined;
   const row=saved?plan({...scenario,actions:[actions[index]]})[0]:reaction?
     {slot,reaction,valid:reaction.amount!=null}:skillPreviewRow(scenario,slot,skill,level);

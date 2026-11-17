@@ -104,7 +104,7 @@ export function discSelection(config={}){
   const entries=Object.entries(setCounts(config.discs)).filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]);
   return {mode:entries[0]?.[1]<4?'trio':'pair',names:entries.map(([name])=>name)};
 }
-export function equipmentStats(agent,info,record,{passives=true}={}) {
+export function equipmentStats(agent,info,record,{passives=false,setBonuses=false}={}) {
   const config=agent.equipment??{};
   const weapon=weaponByName.get(config.weapon);
   const level=weaponLevels.indexOf(config.weaponLevel??60);
@@ -129,7 +129,7 @@ export function equipmentStats(agent,info,record,{passives=true}={}) {
   for(const [name,count] of Object.entries(counts)){
     if(count<2)continue;
     const [,key,value]=setByName.get(name);
-    add(key,value,name+' 2セット');
+    if(setBonuses)add(key,value,name+' 2セット');
     if(count<4||!passives)continue;
     for(const [stat,bonus] of steadyFour[name]??[])add(stat,bonus,name+' 4セット');
     if(name==='夜明けの紀行'&&baseAttribute(info?.attribute)==='エーテル')add('cd',30,name+' 4セット');
