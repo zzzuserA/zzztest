@@ -360,7 +360,7 @@ main > .chars .char .meta2{font-size:13px!important;font-weight:900}
 @media(max-width:560px){.headerDecor::before{max-width:calc(100% - 85px)}.hpMenu{right:10px;top:10px}}
 
 /* Smooth outlined title at any zoom level. */
-.headerDecor h1{color:#080808;-webkit-text-fill-color:#080808;-webkit-text-stroke:1.5px #fff;paint-order:stroke fill;text-shadow:none}
+.headerDecor h1{font-family:Arial,'Zen Kaku Gothic New','Noto Sans JP',system-ui,sans-serif;color:#080808;-webkit-text-fill-color:#080808;-webkit-text-stroke:1.5px #fff;paint-order:stroke fill;text-shadow:none}
 
 .data-transfer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}
 .data-transfer-status{font-size:12px;color:var(--muted)}
