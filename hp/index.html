@@ -448,7 +448,7 @@ $('saveHpImage').addEventListener('click',async()=>{
  const button=$('saveHpImage');button.disabled=true;
  const capture=document.createElement('div');
  try{
-  if(typeof html2canvas!=='function')throw Error('画像保存機能を読み込めませんでした。');
+
   if(document.fonts)await document.fonts.ready;
   capture.style.cssText='position:fixed;left:-20000px;top:0;width:740px;padding:24px;background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);color:#f7f7f2;font-family:Arial,"Zen Kaku Gothic New",sans-serif;box-sizing:border-box';
   const title=document.createElement('h2');title.textContent='ボスHP逆算';
@@ -464,7 +464,36 @@ $('saveHpImage').addEventListener('click',async()=>{
    row.append(nameEl,hpEl);capture.append(row);
   }
   document.body.append(capture);
-  const canvas=await html2canvas(capture,{backgroundColor:'#141414',scale:2,useCORS:true,logging:false,scrollX:-window.scrollX,scrollY:-window.scrollY});
+  let canvas;
+  if(typeof html2canvas==='function'){
+   canvas=await html2canvas(capture,{backgroundColor:'#141414',scale:2,useCORS:true,logging:false,scrollX:-window.scrollX,scrollY:-window.scrollY});
+  }else{
+   // Draw the same compact export when the optional screenshot library is unavailable.
+   const scale=2,width=740,height=82+cards.length*78;
+   canvas=document.createElement('canvas');canvas.width=width*scale;canvas.height=height*scale;
+   const ctx=canvas.getContext('2d');ctx.scale(scale,scale);
+   ctx.fillStyle='#141414';ctx.fillRect(0,0,width,height);
+   ctx.strokeStyle='#1d1d1d';ctx.lineWidth=3;
+   for(let x=-height;x<width+height;x+=10){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+height,height);ctx.stroke()}
+   ctx.fillStyle='#f0eb00';ctx.fillRect(24,24,5,30);
+   ctx.font='900 22px Arial,"Zen Kaku Gothic New",sans-serif';ctx.fillText('ボスHP逆算',39,48);
+   for(const [index,card] of cards.entries()){
+    const y=68+index*78;
+    ctx.fillStyle='#202020';ctx.beginPath();ctx.roundRect(24,y,width-48,68,18);ctx.fill();
+    ctx.strokeStyle='#414141';ctx.lineWidth=2;ctx.stroke();
+    const name=card.querySelector('.inverseName')?.value.trim()||'ボス'+(index+1);
+    const hp=card.querySelector('#total,[data-total]')?.textContent||'—';
+    ctx.fillStyle='#f0eb00';ctx.font='900 25px Arial,"Zen Kaku Gothic New",sans-serif';
+    ctx.textAlign='right';ctx.fillText(hp,width-44,y+43);
+    ctx.fillStyle='#f7f7f2';ctx.font='900 21px Arial,"Zen Kaku Gothic New",sans-serif';
+    ctx.textAlign='left';
+    const maxWidth=width-80-ctx.measureText(hp).width-18;
+    let shown=name;
+    while(shown.length>1&&ctx.measureText(shown).width>maxWidth)shown=shown.slice(0,-1);
+    if(shown!==name)shown=shown.slice(0,-1)+'…';
+    ctx.fillText(shown,44,y+43);
+   }
+  }
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
   if(!blob)throw Error('画像を作成できませんでした。');
   showHpImagePreview(blob);
