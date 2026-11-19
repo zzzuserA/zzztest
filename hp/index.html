@@ -337,6 +337,14 @@ $('extraInverse').addEventListener('input',event=>{
  const card=event.target.closest('[data-extra-index]');
  if(card){if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]'))normalizeNumber(event.target);updateExtra(card,Number(card.dataset.extraIndex))}
 });
+$('extraInverse').addEventListener('keydown',event=>{
+ if(event.key==='Enter'&&!event.isComposing&&event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){
+  event.preventDefault();
+  const card=event.target.closest('[data-extra-index]');
+  commitExtra(card,Number(card.dataset.extraIndex));
+  event.target.blur();
+ }
+});
 $('extraInverse').addEventListener('change',event=>{
  const card=event.target.closest('[data-extra-index]');
  if(card)commitExtra(card,Number(card.dataset.extraIndex));
