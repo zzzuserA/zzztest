@@ -84,7 +84,10 @@ for(const [id,choice] of [['operation','operationChoice'],['forwardOperation','f
 for(const button of document.querySelectorAll('[data-target-score]')){
  button.addEventListener('click',()=>{
   const score=Number(button.dataset.targetScore);
-  if(score===65000)$('forwardOperation').value='5000';
+  if(score===65000){
+   $('forwardOperation').value='5000';
+   if(readNumber('currentScore')<5000)$('currentScore').value='5000';
+  }
   $('targetScore').value=String(score);
   commitLimits();
  });
@@ -191,7 +194,7 @@ const remaining=validForward?Math.max(0,bossTotal*remainingShare):0;
  $('targetError').textContent=targetError;
  $('toCap').textContent=targetText!==''&&validForward&&!targetError?fmt(Math.round(neededHp)):'—';
 $('forwardError').textContent=forwardError;
-$('toCap').textContent=validForward?fmt(Math.round(remaining)):'—';
+
 $('alreadyDealt').textContent=validForward?fmt(Math.round(bossTotal-remaining)):'—';
 $('damageScore').textContent=validForward?fmt(remainingShare*100)+'%':'—';
 $('scoreLeft').textContent=validForward?fmt((1-remainingShare)*100)+'%':'—';
