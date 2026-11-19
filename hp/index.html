@@ -66,7 +66,7 @@ function formatInput(el){
 
 for(const id of fields.filter(id=>$(id).tagName==='INPUT')){
  const el=$(id);el.type='text';
- el.addEventListener('focus',()=>{normalizeNumber(el);requestAnimationFrame(()=>el.select())});
+ el.addEventListener('focus',()=>{normalizeNumber(el);el.select()});
  el.addEventListener('input',event=>{if(event.isComposing)return;normalizeNumber(el)});
  el.addEventListener('compositionend',()=>{setTimeout(commitLimits,0)});
 }
@@ -326,7 +326,7 @@ $('extraInverse').addEventListener('click',event=>{
 });
 $('extraInverse').addEventListener('focusin',event=>{
  if(event.target.matches('[data-field="operation"]'))event.target.closest('.operationField').querySelector('[data-operation-choice]').hidden=false;
- if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){normalizeNumber(event.target);requestAnimationFrame(()=>event.target.select())}
+ if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){normalizeNumber(event.target);event.target.select()}
 });
 $('extraInverse').addEventListener('focusout',event=>{
  if(event.target.matches('[data-field="operation"]'))setTimeout(()=>{event.target.closest('.operationField').querySelector('[data-operation-choice]').hidden=true},150);
