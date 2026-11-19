@@ -449,7 +449,11 @@ $('saveHpImage').addEventListener('click',async()=>{
      const context=canvas.getContext('2d');context.scale(2,2);context.fillStyle='#141414';context.fillRect(0,0,width,height);context.drawImage(image,0,0);
     }finally{URL.revokeObjectURL(url)}
    }
-   const link=document.createElement('a');link.download='危局HP_ボスHP逆算.png';link.href=canvas.toDataURL('image/png');link.click();
+   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+   if(!blob)throw Error('画像を作成できませんでした。');
+   const fileUrl=URL.createObjectURL(blob);
+   const link=document.createElement('a');link.download='危局HP_ボスHP逆算.png';link.href=fileUrl;document.body.append(link);link.click();link.remove();
+   setTimeout(()=>URL.revokeObjectURL(fileUrl),60000);
   }finally{capture.remove()}
  }catch(error){alert(error.message||'画像の作成に失敗しました。')}
  finally{button.disabled=false}
