@@ -416,7 +416,6 @@ $('saveHpImage').addEventListener('click',async()=>{
  const button=$('saveHpImage');
  button.disabled=true;
  try{
-  if(typeof html2canvas!=='function')throw Error('画像作成の読み込みに失敗しました。');
   const capture=document.createElement('div');
   capture.style.cssText='position:fixed;left:-20000px;top:0;width:1100px;padding:24px;background:repeating-linear-gradient(135deg,#171717 0 3px,#141414 3px 7px);color:#f7f7f2;font-family:Arial,"Zen Kaku Gothic New",sans-serif';
   const title=document.createElement('h2');title.textContent='ボスHP逆算';title.className='calcTitle';title.style.margin='0 0 20px';capture.append(title);
@@ -424,14 +423,32 @@ $('saveHpImage').addEventListener('click',async()=>{
    const clone=card.cloneNode(true);
    clone.style.margin='0 0 14px';
    const originalInputs=card.querySelectorAll('input,select'),clonedInputs=clone.querySelectorAll('input,select');
-   originalInputs.forEach((input,i)=>{clonedInputs[i].value=input.value});
+   originalInputs.forEach((input,i)=>{clonedInputs[i].value=input.value;clonedInputs[i].setAttribute('value',input.value)});
    clone.querySelectorAll('.operationChoice').forEach(choice=>choice.hidden=true);
    clone.querySelectorAll('[data-remove]').forEach(button=>button.remove());
    capture.append(clone);
   }
   document.body.append(capture);
   try{
-   const canvas=await html2canvas(capture,{backgroundColor:'#141414',scale:2,useCORS:true,logging:false});
+   let canvas;
+   if(typeof html2canvas==='function')canvas=await html2canvas(capture,{backgroundColor:'#141414',scale:2,useCORS:true,logging:false});
+   else{
+    const width=1100,height=Math.ceil(capture.scrollHeight);
+    const styles=Array.from(document.querySelectorAll('style'),el=>el.textContent.replace(/@import[^;]+;/g,'')).join(' ');
+    const content=capture.cloneNode(true);
+    content.style.position='static';content.style.left='0';content.style.top='0';
+    content.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
+    const style=document.createElement('style');style.textContent=styles;content.prepend(style);
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'"><foreignObject width="100%" height="100%">'+new XMLSerializer().serializeToString(content)+'</foreignObject></svg>';
+    const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
+    try{
+     const image=new Image();
+     image.src=url;
+     await image.decode();
+     canvas=document.createElement('canvas');canvas.width=width*2;canvas.height=height*2;
+     const context=canvas.getContext('2d');context.scale(2,2);context.fillStyle='#141414';context.fillRect(0,0,width,height);context.drawImage(image,0,0);
+    }finally{URL.revokeObjectURL(url)}
+   }
    const link=document.createElement('a');link.download='危局HP_ボスHP逆算.png';link.href=canvas.toDataURL('image/png');link.click();
   }finally{capture.remove()}
  }catch(error){alert(error.message||'画像の作成に失敗しました。')}
