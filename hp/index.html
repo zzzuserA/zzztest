@@ -257,30 +257,41 @@ function updateExtra(card,index){
  const item=extraInverses[index];
  const get=name=>card.querySelector('[data-field="'+name+'"]');
  for(const key of ['preset','name',...extraFields])item[key]=get(key).value;
- const n=key=>Number(String(item[key]).replace(/,/g,''));
- const before=n('before'),after=n('after'),attack=n('attack'),operation=n('operation');
- const started=extraFields.some(key=>n(key)!==0);
+ const read=key=>{const value=get(key).value.replace(/,/g,'');return numericText(value)?Number(value):NaN};
+ const operation=Math.min(5000,read('operation'));
+ const scoreMax=Math.max(0,operation)+60000;
+ const before=Math.min(scoreMax,read('before')),after=Math.min(scoreMax,read('after')),attack=read('attack');
+ const hasInverse=extraFields.every(key=>get(key).value!=='')&&['before','after','attack'].some(key=>read(key)!==0);
  let error='';
- if(started){
-  if(extraFields.some(key=>!Number.isFinite(n(key))))error='数値を確認してください。';
-  else if(operation<0||operation>5000)error='操作スコアは0～5,000にしてください。';
+ if(hasInverse){
+  if(!Number.isFinite(read('before'))||!Number.isFinite(read('after'))||!Number.isFinite(read('operation'))||!Number.isFinite(before)||!Number.isFinite(after)||!Number.isFinite(attack)||!Number.isFinite(operation))error='数値を確認してください。';
+  else if(operation<0)error='操作スコアは0以上にしてください。';
   else if(before<operation)error='攻撃前スコアが操作スコアより小さくなっています。';
-  else if(after<=before)error='攻撃後スコアは攻撃前より大きい数値にしてください。';
-  else if(after-operation>=60000||before-operation>=60000)error='攻撃後にダメージスコアがカンストしているため逆算できません。';
+  else if(after<=before)error='攻撃後スコアは攻撃前より大きい数値にしてください。カンスト後の攻撃からは逆算できません。';
+  else if(after-operation>=60000)error='攻撃後にダメージスコアがカンストしているため、超過ダメージが分からずボスHPを逆算できません。';
   else if(attack<=0)error='攻撃ダメージは0より大きい数値にしてください。';
  }
- let total=0,delta=0;
- if(started&&!error){
-  const rows=rowsFor(item.preset);
-  delta=fractionAtScore(after-operation,rows)-fractionAtScore(before-operation,rows);
-  total=delta>0?attack/delta:0;
-  if(delta<=0)error='スコアと操作スコアを確認してください。';
-  else if(!Number.isSafeInteger(Math.round(total)))error='算出されるHPが大きすぎます。';
- }
+ const valid=hasInverse&&!error,rows=rowsFor(item.preset);
+ const delta=valid?fractionAtScore(after-operation,rows)-fractionAtScore(before-operation,rows):0;
+ const total=valid&&delta>0?attack/delta:0;
+ if(total&&!Number.isSafeInteger(Math.round(total)))error='算出されるHPが大きすぎます。入力値を確認してください。';
+ const usable=total>0&&Number.isSafeInteger(Math.round(total));
  card.querySelector('[data-error]').textContent=error;
- card.querySelector('[data-total]').textContent=started&&!error?fmt(Math.round(total)):'—';
- card.querySelector('[data-fraction]').textContent=started&&!error?fmt(delta*100)+'%':'—';
+ card.querySelector('[data-total]').textContent=usable?fmt(Math.round(total)):'—';
+ card.querySelector('[data-fraction]').textContent=usable?fmt(delta*100)+'%':'—';
  saveExtra();
+}
+function commitExtra(card,index){
+ for(const key of extraFields)normalizeNumber(card.querySelector('[data-field="'+key+'"]'));
+ const operation=card.querySelector('[data-field="operation"]');
+ if(operation.value!==''&&numericText(operation.value)&&Number(operation.value)>5000)operation.value='5000';
+ const limit=Math.max(0,Math.min(5000,Number(operation.value)||0))+60000;
+ for(const key of ['before','after']){
+  const el=card.querySelector('[data-field="'+key+'"]');
+  if(el.value!==''&&numericText(el.value)&&Number(el.value)>limit)el.value=String(limit);
+ }
+ for(const key of extraFields)formatInput(card.querySelector('[data-field="'+key+'"]'));
+ updateExtra(card,index);
 }
 function renderExtra(){
  const root=$('extraInverse');
@@ -297,7 +308,7 @@ function renderExtra(){
  root.querySelectorAll('[data-extra-index]').forEach((card,index)=>{
   const item=extraInverses[index];
   for(const key of ['preset','name',...extraFields])card.querySelector('[data-field="'+key+'"]').value=item[key]??'';
-  updateExtra(card,index);
+  commitExtra(card,index);
  });
 }
 $('addInverse').addEventListener('click',()=>{
@@ -311,18 +322,24 @@ $('extraInverse').addEventListener('click',event=>{
  const index=Number(card.dataset.extraIndex);
  if(event.target.closest('[data-remove]')){extraInverses.splice(index,1);renderExtra();saveExtra();return}
  const button=event.target.closest('[data-operation-preset]');
- if(button){card.querySelector('[data-field="operation"]').value=button.dataset.operationPreset;card.querySelector('[data-operation-choice]').hidden=true;updateExtra(card,index)}
+ if(button){card.querySelector('[data-field="operation"]').value=button.dataset.operationPreset;card.querySelector('[data-operation-choice]').hidden=true;commitExtra(card,index)}
 });
-$('extraInverse').addEventListener('focusin',event=>{if(event.target.matches('[data-field="operation"]'))event.target.closest('.operationField').querySelector('[data-operation-choice]').hidden=false});
-$('extraInverse').addEventListener('focusout',event=>{if(event.target.matches('[data-field="operation"]'))setTimeout(()=>{event.target.closest('.operationField').querySelector('[data-operation-choice]').hidden=true},150)});
+$('extraInverse').addEventListener('focusin',event=>{
+ if(event.target.matches('[data-field="operation"]'))event.target.closest('.operationField').querySelector('[data-operation-choice]').hidden=false;
+ if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){normalizeNumber(event.target);requestAnimationFrame(()=>event.target.select())}
+});
+$('extraInverse').addEventListener('focusout',event=>{
+ if(event.target.matches('[data-field="operation"]'))setTimeout(()=>{event.target.closest('.operationField').querySelector('[data-operation-choice]').hidden=true},150);
+ if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){const card=event.target.closest('[data-extra-index]');commitExtra(card,Number(card.dataset.extraIndex))}
+});
 $('extraInverse').addEventListener('pointerdown',event=>{if(event.target.closest('[data-operation-preset]'))event.preventDefault()});
 $('extraInverse').addEventListener('input',event=>{
  const card=event.target.closest('[data-extra-index]');
- if(card)updateExtra(card,Number(card.dataset.extraIndex));
+ if(card){if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]'))normalizeNumber(event.target);updateExtra(card,Number(card.dataset.extraIndex))}
 });
 $('extraInverse').addEventListener('change',event=>{
  const card=event.target.closest('[data-extra-index]');
- if(card)updateExtra(card,Number(card.dataset.extraIndex));
+ if(card)commitExtra(card,Number(card.dataset.extraIndex));
 });
 
 renderExtra();
