@@ -360,6 +360,15 @@ $('hpRedo').addEventListener('click',()=>{
  if(!hpFuture.length)return;
  hpPast.push(hpCurrent);hpCurrent=hpFuture.pop();hpRestore(hpCurrent);hpButtons();
 });
+let hpEditingTarget=null;
+document.addEventListener('input',event=>{
+ if(!event.target.matches('#firstInverseName,[data-field],#preset,#before,#after,#attack,#operation,#forwardPreset,#bossTotal,#currentScore,#forwardOperation,#targetScore,#compareSourcePreset,#compareSourceHp,#compareSourceScore,#compareSourceOperation,#compareTargetPreset,#compareTargetHp,#compareTargetOperation'))return;
+ const next=JSON.stringify(hpState());
+ if(next===hpCurrent)return;
+ if(hpEditingTarget===event.target){hpCurrent=next;hpFuture=[];hpButtons()}
+ else{hpRecord();hpEditingTarget=event.target}
+});
+document.addEventListener('focusout',event=>{if(hpEditingTarget===event.target)hpEditingTarget=null});
 document.addEventListener('change',hpRecord);
 document.addEventListener('click',event=>{
  if(event.target.closest('#addInverse,[data-remove],[data-operation-preset],[data-operation-value],[data-target-score],#useEstimatedHp'))hpRecord();
