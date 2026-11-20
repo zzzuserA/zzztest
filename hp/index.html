@@ -70,7 +70,7 @@ function formatInput(el){
 for(const id of fields.filter(id=>$(id).tagName==='INPUT')){
  const el=$(id);el.type='text';
  el.addEventListener('focus',()=>{normalizeNumber(el);el.select()});
- el.addEventListener('input',event=>{if(event.isComposing)return;normalizeNumber(el)});
+ // Preserve the browser's in-progress text, especially during IME conversion.
  el.addEventListener('compositionend',()=>{setTimeout(commitLimits,0)});
 }
 $('bossTotal').addEventListener('focus',()=>{if(estimatedHp)$('estimateChoice').hidden=false});
@@ -342,7 +342,7 @@ $('extraInverse').addEventListener('focusout',event=>{
 $('extraInverse').addEventListener('pointerdown',event=>{if(event.target.closest('[data-operation-preset]'))event.preventDefault()});
 $('extraInverse').addEventListener('input',event=>{
  const card=event.target.closest('[data-extra-index]');
- if(card){if(event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]'))normalizeNumber(event.target);updateExtra(card,Number(card.dataset.extraIndex))}
+ if(card){if(event.isComposing)return;updateExtra(card,Number(card.dataset.extraIndex))}
 });
 $('extraInverse').addEventListener('keydown',event=>{
  if(event.key==='Enter'&&!event.isComposing&&event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){
@@ -355,6 +355,10 @@ $('extraInverse').addEventListener('keydown',event=>{
 $('extraInverse').addEventListener('change',event=>{
  const card=event.target.closest('[data-extra-index]');
  if(card)commitExtra(card,Number(card.dataset.extraIndex));
+});
+$('extraInverse').addEventListener('compositionend',event=>{
+ const card=event.target.closest('[data-extra-index]');
+ if(card&&event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]'))setTimeout(()=>commitExtra(card,Number(card.dataset.extraIndex)),0);
 });
 
 renderExtra();
