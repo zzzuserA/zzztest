@@ -293,6 +293,7 @@ function hpInputs(){
 const firstNameKey='zzz-deadly-hp-first-name-v1';
 try{$('firstInverseName').value=localStorage.getItem(firstNameKey)||'ボス1'}catch{}
 $('firstInverseName').addEventListener('input',()=>{try{localStorage.setItem(firstNameKey,$('firstInverseName').value)}catch{}refreshEstimatedChoices()});
+$('firstInverseName').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.isComposing){event.preventDefault();event.target.blur()}});
 const extraKey='zzz-deadly-hp-extra-inverses-v1';
 let extraInverses=[];
 try{
@@ -393,6 +394,7 @@ $('extraInverse').addEventListener('input',event=>{
  if(card){if(event.isComposing)return;updateExtra(card,Number(card.dataset.extraIndex))}
 });
 $('extraInverse').addEventListener('keydown',event=>{
+ if(event.key==='Enter'&&!event.isComposing&&event.target.matches('[data-field="name"]')){event.preventDefault();event.target.blur();return}
  if(event.key==='Enter'&&!event.isComposing&&event.target.matches('[data-field="before"],[data-field="after"],[data-field="attack"],[data-field="operation"]')){
   event.preventDefault();
   const card=event.target.closest('[data-extra-index]');
