@@ -489,9 +489,9 @@ $('saveHpImage').addEventListener('click',async()=>{
    const name=card.querySelector('.inverseName')?.value.trim()||'ボス'+(index+1);
    const hp=card.querySelector('#total,[data-total]')?.textContent||'—';
    const row=document.createElement('div');
-   row.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:10px;padding:17px 20px;border:2px solid #414141;border-radius:18px;background:#202020;font-size:21px;font-weight:900';
-   const nameEl=document.createElement('span');nameEl.textContent=name;nameEl.style.cssText='min-width:0;overflow-wrap:anywhere';
-   const hpEl=document.createElement('strong');hpEl.textContent=hp;hpEl.style.cssText='flex:none;color:#f0eb00;font-size:25px;font-variant-numeric:tabular-nums';
+   row.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:10px;height:68px;box-sizing:border-box;padding:0 20px;border:2px solid #414141;border-radius:18px;background:#202020;font-size:21px;font-weight:900;line-height:1';
+   const nameEl=document.createElement('span');nameEl.textContent=name;nameEl.style.cssText='min-width:0;overflow-wrap:anywhere;line-height:1';
+   const hpEl=document.createElement('strong');hpEl.textContent=hp;hpEl.style.cssText='flex:none;color:#f0eb00;font-size:25px;font-variant-numeric:tabular-nums;line-height:1';
    row.append(nameEl,hpEl);capture.append(row);
   }
   document.body.append(capture);
@@ -514,15 +514,16 @@ $('saveHpImage').addEventListener('click',async()=>{
     ctx.strokeStyle='#414141';ctx.lineWidth=2;ctx.stroke();
     const name=card.querySelector('.inverseName')?.value.trim()||'ボス'+(index+1);
     const hp=card.querySelector('#total,[data-total]')?.textContent||'—';
+    ctx.textBaseline='middle';
     ctx.fillStyle='#f0eb00';ctx.font='900 25px Arial,"Zen Kaku Gothic New",sans-serif';
-    ctx.textAlign='right';ctx.fillText(hp,width-44,y+43);
+    ctx.textAlign='right';ctx.fillText(hp,width-44,y+34);
     ctx.fillStyle='#f7f7f2';ctx.font='900 21px Arial,"Zen Kaku Gothic New",sans-serif';
     ctx.textAlign='left';
     const maxWidth=width-80-ctx.measureText(hp).width-18;
     let shown=name;
     while(shown.length>1&&ctx.measureText(shown).width>maxWidth)shown=shown.slice(0,-1);
     if(shown!==name)shown=shown.slice(0,-1)+'…';
-    ctx.fillText(shown,44,y+43);
+    ctx.fillText(shown,44,y+34);
    }
   }
   const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
