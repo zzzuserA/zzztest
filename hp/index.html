@@ -40,7 +40,7 @@ main{max-width:1180px;padding:24px 10px 40px}
 .inverseTopActions{display:flex;align-items:center;gap:5px}.inverseActions{margin:10px 0 0;min-height:41px}.inverseTopActions>button{border:2px solid var(--line);border-radius:24px;padding:8px 14px;background:var(--panel);color:var(--text);font-weight:900;font-size:13px;white-space:nowrap;cursor:pointer}.inverseTopActions>button:hover{border-color:var(--accent)}.inverseActions .data-transfer>button{font-size:13px}.targetPresets.operationChoice{display:block;margin-top:4px;padding:4px;border:2px solid var(--accent);border-radius:12px}.targetPresets.operationChoice[hidden]{display:none}.targetPresets.operationChoice button{display:block;width:100%;padding:9px 12px;border:0;border-radius:8px;background:transparent;color:var(--text);text-align:left;font:700 13px Arial,sans-serif}.targetPresets.operationChoice button:hover,.targetPresets.operationChoice button[aria-pressed="true"]{background:#3b3b22;color:var(--text);outline:0}@media(max-width:560px){.inverseTopActions>button,.inverseActions .data-transfer>button{padding:8px 10px;font-size:12px}.inverseActions{gap:5px}.inverseHistory{gap:5px}}
 .head{margin-bottom:0}.inverseActions{margin:20px 0;min-height:41px}.inverseActions + .calcTitle{margin-top:0}
 .hpImageModal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:#000c}.hpImageModal.show{display:flex}.hpImageDialog{width:min(650px,100%);max-height:90vh;overflow:auto;padding:20px;border:2px solid var(--line);border-radius:18px;background:#202020;box-shadow:0 15px 45px #000}.hpImageDialog h2{margin:0 0 12px;font-size:20px}.hpImageDialog img{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#141414}.hpImageButtons{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:14px}.hpImageButtons button{padding:9px 14px;border:2px solid var(--line);border-radius:24px;background:#101010;color:var(--text);font-weight:900;cursor:pointer}.hpImageButtons button:hover{border-color:var(--accent)}@media(max-width:560px){.hpImageDialog{padding:12px}}
-/* Compact two-column input layout on narrow screens. Keep mode, HP and operation fields full-width. */
+/* On small screens only the mode selectors span both columns. */
 @media(max-width:560px){
  .firstInverseCard .controls,
  #extraInverse .extraInverseCard .controls,
@@ -50,20 +50,12 @@ main{max-width:1180px;padding:24px 10px 40px}
  #extraInverse .extraInverseCard .controls>label,
  .forwardControls>label,
  .forwardControls>.targetField,
- .compareControls>label{min-width:0}
+ .compareControls>label{min-width:0;grid-column:auto}
  .firstInverseCard .controls>label:first-child,
  #extraInverse .extraInverseCard .controls>label:first-child,
- .firstInverseCard .controls>.operationField,
- #extraInverse .extraInverseCard .controls>.operationField,
  .forwardControls>label:first-child,
- .forwardControls>.bossHpField,
- .forwardControls>.operationField,
  .compareControls>label:nth-child(1),
- .compareControls>label:nth-child(2),
- .compareControls>label:nth-child(4),
- .compareControls>label:nth-child(5),
- .compareControls>label:nth-child(6),
- .compareControls>label:nth-child(7){grid-column:1/-1}
+ .compareControls>label:nth-child(5){grid-column:1/-1}
 }
 </style><link rel="stylesheet" href="../data-share.css?v=20261120-hp"></head><body><main><header class="head"><h1>危局<span class="latinTitle">HP</span>・スコア計算ツール</h1><details class="hpMenu"><summary aria-label="メニューを開く"><svg class="menuIcon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 6H26M6 16H26M6 26H26"/></svg></summary><nav aria-label="関連ページ"><a href="../">チームビルダー</a><a href="../hp/" aria-current="page">危局HP</a><a href="../damage/">ダメージシミュレーター</a></nav></details></header><div class="inverseActions"><div class="inverseHistory"><button id="hpUndo" type="button" aria-label="戻す" title="戻す"><svg viewBox="0 0 147 110" aria-hidden="true"><path class="arrowOutline" d="M32 21H91A35 35 0 0 1 91 91H69C55 91 44 84 37 72L20 42C13 30 19 21 32 21Z"/><g transform="translate(12 -1) translate(65 53) scale(0.8) translate(-65 -53)"><path class="arrowGlyph" d="M56 43H74A15 15 0 0 1 74 73H56"/><path class="arrowHead" d="M36 43L57 30.876L57 55.124Z"/></g></svg></button><button id="hpRedo" type="button" aria-label="やり直す" title="やり直す"><svg viewBox="0 0 147 110" aria-hidden="true"><path class="arrowOutline" d="M32 21H91A35 35 0 0 1 91 91H69C55 91 44 84 37 72L20 42C13 30 19 21 32 21Z"/><g transform="translate(12 -1) translate(65 53) scale(0.8) translate(-65 -53)"><path class="arrowGlyph" d="M56 43H74A15 15 0 0 1 74 73H56"/><path class="arrowHead" d="M36 43L57 30.876L57 55.124Z"/></g></svg></button></div><div class="inverseTopActions"><div class="data-transfer" id="hp-transfer" aria-label="危局HPデータの共有"></div><button id="saveHpImage" type="button">画像保存</button></div></div>
 <h2 class="calcTitle">ボスHP逆算</h2><p class="sectionDescription">攻撃前後のスコアとその攻撃のダメージ量からおおよそのボスHPを算出</p>
